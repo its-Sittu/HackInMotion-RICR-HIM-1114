@@ -2,6 +2,7 @@ import Sidebar from '../components/dashboard/Sidebar'
 import Header from '../components/dashboard/Header'
 import OverviewCards from '../components/dashboard/OverviewCards'
 import CurrentMedicines from '../components/dashboard/CurrentMedicines'
+import ActiveWarnings from '../components/dashboard/ActiveWarnings'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -23,10 +24,12 @@ export default function DashboardPage() {
         
         <main className="dashboard-main-content">
           <CurrentMedicines />
+          <ActiveWarnings />
         </main>
       </div>
     </div>
   )
 }
+
 
 
