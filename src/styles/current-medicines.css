@@ -235,6 +235,93 @@
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
 }
 
+/* Search UI Styles */
+.search-container {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.search-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-input:focus+.search-icon {
+  color: #6366f1;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.search-clear-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Search Empty State */
+.search-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.search-empty-icon {
+  color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 0.75rem;
+}
+
+.search-empty-text {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
 
 /* Empty State */
 .medicines-empty {
@@ -334,27 +421,64 @@
     background: rgba(0, 0, 0, 0.08);
   }
 
-  .medicine-item {
+  .medicine-card {
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(99, 102, 241, 0.08);
   }
 
-  .medicine-item:hover {
+  .medicine-card:hover {
     background: #ffffff;
     border-color: rgba(99, 102, 241, 0.25);
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.07);
   }
 
-  .medicine-name {
+  .medicine-card-name {
     color: #1e293b;
   }
 
-  .medicine-meta {
+  .medicine-card-subtitle {
     color: #64748b;
   }
 
-  .meta-dot {
-    background: rgba(0, 0, 0, 0.2);
+  .search-input {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    color: #1e293b;
+  }
+
+  .search-input:focus {
+    background: #fff;
+    border-color: #4f46e5;
+  }
+
+  .search-icon {
+    color: #64748b;
+  }
+
+  .search-input:focus+.search-icon {
+    color: #4f46e5;
+  }
+
+  .search-clear-btn {
+    color: #64748b;
+  }
+
+  .search-clear-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1e293b;
+  }
+
+  .search-empty-state {
+    background: rgba(0, 0, 0, 0.01);
+    border: 1px dashed rgba(99, 102, 241, 0.15);
+  }
+
+  .search-empty-icon {
+    color: rgba(99, 102, 241, 0.35);
+  }
+
+  .search-empty-text {
+    color: #475569;
   }
 
   .medicines-empty {

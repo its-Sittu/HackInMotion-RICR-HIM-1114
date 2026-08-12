@@ -33,6 +33,7 @@ export default function CurrentMedicines() {
     { id: 2, name: 'Metformin', dosage: '500 mg', type: 'Tablet' }
   ]);
 
+  const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [name, setName] = useState('');
   const [dosage, setDosage] = useState('');
@@ -60,6 +61,10 @@ export default function CurrentMedicines() {
     // Stubbed action: "Do NOT implement actual remove functionality yet."
     console.log(`[Stub Action] Requested removal of medicine: ${medName}. Actual remove functionality is not implemented yet.`);
   };
+
+  const filteredMedicines = medicines.filter(med =>
+    med.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <section className="medicines-section">
@@ -149,18 +154,61 @@ export default function CurrentMedicines() {
         </form>
       )}
 
-      {medicines.length > 0 ? (
-        <div className="medicines-list">
-          {medicines.map((med) => (
-            <MedicineCard
-              key={med.id}
-              name={med.name}
-              dosage={med.dosage}
-              type={med.type}
-              onRemove={() => handleRemoveStub(med.name)}
+      {/* Local Search UI */}
+      {medicines.length > 0 && !isAdding && (
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search medicine by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-          ))}
+            {searchTerm && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => setSearchTerm('')}
+                aria-label="Clear search"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
+      )}
+
+      {medicines.length > 0 ? (
+        filteredMedicines.length > 0 ? (
+          <div className="medicines-list">
+            {filteredMedicines.map((med) => (
+              <MedicineCard
+                key={med.id}
+                name={med.name}
+                dosage={med.dosage}
+                type={med.type}
+                onRemove={() => handleRemoveStub(med.name)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="search-empty-state">
+            <svg className="search-empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <p className="search-empty-text">No medicines match your search "{searchTerm}"</p>
+          </div>
+        )
       ) : (
         <div className="medicines-empty">
           <div className="empty-icon">
