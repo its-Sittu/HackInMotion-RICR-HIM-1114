@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import '../../styles/current-medicines.css';
 
+// Master catalog of searchable medicines
+const MASTER_CATALOG = [
+  { id: 'c1', name: 'Paracetamol', dosage: '500 mg', type: 'Tablet' },
+  { id: 'c2', name: 'Metformin', dosage: '500 mg', type: 'Tablet' },
+  { id: 'c3', name: 'Ibuprofen', dosage: '200 mg', type: 'Tablet' },
+  { id: 'c4', name: 'Aspirin', dosage: '325 mg', type: 'Tablet' },
+  { id: 'c5', name: 'Amoxicillin', dosage: '500 mg', type: 'Capsule' },
+  { id: 'c6', name: 'Atorvastatin', dosage: '20 mg', type: 'Tablet' },
+  { id: 'c7', name: 'Lisinopril', dosage: '10 mg', type: 'Tablet' },
+  { id: 'c8', name: 'Levothyroxine', dosage: '50 mcg', type: 'Tablet' },
+  { id: 'c9', name: 'Gabapentin', dosage: '300 mg', type: 'Capsule' },
+  { id: 'c10', name: 'Albuterol', dosage: '90 mcg', type: 'Inhaler' }
+];
+
 // Reusable MedicineCard Component
 export function MedicineCard({ name, dosage, type, onRemove }) {
   return (
@@ -34,27 +48,26 @@ export default function CurrentMedicines() {
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [addSearchTerm, setAddSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [name, setName] = useState('');
-  const [dosage, setDosage] = useState('');
-  const [type, setType] = useState('Tablet');
 
-  const handleAddMedicine = (e) => {
-    e.preventDefault();
-    if (!name.trim()) return;
+  const handleAddSelect = (item) => {
+    // Prevent duplicate medicines (case-insensitive check)
+    const exists = medicines.some(
+      med => med.name.toLowerCase() === item.name.toLowerCase()
+    );
+    if (exists) return;
 
     const newMed = {
       id: Date.now(),
-      name: name.trim(),
-      dosage: dosage.trim() || 'N/A',
-      type
+      name: item.name,
+      dosage: item.dosage,
+      type: item.type
     };
 
     setMedicines(prev => [...prev, newMed]);
-    setName('');
-    setDosage('');
-    setType('Tablet');
-    setIsAdding(false);
+    setAddSearchTerm(''); // Clear/reset search after adding
+    setIsAdding(false); // Close addition dialog after adding
   };
 
   const handleRemoveStub = (medName) => {
@@ -66,11 +79,15 @@ export default function CurrentMedicines() {
     med.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredCatalog = MASTER_CATALOG.filter(item =>
+    item.name.toLowerCase().includes(addSearchTerm.toLowerCase())
+  );
+
   return (
     <section className="medicines-section">
       <div className="medicines-header">
         <h2 className="medicines-title">Current Medicines</h2>
-        {!isAdding && medicines.length > 0 && (
+        {!isAdding && (
           <button
             type="button"
             className="btn-primary"
@@ -86,72 +103,84 @@ export default function CurrentMedicines() {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleAddMedicine} className="medicine-form-card">
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="med-name">Medicine Name</label>
+        <div className="medicine-form-card">
+          <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+            <label htmlFor="catalog-search">Search Medicine to Add</label>
+            <div className="search-input-wrapper">
+              <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <input
-                id="med-name"
+                id="catalog-search"
                 type="text"
-                className="form-input"
-                placeholder="e.g. Ibuprofen"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+                className="search-input"
+                placeholder="Search master catalog (e.g. Ibuprofen)..."
+                value={addSearchTerm}
+                onChange={(e) => setAddSearchTerm(e.target.value)}
                 autoFocus
               />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="med-dosage">Dosage</label>
-              <input
-                id="med-dosage"
-                type="text"
-                className="form-input"
-                placeholder="e.g. 200 mg"
-                value={dosage}
-                onChange={(e) => setDosage(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="med-type">Form</label>
-              <select
-                id="med-type"
-                className="form-select"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option value="Tablet">Tablet</option>
-                <option value="Capsule">Capsule</option>
-                <option value="Liquid">Liquid</option>
-                <option value="Syrup">Syrup</option>
-                <option value="Injection">Injection</option>
-                <option value="Cream">Cream</option>
-                <option value="Inhaler">Inhaler</option>
-                <option value="Other">Other</option>
-              </select>
+              {addSearchTerm && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setAddSearchTerm('')}
+                  aria-label="Clear search"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="form-actions">
+          {/* Catalog Results List */}
+          <div className="catalog-results">
+            {filteredCatalog.length > 0 ? (
+              filteredCatalog.map(item => {
+                const isAlreadyAdded = medicines.some(
+                  med => med.name.toLowerCase() === item.name.toLowerCase()
+                );
+                return (
+                  <div key={item.id} className="catalog-item">
+                    <div className="catalog-item-info">
+                      <span className="catalog-item-emoji">💊</span>
+                      <div className="catalog-item-details">
+                        <span className="catalog-item-name">{item.name}</span>
+                        <span className="catalog-item-meta">{item.dosage} • {item.type}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={`btn-add-select ${isAlreadyAdded ? 'added' : 'primary'}`}
+                      onClick={() => !isAlreadyAdded && handleAddSelect(item)}
+                      disabled={isAlreadyAdded}
+                    >
+                      {isAlreadyAdded ? 'Added' : 'Add'}
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="catalog-no-results">No medicines found matching "{addSearchTerm}"</p>
+            )}
+          </div>
+
+          <div className="form-actions" style={{ marginTop: '1.5rem' }}>
             <button
               type="button"
               className="btn-secondary"
               onClick={() => {
                 setIsAdding(false);
-                setName('');
-                setDosage('');
-                setType('Tablet');
+                setAddSearchTerm('');
               }}
             >
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary">
-              Save Medicine
+              Close
             </button>
           </div>
-        </form>
+        </div>
       )}
 
       {/* Local Search UI */}
