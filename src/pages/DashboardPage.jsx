@@ -3,6 +3,7 @@ import Header from '../components/dashboard/Header'
 import OverviewCards from '../components/dashboard/OverviewCards'
 import CurrentMedicines from '../components/dashboard/CurrentMedicines'
 import ActiveWarnings from '../components/dashboard/ActiveWarnings'
+import RecentChecks from '../components/dashboard/RecentChecks'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -26,10 +27,13 @@ export default function DashboardPage() {
           <CurrentMedicines />
           <ActiveWarnings />
         </main>
+        
+        <RecentChecks />
       </div>
     </div>
   )
 }
+
 
 
 
