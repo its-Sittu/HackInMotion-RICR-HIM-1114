@@ -91,61 +91,131 @@
   margin-bottom: 0.85rem;
 }
 
-/* Badges for Mild, Moderate, Severe */
-.warning-badge {
+/* Risk Severity Indicator Component */
+.risk-severity-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.severity-header-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.severity-icon-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.825rem;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.severity-text-container {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.severity-main-label {
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-.badge-dot {
-  width: 6px;
+.severity-subtext-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+/* Meter / Step bars (non-color visual indicator) */
+.severity-meter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meter-bar {
+  width: 14px;
   height: 6px;
-  border-radius: 50%;
-  display: inline-block;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
 }
 
-.badge-severe {
-  background: rgba(239, 68, 68, 0.18);
+/* Severe Severity Specifics */
+.severity-severe {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.severity-severe .severity-icon-wrapper {
+  background: rgba(239, 68, 68, 0.25);
   color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.35);
 }
-
-.badge-severe .badge-dot {
+.severity-severe .severity-main-label {
+  color: #fca5a5;
+}
+.severity-severe .severity-subtext-label {
+  color: #f87171;
+}
+.severity-severe .meter-bar.active {
   background: #ef4444;
-  box-shadow: 0 0 6px #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
 }
 
-.badge-moderate {
-  background: rgba(245, 158, 11, 0.18);
+/* Moderate Severity Specifics */
+.severity-moderate {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.severity-moderate .severity-icon-wrapper {
+  background: rgba(245, 158, 11, 0.25);
   color: #fde047;
-  border: 1px solid rgba(245, 158, 11, 0.35);
 }
-
-.badge-moderate .badge-dot {
+.severity-moderate .severity-main-label {
+  color: #fde047;
+}
+.severity-moderate .severity-subtext-label {
+  color: #fbbf24;
+}
+.severity-moderate .meter-bar.active {
   background: #f59e0b;
-  box-shadow: 0 0 6px #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
 }
 
-.badge-mild {
-  background: rgba(59, 130, 246, 0.18);
+/* Mild Severity Specifics */
+.severity-mild {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.severity-mild .severity-icon-wrapper {
+  background: rgba(59, 130, 246, 0.25);
   color: #93c5fd;
-  border: 1px solid rgba(59, 130, 246, 0.35);
 }
-
-.badge-mild .badge-dot {
+.severity-mild .severity-main-label {
+  color: #93c5fd;
+}
+.severity-mild .severity-subtext-label {
+  color: #60a5fa;
+}
+.severity-mild .meter-bar.active {
   background: #3b82f6;
-  box-shadow: 0 0 6px #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
 }
 
 /* Medicines Involved */
 .warning-medicines {
   margin-bottom: 0.75rem;
+  margin-top: 0.85rem;
 }
 
 .medicine-names {
@@ -196,7 +266,7 @@
   background: rgba(15, 23, 42, 0.8);
   border-left: 3px solid #60a5fa;
   border-radius: 8px;
-  animation: fadeIn 0.25 ease-in-out;
+  animation: fadeIn 0.25s ease-in-out;
 }
 
 .details-expanded-title {
@@ -288,20 +358,35 @@
   .recommendation-text {
     color: #1e293b;
   }
-  .badge-severe {
+  .severity-severe {
     background: #fef2f2;
-    color: #dc2626;
     border-color: #fca5a5;
   }
-  .badge-moderate {
+  .severity-severe .severity-main-label {
+    color: #dc2626;
+  }
+  .severity-severe .severity-subtext-label {
+    color: #b91c1c;
+  }
+  .severity-moderate {
     background: #fffbe6;
-    color: #d97706;
     border-color: #fde047;
   }
-  .badge-mild {
+  .severity-moderate .severity-main-label {
+    color: #d97706;
+  }
+  .severity-moderate .severity-subtext-label {
+    color: #b45309;
+  }
+  .severity-mild {
     background: #eff6ff;
-    color: #2563eb;
     border-color: #bfdbfe;
+  }
+  .severity-mild .severity-main-label {
+    color: #2563eb;
+  }
+  .severity-mild .severity-subtext-label {
+    color: #1d4ed8;
   }
   .view-details-btn {
     background: #f1f5f9;

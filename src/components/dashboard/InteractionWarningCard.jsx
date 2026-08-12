@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import RiskSeverityIndicator from './RiskSeverityIndicator'
 import '../../styles/activeWarnings.css'
 
 export default function InteractionWarningCard({ 
@@ -14,19 +15,6 @@ export default function InteractionWarningCard({
   const [showDetails, setShowDetails] = useState(false)
 
   const { severity = 'Moderate', medicines = [], explanation = '', recommendation = '' } = warning
-
-  const getSeverityBadgeClass = (sev) => {
-    const s = (sev || '').toLowerCase()
-    if (s === 'severe' || s === 'high') {
-      return { className: 'warning-badge badge-severe', label: 'Severe' }
-    }
-    if (s === 'mild' || s === 'low') {
-      return { className: 'warning-badge badge-mild', label: 'Mild' }
-    }
-    return { className: 'warning-badge badge-moderate', label: 'Moderate' }
-  }
-
-  const badgeInfo = getSeverityBadgeClass(severity)
   const formattedMedicines = Array.isArray(medicines) ? medicines.join(' + ') : medicines
 
   const handleDetailsClick = () => {
@@ -39,10 +27,7 @@ export default function InteractionWarningCard({
   return (
     <div className={`active-warning-card risk-${(severity || 'moderate').toLowerCase()}`}>
       <div className="warning-card-header">
-        <span className={badgeInfo.className}>
-          <span className="badge-dot"></span>
-          {severity || 'Moderate'}
-        </span>
+        <RiskSeverityIndicator severity={severity} showDescription={true} />
       </div>
 
       <div className="warning-medicines">
