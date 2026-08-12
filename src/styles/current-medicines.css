@@ -647,3 +647,166 @@
     background: rgba(0, 0, 0, 0.155);
   }
 }
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS — Commit 7
+   ============================================ */
+
+/* ---------- Tablet (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .medicines-section {
+    margin: 1.5rem auto;
+    padding: 0 0.25rem;
+  }
+
+  .medicines-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 0.25rem;
+  }
+
+  .medicines-title {
+    font-size: 1.3rem;
+  }
+
+  .btn-primary {
+    font-size: 0.85rem;
+    padding: 0.55rem 1rem;
+  }
+
+  .medicine-card {
+    padding: 1rem 1.25rem;
+  }
+
+  .medicine-card-name {
+    font-size: 1.05rem;
+  }
+
+  .medicine-form-card {
+    padding: 1.25rem;
+  }
+
+  .catalog-results {
+    max-height: 220px;
+  }
+
+  .catalog-item {
+    padding: 0.65rem 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Mobile (≤ 480px) ---------- */
+@media (max-width: 480px) {
+  .medicines-section {
+    margin: 1rem 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .medicines-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0;
+  }
+
+  .medicines-title {
+    font-size: 1.2rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+  }
+
+  /* Card: stack name block and Remove button vertically */
+  .medicine-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+  }
+
+  .btn-remove {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+  }
+
+  /* Search: full-width, comfortable tap targets */
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+  }
+
+  .search-icon {
+    left: 0.8rem;
+  }
+
+  .search-clear-btn {
+    right: 0.8rem;
+  }
+
+  /* Catalog items: stack vertically on mobile */
+  .catalog-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .btn-add-select {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .medicine-form-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .medicines-empty {
+    padding: 2rem 1rem;
+  }
+
+  .empty-title {
+    font-size: 1rem;
+  }
+
+  .empty-desc {
+    font-size: 0.85rem;
+  }
+}
+
+/* ---------- Small mobile (≤ 360px) ---------- */
+@media (max-width: 360px) {
+  .medicines-title {
+    font-size: 1.1rem;
+  }
+
+  .medicine-card-name {
+    font-size: 0.95rem;
+  }
+
+  .medicine-card-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .btn-remove,
+  .btn-add-select,
+  .btn-primary,
+  .btn-secondary {
+    font-size: 0.82rem;
+  }
+}
