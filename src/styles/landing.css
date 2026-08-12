@@ -1,0 +1,332 @@
+/* ─── Typography & Core System ──────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+.landing-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #fafafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* ─── Atmospheric Ambient Glows (Matches Reference Lighting) ─── */
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(60px);
+}
+
+.glow-purple {
+  width: 320px;
+  height: 320px;
+  top: -40px;
+  left: -40px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(250, 250, 252, 0) 70%);
+}
+
+.glow-blue {
+  width: 340px;
+  height: 340px;
+  top: -30px;
+  right: -40px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.20) 0%, rgba(250, 250, 252, 0) 70%);
+}
+
+.glow-red {
+  width: 300px;
+  height: 300px;
+  bottom: 12%;
+  left: -30px;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.16) 0%, rgba(250, 250, 252, 0) 70%);
+}
+
+.glow-orange {
+  width: 300px;
+  height: 300px;
+  bottom: 14%;
+  right: -30px;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.16) 0%, rgba(250, 250, 252, 0) 70%);
+}
+
+.glow-green {
+  width: 360px;
+  height: 360px;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.18) 0%, rgba(250, 250, 252, 0) 70%);
+}
+
+/* ─── 3D Medical Organs (100% Transparent, No Boxes/Borders) ─── */
+.organ-frame {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.organ-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+/* ── Organ Positions (Exact Reference Composition) ── */
+
+/* 1. Purple Brain (Top-Left) */
+.organ-pos-brain {
+  width: clamp(140px, 36vw, 290px);
+  height: clamp(140px, 36vw, 290px);
+  top: 1%;
+  left: -1%;
+  animation: floatBrain 8s ease-in-out infinite;
+}
+
+/* 2. Blue Lungs (Top-Right) */
+.organ-pos-lungs {
+  width: clamp(160px, 42vw, 340px);
+  height: clamp(160px, 42vw, 340px);
+  top: 0%;
+  right: -2%;
+  animation: floatLungs 9s ease-in-out infinite 0.5s;
+}
+
+/* 3. Red Heart (Mid/Lower-Left) */
+.organ-pos-heart {
+  width: clamp(135px, 35vw, 280px);
+  height: clamp(135px, 35vw, 280px);
+  bottom: 12%;
+  left: -1%;
+  animation: floatHeart 7.5s ease-in-out infinite 1s;
+}
+
+/* 4. Orange Kidney (Mid/Lower-Right) */
+.organ-pos-kidney {
+  width: clamp(135px, 35vw, 280px);
+  height: clamp(135px, 35vw, 280px);
+  bottom: 14%;
+  right: -1%;
+  animation: floatKidney 8.5s ease-in-out infinite 1.5s;
+}
+
+/* 5. Green Stomach (Bottom-Center) */
+.organ-pos-stomach {
+  width: clamp(165px, 44vw, 350px);
+  height: clamp(165px, 44vw, 350px);
+  bottom: -4%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: floatStomach 8s ease-in-out infinite 0.8s;
+}
+
+/* ── Smooth, Subtle Gentle Floating (Thoda Move) ── */
+@keyframes floatBrain {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes floatLungs {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(-1deg); }
+}
+
+@keyframes floatHeart {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-7px) scale(1.02); }
+}
+
+@keyframes floatKidney {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.2deg); }
+}
+
+@keyframes floatStomach {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ─── Center Hero Content ────────────────────────────────────── */
+.landing-center-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 1.25rem;
+  max-width: 440px;
+  box-sizing: border-box;
+}
+
+.landing-text-wrapper {
+  margin-bottom: 1.75rem;
+}
+
+.hero-main-title {
+  font-size: clamp(2rem, 5.8vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.14;
+  color: #1a1a24;
+  margin: 0 0 0.75rem 0;
+}
+
+.hero-sub-title {
+  font-size: clamp(0.92rem, 2.4vw, 1.05rem);
+  font-weight: 450;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 320px;
+}
+
+/* ─── CTA Pill Button (Exact Reference Apple Design) ────────── */
+.hero-cta-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.btn-continue-guest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem 2.2rem;
+  background: #ffffff;
+  color: #1e1e2d;
+  font-family: inherit;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  cursor: pointer;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(99, 102, 241, 0.06);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.btn-continue-guest:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.09),
+    0 6px 16px rgba(99, 102, 241, 0.12);
+  border-color: #cbd5e1;
+  color: #6366f1;
+}
+
+.btn-continue-guest:active {
+  transform: translateY(0px) scale(1);
+}
+
+.btn-continue-guest svg {
+  transition: transform 0.2s ease;
+}
+
+.btn-continue-guest:hover svg {
+  transform: translateX(4px);
+}
+
+/* ─── Desktop Optimization ───────────────────────────────────── */
+@media (min-width: 1024px) {
+  .organ-pos-brain {
+    top: 4%;
+    left: 8%;
+  }
+
+  .organ-pos-lungs {
+    top: 3%;
+    right: 8%;
+  }
+
+  .organ-pos-heart {
+    bottom: 8%;
+    left: 10%;
+  }
+
+  .organ-pos-kidney {
+    bottom: 10%;
+    right: 10%;
+  }
+
+  .organ-pos-stomach {
+    bottom: -3%;
+  }
+
+  .landing-center-content {
+    max-width: 500px;
+  }
+}
+
+/* ─── Mobile Optimization (Exact Phone Reference Composition) ── */
+@media (max-width: 480px) {
+  .landing-screen {
+    padding: 0;
+  }
+
+  .organ-pos-brain {
+    top: 2%;
+    left: -4%;
+  }
+
+  .organ-pos-lungs {
+    top: 1%;
+    right: -5%;
+  }
+
+  .organ-pos-heart {
+    bottom: 14%;
+    left: -3%;
+  }
+
+  .organ-pos-kidney {
+    bottom: 16%;
+    right: -3%;
+  }
+
+  .organ-pos-stomach {
+    bottom: -2%;
+  }
+
+  .landing-center-content {
+    padding: 0 1.25rem;
+    max-width: 320px;
+  }
+
+  .hero-main-title {
+    font-size: 1.85rem;
+    line-height: 1.18;
+  }
+
+  .hero-sub-title {
+    font-size: 0.86rem;
+    max-width: 260px;
+  }
+
+  .btn-continue-guest {
+    padding: 0.85rem 1.8rem;
+    font-size: 0.95rem;
+  }
+}
