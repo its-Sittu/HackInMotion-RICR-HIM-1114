@@ -1,4 +1,5 @@
 import Sidebar from '../components/dashboard/Sidebar'
+import Header from '../components/dashboard/Header'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -7,6 +8,7 @@ export default function DashboardPage() {
       <Sidebar />
       
       <div className="dashboard-content-container">
+        <Header />
         <main className="dashboard-main">
           <h1 className="dashboard-heading">Medicine Safety Dashboard</h1>
           
