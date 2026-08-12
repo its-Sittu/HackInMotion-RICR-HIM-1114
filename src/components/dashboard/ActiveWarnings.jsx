@@ -5,7 +5,7 @@ import '../../styles/activeWarnings.css'
 // Re-export InteractionWarningCard for standalone use
 export { InteractionWarningCard }
 
-// Local placeholder warnings data with symptoms to watch for
+// Local placeholder warnings data with clear action recommendations
 const DEFAULT_WARNINGS = [
   {
     id: 'warn-1',
@@ -13,15 +13,15 @@ const DEFAULT_WARNINGS = [
     medicines: ['Warfarin', 'Aspirin'],
     explanation: 'Combining blood thinners like Warfarin with Aspirin significantly increases the risk of severe internal bleeding.',
     symptoms: ['Unusual bleeding', 'Severe bruising', 'Dizziness', 'Blood in urine or stool'],
-    recommendation: 'Consult your prescribing physician immediately before taking these medications together.'
+    recommendation: 'Avoid combining these medicines unless specifically advised by a healthcare professional.'
   },
   {
     id: 'warn-2',
     severity: 'Moderate',
     medicines: ['Medicine A', 'Medicine B'],
-    explanation: 'These medicines may interact.',
+    explanation: 'These medicines may interact and reduce therapeutic effectiveness.',
     symptoms: ['Dizziness', 'Nausea', 'Headache'],
-    recommendation: 'Consult your doctor or pharmacist.'
+    recommendation: 'Consult your doctor before taking these medicines together.'
   },
   {
     id: 'warn-3',
@@ -29,7 +29,7 @@ const DEFAULT_WARNINGS = [
     medicines: ['Calcium Supplement', 'Levothyroxine'],
     explanation: 'Calcium can bind to thyroid medication, reducing overall gastrointestinal absorption.',
     symptoms: ['Mild fatigue', 'Stomach upset'],
-    recommendation: 'Take these medications at least 4 hours apart.'
+    recommendation: 'Take these medications at least 4 hours apart to ensure proper absorption.'
   }
 ]
 

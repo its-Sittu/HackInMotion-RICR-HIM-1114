@@ -282,30 +282,44 @@
   font-size: 0.9rem;
 }
 
-/* Recommendation Area */
+/* Visually Distinct Safety Recommendation Area */
 .warning-recommendation-box {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.08) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-left: 4px solid #10b981;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.recommendation-icon {
+  color: #10b981;
+  flex-shrink: 0;
 }
 
 .recommendation-label {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: #34d399;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .recommendation-text {
-  font-size: 0.9rem;
-  color: #e2e8f0;
+  font-size: 0.925rem;
+  color: #f1f5f9;
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 /* Expanded Details */
@@ -410,14 +424,18 @@
     border-color: #bae6fd;
   }
   .warning-recommendation-box {
-    background: rgba(241, 245, 249, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid #a7f3d0;
+    border-left: 4px solid #059669;
   }
   .recommendation-label {
-    color: #64748b;
+    color: #047857;
   }
   .recommendation-text {
-    color: #1e293b;
+    color: #064e3b;
+  }
+  .recommendation-icon {
+    color: #059669;
   }
   .severity-severe {
     background: #fef2f2;

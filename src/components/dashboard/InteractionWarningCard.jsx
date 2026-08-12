@@ -9,7 +9,7 @@ export default function InteractionWarningCard({
     medicines: ['Medicine A', 'Medicine B'],
     explanation: 'These medicines may interact.',
     symptoms: ['Dizziness', 'Nausea', 'Unusual bleeding'],
-    recommendation: 'Consult your doctor or pharmacist.'
+    recommendation: 'Consult your doctor before taking these medicines together.'
   },
   onViewDetails
 }) {
@@ -20,7 +20,7 @@ export default function InteractionWarningCard({
     medicines = [], 
     explanation = '', 
     symptoms = ['Dizziness', 'Nausea', 'Unusual bleeding'],
-    recommendation = '' 
+    recommendation = 'Consult your doctor before taking these medicines together.' 
   } = warning
 
   const formattedMedicines = Array.isArray(medicines) ? medicines.join(' + ') : medicines
@@ -78,10 +78,28 @@ export default function InteractionWarningCard({
         </div>
       )}
 
+      {/* Visually Distinct Safety Recommendation Area */}
       <div className="warning-recommendation-box">
-        <strong className="recommendation-label">Recommendation:</strong>
+        <div className="recommendation-header">
+          <svg 
+            className="recommendation-icon" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            aria-hidden="true"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <strong className="recommendation-label">Safety Recommendation</strong>
+        </div>
         <p className="recommendation-text">
-          {recommendation || 'Consult your doctor or pharmacist.'}
+          {recommendation || 'Consult your doctor before taking these medicines together.'}
         </p>
       </div>
 
