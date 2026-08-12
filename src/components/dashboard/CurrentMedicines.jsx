@@ -70,9 +70,8 @@ export default function CurrentMedicines() {
     setIsAdding(false); // Close addition dialog after adding
   };
 
-  const handleRemoveStub = (medName) => {
-    // Stubbed action: "Do NOT implement actual remove functionality yet."
-    console.log(`[Stub Action] Requested removal of medicine: ${medName}. Actual remove functionality is not implemented yet.`);
+  const handleRemove = (id) => {
+    setMedicines(prev => prev.filter(med => med.id !== id));
   };
 
   const filteredMedicines = medicines.filter(med =>
@@ -224,7 +223,7 @@ export default function CurrentMedicines() {
                 name={med.name}
                 dosage={med.dosage}
                 type={med.type}
-                onRemove={() => handleRemoveStub(med.name)}
+                onRemove={() => handleRemove(med.id)}
               />
             ))}
           </div>
