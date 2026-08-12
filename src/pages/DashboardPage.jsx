@@ -1,5 +1,6 @@
 import Sidebar from '../components/dashboard/Sidebar'
 import Header from '../components/dashboard/Header'
+import OverviewCards from '../components/dashboard/OverviewCards'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -9,6 +10,7 @@ export default function DashboardPage() {
       
       <div className="dashboard-content-container">
         <Header />
+        <OverviewCards />
         <main className="dashboard-main">
           <h1 className="dashboard-heading">Medicine Safety Dashboard</h1>
           
