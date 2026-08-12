@@ -1,70 +1,34 @@
 import React from 'react'
+import InteractionWarningCard from './InteractionWarningCard'
 import '../../styles/activeWarnings.css'
 
-// Local placeholder warnings data
+// Re-export InteractionWarningCard for standalone use
+export { InteractionWarningCard }
+
+// Local placeholder warnings data featuring Mild, Moderate, Severe severities
 const DEFAULT_WARNINGS = [
   {
     id: 'warn-1',
-    riskLevel: 'Moderate Interaction',
-    riskType: 'moderate',
+    severity: 'Severe',
+    medicines: ['Warfarin', 'Aspirin'],
+    explanation: 'Combining blood thinners like Warfarin with Aspirin significantly increases the risk of severe internal bleeding.',
+    recommendation: 'Consult your prescribing physician immediately before taking these medications together.'
+  },
+  {
+    id: 'warn-2',
+    severity: 'Moderate',
     medicines: ['Medicine A', 'Medicine B'],
     explanation: 'These medicines may interact.',
     recommendation: 'Consult your doctor or pharmacist.'
   },
   {
-    id: 'warn-2',
-    riskLevel: 'High Risk',
-    riskType: 'high',
-    medicines: ['Warfarin', 'Aspirin'],
-    explanation: 'Combining blood thinners like Warfarin with Aspirin significantly increases the risk of severe internal bleeding.',
-    recommendation: 'Consult your prescribing physician immediately before taking these medications together.'
+    id: 'warn-3',
+    severity: 'Mild',
+    medicines: ['Calcium Supplement', 'Levothyroxine'],
+    explanation: 'Calcium can bind to thyroid medication, reducing overall gastrointestinal absorption.',
+    recommendation: 'Take these medications at least 4 hours apart.'
   }
 ]
-
-export function WarningCard({ warning }) {
-  const { riskLevel, riskType, medicines, explanation, recommendation } = warning
-
-  const getBadgeClass = (type) => {
-    switch (type) {
-      case 'high':
-        return 'warning-badge badge-high'
-      case 'moderate':
-        return 'warning-badge badge-moderate'
-      case 'low':
-      default:
-        return 'warning-badge badge-low'
-    }
-  }
-
-  const formattedMedicines = Array.isArray(medicines) ? medicines.join(' + ') : medicines
-
-  return (
-    <div className={`active-warning-card risk-${riskType || 'moderate'}`}>
-      <div className="warning-card-header">
-        <span className={getBadgeClass(riskType)}>
-          {riskLevel || 'Moderate Interaction'}
-        </span>
-      </div>
-
-      <div className="warning-medicines">
-        <span className="medicine-names">
-          {formattedMedicines}
-        </span>
-      </div>
-
-      <p className="warning-explanation">
-        {explanation || 'These medicines may interact.'}
-      </p>
-
-      <div className="warning-recommendation-box">
-        <strong className="recommendation-label">Recommendation:</strong>
-        <p className="recommendation-text">
-          {recommendation || 'Consult your doctor or pharmacist.'}
-        </p>
-      </div>
-    </div>
-  )
-}
 
 export default function ActiveWarnings({ warnings = DEFAULT_WARNINGS, title = "Active Warnings" }) {
   return (
@@ -96,7 +60,7 @@ export default function ActiveWarnings({ warnings = DEFAULT_WARNINGS, title = "A
       <div className="active-warnings-list">
         {warnings && warnings.length > 0 ? (
           warnings.map((warning, index) => (
-            <WarningCard key={warning.id || index} warning={warning} />
+            <InteractionWarningCard key={warning.id || index} warning={warning} />
           ))
         ) : (
           <div className="no-warnings-state">
