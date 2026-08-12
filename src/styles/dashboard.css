@@ -765,107 +765,190 @@
   line-height: 1.6;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Layout transition for screen size <= 992px (Tablet & Mobile viewports) */
+@media (max-width: 992px) {
   .dashboard-container {
     flex-direction: column;
   }
+  
+  /* Sidebar becomes a top header bar */
   .medisafe-sidebar {
     width: 100%;
     min-width: 100%;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 1.5rem 1.25rem;
+    padding: 1rem 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
   }
+  
   @media (prefers-color-scheme: light) {
     .medisafe-sidebar {
       border-bottom: 1px solid rgba(99, 102, 241, 0.08);
     }
   }
+  
   .sidebar-brand {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
+    padding-left: 0;
+    flex-shrink: 0;
   }
+  
+  /* Nav items scroll horizontally to save height */
+  .sidebar-nav {
+    flex-grow: 1;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide for Firefox */
+    -ms-overflow-style: none; /* Hide for IE/Edge */
+  }
+  
+  .sidebar-nav::-webkit-scrollbar {
+    display: none; /* Hide for Chrome/Safari */
+  }
+  
   .nav-list {
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.35rem;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding: 0.15rem 0;
   }
+  
   .nav-item-wrapper {
     width: auto;
-    flex-grow: 1;
+    flex-shrink: 0;
   }
+  
   .nav-item-btn {
-    padding: 0.65rem 0.85rem;
-    justify-content: center;
+    padding: 0.55rem 0.95rem;
     border-radius: 10px;
+    white-space: nowrap;
   }
+  
   .nav-item-btn:hover {
     transform: none;
   }
+  
   .sidebar-footer {
     border-top: none;
     padding-top: 0;
-    margin-top: 0.5rem;
+    margin-top: 0;
+    flex-shrink: 0;
   }
+  
   .logout-btn {
-    padding: 0.65rem 0.85rem;
-    justify-content: center;
+    padding: 0.55rem;
     border-radius: 10px;
+    width: auto;
+    display: flex;
+    justify-content: center;
   }
+  
+  /* Only show icon for Logout to save space */
+  .logout-btn .nav-label {
+    display: none;
+  }
+  
   .logout-btn:hover {
     transform: none;
   }
+  
   .dashboard-content-container {
-    padding: 1.5rem 1rem;
+    padding: 2rem 1.5rem 3.5rem 1.5rem;
   }
+  
+  /* Overview cards display in a neat 2x2 grid */
+  .overview-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 1.75rem;
+  }
+}
+
+/* Tablet adjustments specifically */
+@media (min-width: 641px) and (max-width: 992px) {
+  .dashboard-main-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile adjustments (<= 640px viewport) */
+@media (max-width: 640px) {
+  .medisafe-sidebar {
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+  }
+  
+  .brand-name {
+    font-size: 1.15rem;
+  }
+  
+  .brand-icon-wrapper {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+  
+  .dashboard-content-container {
+    padding: 1.5rem 1rem 3rem 1rem;
+  }
+  
+  /* Greetings Header stack vertically on small screens */
   .medisafe-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
   }
+  
   .header-actions {
     width: 100%;
     justify-content: space-between;
   }
+  
+  /* Overview cards stack vertically on small mobile viewports */
   .overview-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
   }
+  
+  .dashboard-page-title-area {
+    margin-bottom: 1.25rem;
+  }
+  
+  .dashboard-heading {
+    font-size: 1.85rem;
+  }
+  
+  .dashboard-subheading {
+    font-size: 0.95rem;
+  }
+  
+  /* Section cards stack vertically */
   .dashboard-main-content {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
+  
   .medisafe-section-card {
     padding: 1.75rem 1.25rem;
   }
-  .recent-checks-card {
-    margin-top: 1.25rem;
-  }
-  .dashboard-page-title-area {
-    margin-bottom: 1.5rem;
-  }
-  .dashboard-heading {
-    font-size: 2.25rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .overview-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
+  
+  /* Buttons and headers align stack on mobile viewports */
   .card-section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
+  
   .add-medicine-btn {
     width: 100%;
     justify-content: center;
   }
-  .dashboard-heading {
-    font-size: 2rem;
+  
+  .recent-checks-card {
+    margin-top: 1.25rem;
   }
 }
