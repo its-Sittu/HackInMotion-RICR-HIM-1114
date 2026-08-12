@@ -15,6 +15,48 @@ const MASTER_CATALOG = [
   { id: 'c10', name: 'Albuterol', dosage: '90 mcg', type: 'Inhaler' }
 ];
 
+// --- Fuzzy match helper ---
+// Returns true if `query` is a fuzzy match for `target`.
+// Handles: partial names, case-insensitivity, and common misspellings
+// via sliding-window Levenshtein distance.
+function levenshtein(a, b) {
+  const m = a.length;
+  const n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function fuzzyMatch(query, target) {
+  if (!query) return true;
+  const q = query.toLowerCase().trim();
+  const t = target.toLowerCase();
+
+  // 1. Exact substring match
+  if (t.includes(q)) return true;
+
+  // 2. Fuzzy: slide query over target substrings of same length ±2
+  //    and accept if edit distance ≤ tolerance
+  const tolerance = Math.max(1, Math.floor(q.length / 4));
+  const windowSize = q.length;
+  for (let i = 0; i <= t.length - windowSize + tolerance; i++) {
+    const window = t.slice(i, i + windowSize + Math.ceil(tolerance));
+    if (window.length >= windowSize - tolerance) {
+      if (levenshtein(q, window) <= tolerance) return true;
+    }
+  }
+  return false;
+}
+
 // Reusable MedicineCard Component
 export function MedicineCard({ name, dosage, type, onRemove }) {
   return (
@@ -75,11 +117,11 @@ export default function CurrentMedicines() {
   };
 
   const filteredMedicines = medicines.filter(med =>
-    med.name.toLowerCase().includes(searchTerm.toLowerCase())
+    fuzzyMatch(searchTerm, med.name)
   );
 
   const filteredCatalog = MASTER_CATALOG.filter(item =>
-    item.name.toLowerCase().includes(addSearchTerm.toLowerCase())
+    fuzzyMatch(addSearchTerm, item.name)
   );
 
   return (
