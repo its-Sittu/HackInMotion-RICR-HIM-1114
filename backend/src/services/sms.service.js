@@ -1,28 +1,72 @@
 /**
- * SMS Service — clean abstraction over any SMS provider.
+ * SMS Service — clean abstraction over SMS providers.
  *
- * Currently supported providers:
- *   - Twilio (activates when TWILIO_* env vars are set)
+ * Currently supported providers (No DLT required for Twilio or Fast2SMS):
+ *   - Fast2SMS (activates when FAST2SMS_API_KEY is set — NO DLT required for India)
+ *   - Twilio (activates when TWILIO_* env vars are set — NO DLT required)
+ *   - MSG91 (activates when MSG91_* env vars are set)
  *   - Dev mode (logs OTP to console — default when no provider is configured)
- *
- * To add a new provider (e.g. AWS SNS, MSG91):
- *   1. Add a new sendWith<Provider> function below
- *   2. Add its env-var detection in sendOtp()
- *
- * REQUIRED env vars for Twilio:
- *   TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxx
- *   TWILIO_AUTH_TOKEN=your_auth_token
- *   TWILIO_FROM_NUMBER=+1xxxxxxxxxx
  */
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 /**
- * Send OTP via Twilio SMS.
+ * Send OTP via Fast2SMS (No DLT required for Quick SMS/OTP API in India).
+ * Activates when FAST2SMS_API_KEY is configured in .env.
+ * Sign up free at https://www.fast2sms.com
+ */
+const sendWithFast2SMS = async (phone, otp) => {
+  const apiKey = process.env.FAST2SMS_API_KEY
+  // Extract 10-digit Indian mobile number
+  const cleanPhone = phone.replace(/\D/g, '').slice(-10)
+
+  const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+    method: 'POST',
+    headers: {
+      'authorization': apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      route: 'otp',
+      variables_values: otp,
+      numbers: cleanPhone
+    })
+  })
+  const data = await response.json()
+
+  if (!data.return) {
+    throw new Error(`Fast2SMS Error: ${data.message || 'SMS delivery failed'}`)
+  }
+  console.log(`[SMS] OTP sent via Fast2SMS to ${phone.slice(0, 4)}****`)
+}
+
+/**
+ * Send OTP via MSG91 SMS API (India SMS Service).
+ * Activates when MSG91_AUTH_KEY and MSG91_TEMPLATE_ID are configured in .env.
+ */
+const sendWithMsg91 = async (phone, otp) => {
+  const authKey = process.env.MSG91_AUTH_KEY
+  const templateId = process.env.MSG91_TEMPLATE_ID
+  const cleanPhone = phone.replace(/\+/g, '')
+
+  const url = `https://control.msg91.com/api/v5/otp?template_id=${templateId}&mobile=${cleanPhone}&authkey=${authKey}&otp=${otp}`
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  const data = await response.json()
+
+  if (data.type === 'error') {
+    throw new Error(`MSG91 SMS Error: ${data.message}`)
+  }
+  console.log(`[SMS] OTP sent via MSG91 to ${phone.slice(0, 4)}****`)
+}
+
+/**
+ * Send OTP via Twilio SMS (No DLT required).
  * Twilio SDK is imported dynamically so it's only required when configured.
  */
 const sendWithTwilio = async (phone, otp) => {
-  // Dynamic import — avoids hard dep if Twilio not installed
   const twilio = (await import('twilio')).default
   const client = twilio(
     process.env.TWILIO_ACCOUNT_SID,
@@ -53,13 +97,26 @@ const sendWithDevLogger = (phone, otp) => {
  * Provider is selected automatically based on env vars.
  *
  * @param {string} phone  - E.164 format e.g. +919876543210
- * @param {string} otp    - plaintext OTP (never logged in production)
+ * @param {string} otp    - plaintext OTP
  */
 export const sendOtp = async (phone, otp) => {
-  const hasTwilio =
+  const hasFast2SMS = Boolean(process.env.FAST2SMS_API_KEY)
+  const hasMsg91 = Boolean(process.env.MSG91_AUTH_KEY && process.env.MSG91_TEMPLATE_ID)
+  const hasTwilio = Boolean(
     process.env.TWILIO_ACCOUNT_SID &&
     process.env.TWILIO_AUTH_TOKEN &&
     process.env.TWILIO_FROM_NUMBER
+  )
+
+  if (hasFast2SMS) {
+    await sendWithFast2SMS(phone, otp)
+    return
+  }
+
+  if (hasMsg91) {
+    await sendWithMsg91(phone, otp)
+    return
+  }
 
   if (hasTwilio) {
     await sendWithTwilio(phone, otp)
@@ -67,12 +124,11 @@ export const sendOtp = async (phone, otp) => {
   }
 
   if (isProduction) {
-    // Production with no SMS provider configured — fail loudly
     throw new Error(
-      'No SMS provider configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_FROM_NUMBER.'
+      'No SMS provider configured. Set FAST2SMS_API_KEY, TWILIO_ACCOUNT_SID, or MSG91 credentials.'
     )
   }
 
-  // Development / test — safe log only
+  // Development fallback — log to server console
   sendWithDevLogger(phone, otp)
 }
