@@ -1,21 +1,45 @@
 import mongoose from 'mongoose'
 
 /**
- * Connects to MongoDB using the MONGODB_URI environment variable.
- * Never logs or exposes the connection string.
+ * Connects to MongoDB using MONGODB_URI.
+ * If local MongoDB is not running, seamlessly falls back to an in-memory MongoDB instance
+ * for frictionless local development and testing.
  */
 const connectDB = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mediguard'
+  const uri = process.env.MONGODB_URI
 
+  // 1. If explicit cloud/remote URI provided (e.g. MongoDB Atlas mongodb+srv://), connect directly
+  if (uri && !uri.includes('127.0.0.1') && !uri.includes('localhost')) {
+    try {
+      const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 })
+      console.log(`MongoDB connected successfully — host: ${conn.connection.host}`)
+      return
+    } catch (err) {
+      console.error(`[MongoDB Error] Failed to connect to remote MongoDB URI: ${err.message}`)
+      throw err
+    }
+  }
+
+  // 2. Try connecting to local MongoDB daemon (127.0.0.1:27017)
+  const localUri = uri || 'mongodb://127.0.0.1:27017/mediguard'
   try {
-    const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000
-    })
+    const conn = await mongoose.connect(localUri, { serverSelectionTimeoutMS: 2000 })
     console.log(`MongoDB connected successfully — host: ${conn.connection.host}`)
-  } catch (err) {
-    console.error(`[MongoDB Error] Could not connect to MongoDB at: ${uri}`)
-    console.error(`👉 Fix: Make sure your local MongoDB service is running, OR update MONGODB_URI in backend/.env with your MongoDB Atlas connection string.`)
-    throw err
+  } catch (_localErr) {
+    console.log(`[MongoDB] Local daemon not running on 127.0.0.1:27017. Starting Dev In-Memory Database...`)
+    
+    // 3. Fallback to In-Memory MongoDB for effortless local development
+    try {
+      const { MongoMemoryServer } = await import('mongodb-memory-server')
+      const mongod = await MongoMemoryServer.create()
+      const memUri = mongod.getUri()
+      const conn = await mongoose.connect(memUri)
+      console.log(`MongoDB connected successfully (In-Memory Dev Database) — host: ${conn.connection.host}`)
+    } catch (memErr) {
+      console.error(`[MongoDB Error] Failed to start In-Memory Database: ${memErr.message}`)
+      console.error(`👉 Please update MONGODB_URI in backend/.env with your MongoDB Atlas connection string.`)
+      throw memErr
+    }
   }
 }
 
