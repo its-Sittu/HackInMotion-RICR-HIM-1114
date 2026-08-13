@@ -177,32 +177,38 @@
   box-sizing: border-box;
 }
 
-.landing-text-wrapper {
-  margin-bottom: 1.75rem;
+/* ─── Brand Mark ─────────────────────────────────────────── */
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2.5rem;
 }
 
-.hero-main-title {
-  font-size: clamp(2rem, 5.8vw, 3.2rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.14;
+.landing-brand-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+}
+
+.landing-brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #1a1a24;
-  margin: 0 0 0.75rem 0;
-}
-
-.hero-sub-title {
-  font-size: clamp(0.92rem, 2.4vw, 1.05rem);
-  font-weight: 450;
-  color: #64748b;
-  line-height: 1.5;
-  margin: 0 auto;
-  max-width: 320px;
+  letter-spacing: -0.03em;
 }
 
 /* ─── CTA Pill Button (Exact Reference Apple Design) ────────── */
 .hero-cta-wrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   width: 100%;
 }
 

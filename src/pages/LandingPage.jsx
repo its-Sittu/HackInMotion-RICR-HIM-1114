@@ -9,6 +9,10 @@ export default function LandingPage() {
     navigate('/dashboard')
   }
 
+  const handleSignIn = () => {
+    navigate('/auth')
+  }
+
   return (
     <div className="landing-screen">
       {/* Soft atmospheric ambient glow lights matching organ colors */}
@@ -72,24 +76,37 @@ export default function LandingPage() {
 
       {/* ── Center Content Area ── */}
       <main className="landing-center-content">
-        <div className="landing-text-wrapper">
-          <h1 className="hero-main-title">
-            Your Health,<br />
-            All in One Place
-          </h1>
-
-          <p className="hero-sub-title">
-            Track your health, manage appointments, and stay connected with your care.
-          </p>
+        {/* Brand mark */}
+        <div className="landing-brand">
+          <div className="landing-brand-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <span className="landing-brand-name">MediGuard</span>
         </div>
 
-        {/* Prominent "Continue as Guest" CTA */}
+        {/* CTA Buttons */}
         <div className="hero-cta-wrapper">
+          <button
+            id="sign-in-btn"
+            className="btn-continue-guest"
+            onClick={handleSignIn}
+            type="button"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', border: 'none' }}
+          >
+            <span>Sign In / Sign Up</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+
           <button
             id="continue-as-guest-btn"
             className="btn-continue-guest"
             onClick={handleGuestContinue}
             type="button"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.75)' }}
           >
             <span>Continue as Guest</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
