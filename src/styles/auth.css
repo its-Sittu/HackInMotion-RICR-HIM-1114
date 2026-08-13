@@ -42,7 +42,8 @@
   z-index: 10;
   width: 100%;
   max-width: 440px;
-  margin: 2rem;
+  margin: 1.5rem;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 24px;
@@ -168,19 +169,23 @@
 
 /* OTP inputs */
 .auth-otp-grid {
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .auth-otp-input {
-  flex: 1;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   text-align: center;
-  padding: 0.9rem 0.25rem;
-  font-size: 1.4rem;
+  padding: 0.75rem 0.15rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 12px;
   color: #f1f5f9;
   outline: none;
@@ -357,3 +362,21 @@
   from { transform: scale(0.5); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
+
+/* ── Mobile Responsive Optimization ──────────────────────── */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.75rem 1.25rem;
+    margin: 1rem;
+    border-radius: 20px;
+  }
+  .auth-otp-grid {
+    gap: 5px;
+  }
+  .auth-otp-input {
+    font-size: 1.1rem;
+    padding: 0.65rem 0.1rem;
+    border-radius: 10px;
+  }
+}
+
