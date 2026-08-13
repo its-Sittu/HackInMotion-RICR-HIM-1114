@@ -1,0 +1,289 @@
+/* src/styles/medication.css */
+
+.medication-module-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  text-align: left;
+}
+
+/* Glassmorphic Panel Base */
+.med-panel {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+}
+
+@media (prefers-color-scheme: light) {
+  .med-panel {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    box-shadow: 
+      0 10px 25px rgba(99, 102, 241, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+.med-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-color-scheme: light) {
+  .med-panel-header {
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  }
+}
+
+.med-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.med-panel-icon {
+  color: #6366f1;
+}
+
+.med-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.med-badge-indigo {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.med-badge-purple {
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.med-badge-green {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.med-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.med-badge-rose {
+  background: rgba(244, 63, 94, 0.12);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+/* Schedule Cards Grid */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.schedule-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+@media (prefers-color-scheme: light) {
+  .schedule-card {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+  }
+}
+
+.schedule-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.08);
+}
+
+.schedule-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.med-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.med-dosage {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6366f1;
+  margin-top: 0.25rem;
+}
+
+.schedule-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.schedule-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schedule-meta-icon {
+  flex-shrink: 0;
+  color: #a855f7;
+}
+
+.time-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.time-chip {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--text-h);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.schedule-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  .schedule-actions {
+    border-top-color: rgba(99, 102, 241, 0.15);
+  }
+}
+
+/* Common Button Styles */
+.med-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.med-btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.med-btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+
+.med-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-h);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+@media (prefers-color-scheme: light) {
+  .med-btn-secondary {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+}
+
+.med-btn-secondary:hover {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.med-btn-danger {
+  background: rgba(244, 63, 94, 0.1);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.med-btn-danger:hover {
+  background: rgba(244, 63, 94, 0.2);
+}
+
+.med-btn-icon-only {
+  padding: 0.4rem;
+  border-radius: 8px;
+}
+
+.empty-schedule-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.empty-icon {
+  color: #6366f1;
+  opacity: 0.6;
+}
