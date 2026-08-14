@@ -4,6 +4,7 @@ import * as THREE from 'three'
 export default function Medical3DCanvas({ scrollProgress = 0 }) {
   const mountRef = useRef(null)
   const progressRef = useRef(scrollProgress)
+  const [webglOrganCanvasActive] = React.useState(true)
 
   // Keep progressRef updated for animation frame loop
   useEffect(() => {
