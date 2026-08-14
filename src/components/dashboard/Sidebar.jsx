@@ -98,11 +98,11 @@ const getUserDisplayName = (user) => {
     }
     return user.phone
   }
-  return 'PulseMed Member'
+  return 'MediSafe Member'
 }
 
 const getInitials = (name) => {
-  if (!name) return 'PM'
+  if (!name) return 'MS'
   const parts = name.trim().split(/[\s._@]+/)
   if (parts.length >= 2 && parts[1]) {
     return (parts[0][0] + parts[1][0]).toUpperCase()
@@ -128,14 +128,13 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
     <aside className={`medisafe-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
       {/* Brand Header Row */}
       <div className="sidebar-brand-row">
-        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="PulseMed Home">
+        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="MediSafe Home">
           <div className="brand-icon-wrapper">
             <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M12 8v8"/><path d="M8 12h8"/>
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          {!isCollapsed && <span className="brand-name">PulseMed</span>}
+          {!isCollapsed && <span className="brand-name">MEDISAFE</span>}
         </div>
 
         {/* Clear Prominent Toggle Button */}

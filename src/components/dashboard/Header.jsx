@@ -36,7 +36,7 @@ export default function Header() {
   const greeting = getGreetingTime()
   const displayName = getUserDisplayName(user)
   const initials = getInitials(displayName)
-  const isGuest = !user || user.phone === 'guest@pulsemed.com'
+  const isGuest = !user || user.phone === 'guest@medisafe.com'
 
   return (
     <header className="dash-header" style={{
