@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const CATEGORIES = [
   { id: 'All', label: '🌐 All Medicines' },
@@ -12,10 +13,11 @@ const CATEGORIES = [
 const POPULAR_SEARCHES = ['Dolo 650', 'Pantocid 40', 'Crocin 500', 'Azithral 500', 'Combiflam', 'Cetirizine 10', 'Metformin']
 
 const AI_PROMPTS = [
+  'Pantocid 40 kab aur kaise khaye?',
+  'Dolo 650 aur Combiflam ek sath le sakte hain?',
   'Can I eat banana with egg?',
-  'What is Omeprazole used for & dosage?',
-  'Can I take Dolo 650 and Combiflam together?',
-  'Is Cetirizine 10mg safe at bedtime for dry cough?'
+  'Fasting blood sugar 140 mg/dL normal hai?',
+  'Paracetamol 650 dosage & timing'
 ]
 
 /**
@@ -185,8 +187,9 @@ export default function MedicineSearch() {
       }
     } catch {
       setMedicines([])
-    } Object.finally
-    setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -224,6 +227,22 @@ export default function MedicineSearch() {
       const data = await res.json()
       if (data.success) {
         setAiResponse(data)
+
+        saveActivityToMedicalHistory({
+          title: `AI Search: "${textToAsk.trim()}"`,
+          category: 'Medicines',
+          typeIcon: '🤖',
+          status: 'SEARCHED 🔎',
+          statusBg: '#f3e8ff',
+          statusColor: '#7e22ce',
+          summary: `Asked Gemini AI: "${textToAsk.trim()}"`,
+          doctorNote: `AI Search Provider: ${data.provider || 'Google Gemini 3.5 Flash Medical Search'}`,
+          details: [
+            `Question Prompt: "${textToAsk.trim()}"`,
+            `Provider Engine: ${data.provider || 'Google Gemini AI'}`,
+            `Query Processed: Real Medical Database & Clinical Search`
+          ]
+        })
       }
     } catch {
       setAiResponse({

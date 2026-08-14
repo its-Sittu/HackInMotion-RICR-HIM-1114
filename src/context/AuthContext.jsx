@@ -6,39 +6,52 @@ const TOKEN_KEY = 'mg_token'
 const USER_KEY  = 'mg_user'
 
 export function AuthProvider({ children }) {
-  const [token, setToken]     = useState(() => localStorage.getItem(TOKEN_KEY))
-  const [user, setUser]       = useState(() => {
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))
+  const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem(USER_KEY)) } catch { return null }
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  // On mount, validate stored token against /api/auth/me
-  useEffect(() => {
-    if (!token) return
-    setIsLoading(true)
-    fetch('/api/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.success) {
-          setUser(data.user)
-          localStorage.setItem(USER_KEY, JSON.stringify(data.user))
-        } else {
-          // Token invalid / expired — clear everything
-          _clearAuth()
-        }
-      })
-      .catch(() => _clearAuth())
-      .finally(() => setIsLoading(false))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const _clearAuth = useCallback(() => {
+  const clearAuth = useCallback(() => {
     setToken(null)
     setUser(null)
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
   }, [])
+
+  // On mount, validate stored token against /api/auth/me (bypassing guest tokens)
+  useEffect(() => {
+    if (!token || token === 'pulsemed_guest_session_token' || token.startsWith('guest_')) return
+
+    let isMounted = true
+
+    const validateToken = async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        const data = await res.json()
+        if (isMounted) {
+          if (data.success) {
+            setUser(data.user)
+            localStorage.setItem(USER_KEY, JSON.stringify(data.user))
+          } else {
+            clearAuth()
+          }
+        }
+      } catch {
+        if (isMounted) clearAuth()
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    validateToken()
+
+    return () => {
+      isMounted = false
+    }
+  }, [token, clearAuth])
 
   /**
    * Call after successful login or signup.
@@ -56,17 +69,18 @@ export function AuthProvider({ children }) {
    * Clear auth state and token — triggers redirect via ProtectedRoute.
    */
   const logout = useCallback(async () => {
-    try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      })
-    } catch {
-      // Best-effort logout — clear locally regardless
-    } finally {
-      _clearAuth()
+    if (token && !token.includes('guest')) {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      } catch {
+        // Best-effort logout — clear locally regardless
+      }
     }
-  }, [token, _clearAuth])
+    clearAuth()
+  }, [token, clearAuth])
 
   return (
     <AuthContext.Provider value={{ token, user, isLoading, login, logout }}>

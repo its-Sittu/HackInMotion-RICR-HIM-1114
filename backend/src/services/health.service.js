@@ -21,7 +21,7 @@ export const getHealthStatus = () => {
 
   return {
     success: true,
-    message: 'MediGuard backend is running',
+    message: 'PulseMed backend is running',
     database: dbStatus
   }
 }

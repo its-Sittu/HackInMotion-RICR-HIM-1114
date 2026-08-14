@@ -1,5 +1,5 @@
 import express from 'express'
-import { searchMedicinesHandler, aiConsultHandler, checkInteractionHandler } from '../controllers/medicine.controller.js'
+import { searchMedicinesHandler, aiConsultHandler, checkInteractionHandler, analyzeSymptomsHandler } from '../controllers/medicine.controller.js'
 
 const router = express.Router()
 
@@ -11,5 +11,8 @@ router.post('/ai-consult', aiConsultHandler)
 
 // POST /api/medicines/check-interaction
 router.post('/check-interaction', checkInteractionHandler)
+
+// POST /api/medicines/analyze-symptoms
+router.post('/analyze-symptoms', analyzeSymptomsHandler)
 
 export default router

@@ -16,13 +16,20 @@ const BCRYPT_ROUNDS = 12
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const validatePhone = (phone) => {
-  if (!phone) return 'Phone number is required.'
-  const normalized = phone.startsWith('+') ? phone : `+${phone}`
-  if (!validator.isMobilePhone(normalized, 'any', { strictMode: false })) {
-    return 'Invalid phone number format.'
+const normalizeInput = (input) => {
+  if (!input) return ''
+  if (validator.isEmail(input)) return input.trim().toLowerCase()
+  return input.startsWith('+') ? input : `+${input}`
+}
+
+const validatePhoneOrEmail = (input) => {
+  if (!input) return 'Phone number or Email address is required.'
+  if (validator.isEmail(input)) return null
+  const normalized = input.startsWith('+') ? input : `+${input}`
+  if (validator.isMobilePhone(normalized, 'any', { strictMode: false })) {
+    return null
   }
-  return null
+  return 'Please enter a valid phone number or email address.'
 }
 
 const validatePassword = (password) => {
@@ -40,21 +47,21 @@ const OTP_GENERIC_ERROR = 'Invalid or expired OTP. Please request a new one.'
 
 /**
  * POST /api/auth/send-otp
- * Send a 6-digit OTP to the given phone number.
+ * Send a 6-digit OTP to the given phone number or email.
  * Works for both signup and forgot-password flows.
  */
 export const sendOtpHandler = async (req, res, next) => {
   try {
     const { phone, purpose = 'signup' } = req.body
 
-    const phoneErr = validatePhone(phone)
-    if (phoneErr) return res.status(400).json({ success: false, message: phoneErr })
+    const inputErr = validatePhoneOrEmail(phone)
+    if (inputErr) return res.status(400).json({ success: false, message: inputErr })
 
     if (!['signup', 'reset'].includes(purpose)) {
       return res.status(400).json({ success: false, message: 'Invalid OTP purpose.' })
     }
 
-    const normalized = phone.startsWith('+') ? phone : `+${phone}`
+    const normalized = normalizeInput(phone)
 
     // Find or create a user record
     let user = await User.findOne({ phone: normalized }).select(
@@ -94,7 +101,10 @@ export const sendOtpHandler = async (req, res, next) => {
       await user.save()
     }
 
-    await sendOtp(normalized, otp)
+    // Dispatch OTP dispatch asynchronously so browser gets instant response
+    sendOtp(normalized, otp).catch(err => {
+      console.warn('[OTP Dispatch Background Warning]:', err.message)
+    })
 
     return res.status(200).json({
       success: true,
@@ -118,7 +128,7 @@ export const verifyOtpHandler = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Phone and OTP are required.' })
     }
 
-    const normalized = phone.startsWith('+') ? phone : `+${phone}`
+    const normalized = normalizeInput(phone)
 
     const user = await User.findOne({ phone: normalized }).select(
       '+otpHash +otpExpiry +otpAttempts +otpPurpose'
@@ -199,7 +209,7 @@ export const signupHandler = async (req, res, next) => {
     const passErr = validatePassword(password)
     if (passErr) return res.status(400).json({ success: false, message: passErr })
 
-    const normalized = phone.startsWith('+') ? phone : `+${phone}`
+    const normalized = normalizeInput(phone)
 
     // Verify the session token (issued after OTP verification)
     let decoded
@@ -266,7 +276,7 @@ export const loginHandler = async (req, res, next) => {
       })
     }
 
-    const normalized = phone.startsWith('+') ? phone : `+${phone}`
+    const normalized = normalizeInput(phone)
 
     const user = await User.findOne({ phone: normalized }).select('+passwordHash')
 
@@ -341,7 +351,7 @@ export const resetPasswordHandler = async (req, res, next) => {
       })
     }
 
-    const normalized = phone.startsWith('+') ? phone : `+${phone}`
+    const normalized = normalizeInput(phone)
     const user = await User.findOne({ phone: normalized, _id: decoded.userId }).select(
       '+passwordHash'
     )
