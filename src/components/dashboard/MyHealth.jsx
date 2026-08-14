@@ -232,45 +232,45 @@ export default function MyHealth() {
         </div>
       </div>
 
-      {/* ── 2-COLUMN LAYOUT: COMPACT CALENDAR ON LEFT, FEATURE SUITE ON RIGHT ── */}
+      {/* ── 2-COLUMN LAYOUT: SLEEK COMPACT WIDGET CALENDAR ON LEFT ───────────── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(350px, 460px) 1fr',
-        gap: '1.6rem',
+        gridTemplateColumns: 'minmax(310px, 360px) 1fr',
+        gap: '1.8rem',
         alignItems: 'start'
       }}>
 
-        {/* ── LEFT: COMPACT DIGITAL HEALTH CALENDAR ───────────────────────── */}
+        {/* ── LEFT: ULTRA-COMPACT DIGITAL HEALTH CALENDAR WIDGET ──────────── */}
         <div style={{
           backgroundColor: '#ffffff',
-          borderRadius: '24px',
+          borderRadius: '20px',
           border: '1px solid #e2e8f0',
-          padding: '1.3rem 1.4rem',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
+          padding: '1.1rem 1.2rem',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
           animation: 'fadeInUp 0.3s ease-out'
         }}>
           {/* Calendar Header: Month Switcher & Legend */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.8rem', marginBottom: '1.1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
                 {MONTH_NAMES[currentMonth]} {currentYear}
               </h2>
 
-              <div style={{ display: 'flex', gap: '0.25rem' }}>
+              <div style={{ display: 'flex', gap: '0.2rem' }}>
                 <button
                   type="button"
                   onClick={handlePrevMonth}
                   style={{
                     backgroundColor: '#f1f5f9',
                     border: '1px solid #cbd5e1',
-                    borderRadius: '8px',
-                    width: '28px',
-                    height: '28px',
+                    borderRadius: '7px',
+                    width: '24px',
+                    height: '24px',
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.8rem',
+                    fontSize: '0.72rem',
                     fontWeight: 700,
                     color: '#475569'
                   }}
@@ -284,14 +284,14 @@ export default function MyHealth() {
                   style={{
                     backgroundColor: '#f1f5f9',
                     border: '1px solid #cbd5e1',
-                    borderRadius: '8px',
-                    width: '28px',
-                    height: '28px',
+                    borderRadius: '7px',
+                    width: '24px',
+                    height: '24px',
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.8rem',
+                    fontSize: '0.72rem',
                     fontWeight: 700,
                     color: '#475569'
                   }}
@@ -301,16 +301,13 @@ export default function MyHealth() {
               </div>
             </div>
 
-            {/* Status Color Legend */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.72rem', fontWeight: 700 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#059669', backgroundColor: '#d1fae5', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>
-                💊 Taken
+            {/* Status Color Legend Pills */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.65rem', fontWeight: 800 }}>
+              <span style={{ color: '#059669', backgroundColor: '#d1fae5', padding: '0.15rem 0.4rem', borderRadius: '5px' }}>
+                💊 Dose
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#e11d48', backgroundColor: '#ffe4e6', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>
+              <span style={{ color: '#e11d48', backgroundColor: '#ffe4e6', padding: '0.15rem 0.4rem', borderRadius: '5px' }}>
                 ⚠️ Missed
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#0284c7', backgroundColor: '#e0f2fe', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>
-                🩺 Lab
               </span>
             </div>
           </div>
@@ -319,12 +316,12 @@ export default function MyHealth() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.4rem',
+            gap: '0.3rem',
             textAlign: 'center',
-            marginBottom: '0.4rem'
+            marginBottom: '0.35rem'
           }}>
             {DAYS_OF_WEEK.map(day => (
-              <div key={day} style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '0.2rem 0' }}>
+              <div key={day} style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '0.15rem 0' }}>
                 {day}
               </div>
             ))}
@@ -334,11 +331,11 @@ export default function MyHealth() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.45rem'
+            gap: '0.35rem'
           }}>
             {/* Blank Leading Cells */}
             {Array.from({ length: firstDayIndex }).map((_, idx) => (
-              <div key={`blank-${idx}`} style={{ minHeight: '60px', backgroundColor: '#f8fafc', borderRadius: '10px', opacity: 0.3 }} />
+              <div key={`blank-${idx}`} style={{ minHeight: '44px', backgroundColor: '#f8fafc', borderRadius: '8px', opacity: 0.2 }} />
             ))}
 
             {/* Active Month Days */}
@@ -356,9 +353,9 @@ export default function MyHealth() {
                   key={dateKey}
                   onClick={() => openDayModal(dayNum)}
                   style={{
-                    minHeight: '62px',
-                    borderRadius: '12px',
-                    padding: '0.4rem 0.45rem',
+                    minHeight: '46px',
+                    borderRadius: '10px',
+                    padding: '0.25rem 0.3rem',
                     border: isToday ? '2px solid #6366f1' : marking ? `1.5px solid ${marking.color}` : '1px solid #e2e8f0',
                     backgroundColor: marking ? marking.bg : isToday ? '#eef2ff' : '#ffffff',
                     cursor: 'pointer',
@@ -366,13 +363,13 @@ export default function MyHealth() {
                     flexDirection: 'column',
                     justify: 'space-between',
                     transition: 'all 0.2s ease',
-                    boxShadow: isToday ? '0 4px 10px rgba(99, 102, 241, 0.15)' : 'none',
+                    boxShadow: isToday ? '0 2px 8px rgba(99, 102, 241, 0.15)' : 'none',
                     position: 'relative'
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
-                      fontSize: '0.82rem',
+                      fontSize: '0.78rem',
                       fontWeight: isToday || marking ? 800 : 600,
                       color: isToday ? '#4338ca' : marking ? marking.color : '#1e293b'
                     }}>
@@ -380,22 +377,22 @@ export default function MyHealth() {
                     </span>
 
                     {isToday && (
-                      <span style={{ fontSize: '0.55rem', backgroundColor: '#6366f1', color: '#ffffff', padding: '0.08rem 0.3rem', borderRadius: '4px', fontWeight: 800 }}>
+                      <span style={{ fontSize: '0.48rem', backgroundColor: '#6366f1', color: '#ffffff', padding: '0.05rem 0.2rem', borderRadius: '3px', fontWeight: 800 }}>
                         TODAY
                       </span>
                     )}
                   </div>
 
-                  {/* Compact Marked Info Badge */}
+                  {/* Ultra-Compact Marked Info Badge */}
                   {marking ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                      <span style={{ fontSize: '0.78rem' }}>{marking.typeIcon}</span>
-                      <strong style={{ fontSize: '0.62rem', color: marking.color, textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
+                      <span style={{ fontSize: '0.72rem' }}>{marking.typeIcon}</span>
+                      <strong style={{ fontSize: '0.55rem', color: marking.color, textTransform: 'uppercase', letterSpacing: '0.1px' }}>
                         {marking.status}
                       </strong>
                     </div>
                   ) : (
-                    <span style={{ fontSize: '0.62rem', color: '#94a3b8' }}>
+                    <span style={{ fontSize: '0.55rem', color: '#94a3b8' }}>
                       + Mark
                     </span>
                   )}
