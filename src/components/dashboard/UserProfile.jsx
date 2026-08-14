@@ -4,20 +4,16 @@ import { useAuth } from '../../context/AuthContext'
 export default function UserProfile() {
   const { user } = useAuth()
 
-  // Profile form state
+  // Clean Profile Form State (Username, Medical Conditions, Emergency & Caregiver Contacts removed as requested)
   const [formData, setFormData] = useState({
     firstName: user?.name ? user.name.split(' ')[0] : 'Sittu',
     lastName: user?.name && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : 'Dev',
-    username: '@SittuDev',
     email: user?.email || (user?.phone?.includes('@') ? user?.phone : 'sittu@medisafe.com'),
     phone: user?.phone?.includes('@') ? '9876543210' : (user?.phone || '9876543210'),
     countryCode: '+91',
     dob: '1998-05-15',
     gender: 'Male',
-    bloodGroup: 'O+',
-    medicalConditions: 'Mild Asthma, Seasonal Allergies',
-    emergencyContact: 'Rajesh Sharma (+91 98111 22334)',
-    caregiverContact: 'Rahul Sharma (+91 98765 11223)'
+    bloodGroup: 'O+'
   })
 
   const [savedSuccess, setSavedSuccess] = useState(false)
@@ -40,7 +36,7 @@ export default function UserProfile() {
 
   return (
     <div style={{ width: '100%', padding: '0.5rem 0', animation: 'auth-card-in 0.4s ease', boxSizing: 'border-box' }}>
-      {/* Full-Width Wide Landscape Card Container (Matching Reference Image Dimensions) */}
+      {/* Full-Width Wide Landscape Card Container */}
       <div
         className="auth-card"
         style={{
@@ -54,7 +50,8 @@ export default function UserProfile() {
           backdropFilter: 'blur(28px)',
           WebkitBackdropFilter: 'blur(28px)',
           boxShadow: '0 25px 65px rgba(0, 0, 0, 0.65)',
-          border: '1px solid rgba(255, 255, 255, 0.08)'
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          overflow: 'hidden'
         }}
       >
         {/* Top Header Row with Title & Action Buttons */}
@@ -65,10 +62,10 @@ export default function UserProfile() {
             </div>
             <div>
               <h1 className="auth-title" style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0, color: '#ffffff' }}>
-                Edit Profile Information
+                Edit Profile
               </h1>
               <p style={{ color: '#94a3b8', margin: '0.2rem 0 0 0', fontSize: '0.9rem' }}>
-                Manage your personal identity, contact numbers, and medical conditions.
+                Manage your personal identity, contact email, and core health details.
               </p>
             </div>
           </div>
@@ -108,12 +105,12 @@ export default function UserProfile() {
 
         {savedSuccess && (
           <div className="auth-alert success" style={{ marginBottom: '1.6rem' }}>
-            ✓ Profile information saved successfully!
+            ✓ Profile saved successfully!
           </div>
         )}
 
-        {/* 3-Column Wide Landscape Grid Layout */}
-        <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', width: '100%', boxSizing: 'border-box' }}>
+        {/* Clean Form Grid Layout */}
+        <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.6rem', width: '100%', boxSizing: 'border-box' }}>
           {/* First Name */}
           <div className="auth-form-group" style={{ marginBottom: 0 }}>
             <label className="auth-label" htmlFor="firstName">First Name</label>
@@ -144,22 +141,7 @@ export default function UserProfile() {
             />
           </div>
 
-          {/* Username */}
-          <div className="auth-form-group" style={{ marginBottom: 0 }}>
-            <label className="auth-label" htmlFor="username">Username</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              className="auth-input"
-              style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1.1rem' }}
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="@username"
-            />
-          </div>
-
-          {/* Email */}
+          {/* Email Address */}
           <div className="auth-form-group" style={{ marginBottom: 0 }}>
             <label className="auth-label" htmlFor="email">Email Address</label>
             <input
@@ -258,58 +240,13 @@ export default function UserProfile() {
               <option value="AB+">AB+</option>
             </select>
           </div>
-
-          {/* Medical Conditions */}
-          <div className="auth-form-group" style={{ marginBottom: 0 }}>
-            <label className="auth-label" htmlFor="medicalConditions">Medical Conditions &amp; Allergies</label>
-            <input
-              id="medicalConditions"
-              name="medicalConditions"
-              type="text"
-              className="auth-input"
-              style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1.1rem' }}
-              value={formData.medicalConditions}
-              onChange={handleChange}
-              placeholder="e.g. Asthma, Penicillin Allergy"
-            />
-          </div>
-
-          {/* Emergency Contact */}
-          <div className="auth-form-group" style={{ marginBottom: 0 }}>
-            <label className="auth-label" htmlFor="emergencyContact">Emergency Contact</label>
-            <input
-              id="emergencyContact"
-              name="emergencyContact"
-              type="text"
-              className="auth-input"
-              style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1.1rem' }}
-              value={formData.emergencyContact}
-              onChange={handleChange}
-              placeholder="Name &amp; Phone"
-            />
-          </div>
-
-          {/* Caregiver Contact */}
-          <div className="auth-form-group" style={{ marginBottom: 0, gridColumn: 'span 2' }}>
-            <label className="auth-label" htmlFor="caregiverContact">Caregiver / Trusted Contact</label>
-            <input
-              id="caregiverContact"
-              name="caregiverContact"
-              type="text"
-              className="auth-input"
-              style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1.1rem' }}
-              value={formData.caregiverContact}
-              onChange={handleChange}
-              placeholder="Caregiver Name &amp; Phone"
-            />
-          </div>
         </form>
 
         {/* Change Password Modal */}
         {showPasswordModal && (
           <div style={{ marginTop: '1.8rem', padding: '1.5rem', background: 'rgba(255,255,255,0.06)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.1)', boxSizing: 'border-box' }}>
             <h4 style={{ margin: '0 0 1rem 0', color: '#ffffff', fontSize: '1rem', fontWeight: 800 }}>Update Account Password</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
               <input type="password" className="auth-input" placeholder="Enter current password" style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1rem' }} />
               <input type="password" className="auth-input" placeholder="Enter new password" style={{ width: '100%', boxSizing: 'border-box', paddingLeft: '1rem' }} />
             </div>
