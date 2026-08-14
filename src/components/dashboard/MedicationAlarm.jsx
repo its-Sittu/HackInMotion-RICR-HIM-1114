@@ -617,7 +617,7 @@ export default function MedicationAlarm() {
                 >
                   {Array.from({ length: 24 }).map((_, i) => {
                     const val = String(i).padStart(2, '0')
-                    return <option key={val} value={val}>{val} ({i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`})</option>
+                    return <option key={val} value={val}>{val}</option>
                   })}
                 </select>
               </div>
