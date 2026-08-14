@@ -222,22 +222,22 @@ export default function SymptomChecker() {
               justify: 'center',
               alignItems: 'center',
               position: 'relative',
-              padding: '1rem 0 1rem 35px'
+              padding: '1.2rem 0 1.2rem 60px'
             }}>
               {/* Outer Cyan Glowing Body Aura */}
               <div style={{
                 position: 'absolute',
-                width: '180px',
-                height: '380px',
-                background: 'radial-gradient(ellipse at center, rgba(56, 189, 248, 0.12) 0%, transparent 70%)',
+                width: '220px',
+                height: '440px',
+                background: 'radial-gradient(ellipse at center, rgba(56, 189, 248, 0.15) 0%, transparent 70%)',
                 pointerEvents: 'none'
               }} />
 
               <svg
-                width="300"
-                height="460"
+                width="350"
+                height="510"
                 viewBox="0 0 300 460"
-                style={{ overflow: 'visible' }}
+                style={{ overflow: 'visible', transform: 'scale(1.12)' }}
               >
                 {/* Outer Faint Anatomical Body Silhouette Outline */}
                 <g opacity="0.15" stroke="#38bdf8" strokeWidth="2" fill="none">
