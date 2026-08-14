@@ -681,24 +681,26 @@ export default function MedicalRecords() {
       {deleteConfirmId && (
         <div style={{
           position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
+          top: 0, left: 0, width: '100vw', height: '100vh',
           backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(5px)',
-          zIndex: 1000,
+          backdropFilter: 'blur(6px)',
+          zIndex: 9999,
           display: 'flex',
           alignItems: 'center',
           justify: 'center',
-          padding: '1rem'
+          padding: '1rem',
+          boxSizing: 'border-box'
         }}>
           <div style={{
             backgroundColor: '#ffffff',
-            borderRadius: '20px',
-            maxWidth: '420px',
+            borderRadius: '24px',
+            maxWidth: '430px',
             width: '100%',
-            padding: '1.6rem',
+            padding: '1.8rem',
             textAlign: 'center',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.25)',
-            animation: 'fadeInUp 0.25s ease-out'
+            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.35)',
+            animation: 'fadeInUp 0.25s ease-out',
+            margin: 'auto'
           }}>
             <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>⚠️</span>
             <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.15rem', color: '#0f172a', fontWeight: 800 }}>
