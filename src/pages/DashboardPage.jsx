@@ -6,6 +6,7 @@ import DrugInteractionChecker from '../components/dashboard/DrugInteractionCheck
 import SymptomChecker from '../components/dashboard/SymptomChecker'
 import MedicalRecords from '../components/dashboard/MedicalRecords'
 import MyHealth from '../components/dashboard/MyHealth'
+import HealthAnalytics from '../components/dashboard/HealthAnalytics'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -94,20 +95,17 @@ export default function DashboardPage() {
     }
   ]
 
-
-
   // Mock medical records
   const recentRecords = [
-    { id: 1, title: 'Comprehensive Blood Panel', date: 'Aug 10, 2026', doctor: 'Dr. Sarah Jenkins', status: 'Completed', tag: 'Lab Results' },
-    { id: 2, title: 'Chest X-Ray & Pulmonology Scan', date: 'Jul 28, 2026', doctor: 'Dr. Robert Chen', status: 'Normal', tag: 'Radiology' },
-    { id: 3, title: 'Annual ECG & Cardiac Wellness', date: 'Jul 15, 2026', doctor: 'Dr. Sarah Jenkins', status: 'Normal', tag: 'Cardiology' }
+    { id: 1, title: 'Blood Pressure & ECG Scan', date: 'Yesterday, 4:30 PM', doctor: 'Dr. Sarah Jenkins', status: 'Completed', tag: 'Cardiology' },
+    { id: 2, title: 'Complete Blood Count (CBC)', date: 'Aug 10, 2026', doctor: 'Dr. Robert Chen', status: 'Normal', tag: 'Hematology' },
+    { id: 3, title: 'Lipid Profile Report', date: 'Jul 28, 2026', doctor: 'Dr. Sarah Jenkins', status: 'Normal', tag: 'Lab Test' }
   ]
 
   // Mock doctors
   const doctors = [
-    { id: 1, name: 'Dr. Sarah Jenkins', spec: 'Cardiologist', rating: '4.9', reviews: 124, avail: 'Available Today', avatar: 'SJ' },
-    { id: 2, name: 'Dr. Marcus Vance', spec: 'Neurologist', rating: '4.8', reviews: 98, avail: 'Available Aug 15', avatar: 'MV' },
-    { id: 3, name: 'Dr. Elena Rostova', spec: 'Endocrinologist', rating: '5.0', reviews: 156, avail: 'Available Aug 16', avatar: 'ER' }
+    { id: 1, name: 'Dr. Sarah Jenkins', spec: 'Cardiologist', rating: '4.9', reviews: 128, avatar: '👩‍⚕️' },
+    { id: 2, name: 'Dr. Robert Chen', spec: 'Neurologist', rating: '4.8', reviews: 94, avatar: '👨‍⚕️' }
   ]
 
   return (
@@ -133,6 +131,8 @@ export default function DashboardPage() {
           <MedicalRecords />
         ) : activeTab === 'myhealth' ? (
           <MyHealth />
+        ) : activeTab === 'analytics' ? (
+          <HealthAnalytics />
         ) : (
           <>
             {/* Top Header Bar (Dashboard Tab Only) */}
