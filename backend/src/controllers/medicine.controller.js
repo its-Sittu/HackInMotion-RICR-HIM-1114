@@ -785,19 +785,30 @@ Return JSON ONLY in this structure:
     const partsStr = selectedParts.join(' ').toLowerCase()
     const fullInput = `${lowerDesc} ${partsStr}`
 
+    const hasThroat = fullInput.includes('throat') || fullInput.includes('gala') || fullInput.includes('gale') || fullInput.includes('pharyng') || fullInput.includes('tonsil') || fullInput.includes('swallow')
     const hasBurn = fullInput.includes('burn') || fullInput.includes('fire') || fullInput.includes('flame') || fullInput.includes('jal') || fullInput.includes('scald') || fullInput.includes('hot water') || fullInput.includes('heat') || fullInput.includes('blister')
     const hasFever = fullInput.includes('fever') || fullInput.includes('bukhar') || fullInput.includes('bukhār') || fullInput.includes('temp') || fullInput.includes('tap')
     const hasHeadache = fullInput.includes('head') || fullInput.includes('sar') || fullInput.includes('headache') || fullInput.includes('sir') || fullInput.includes('brain')
     const hasStomach = fullInput.includes('stomach') || fullInput.includes('pait') || fullInput.includes('pet') || fullInput.includes('abdomen') || fullInput.includes('gas') || fullInput.includes('acid') || fullInput.includes('jalan')
     const hasChest = fullInput.includes('chest') || fullInput.includes('heart') || fullInput.includes('dil') || fullInput.includes('chati') || fullInput.includes('saans') || fullInput.includes('breath')
-    const hasCough = fullInput.includes('cough') || fullInput.includes('khasi') || fullInput.includes('khansi') || fullInput.includes('throat') || fullInput.includes('gala')
-    const hasJointBack = fullInput.includes('back') || fullInput.includes('kamar') || fullInput.includes('knee') || fullInput.includes('guthna') || fullInput.includes('joint') || fullInput.includes('dard') || fullInput.includes('pain')
+    const hasCough = fullInput.includes('cough') || fullInput.includes('khasi') || fullInput.includes('khansi')
+    const hasJointBack = fullInput.includes('back') || fullInput.includes('kamar') || fullInput.includes('knee') || fullInput.includes('guthna') || fullInput.includes('joint') || fullInput.includes('spine') || fullInput.includes('lumbar') || fullInput.includes('shoulder')
 
     let mockConditions = []
     let mockSummary = ''
     let mockWarning = ''
 
-    if (hasBurn) {
+    if (hasThroat) {
+      mockSummary = `ENT clinical analysis for description "${descText || 'Throat pain / Sore throat'}": High diagnostic probability of acute pharyngitis, tonsillitis, or upper respiratory mucosal inflammation.`
+      mockWarning = `Consult an ENT specialist or ER immediately if experiencing severe inability to swallow liquids, difficulty breathing, or high fever with muffled voice.`
+      mockConditions = [
+        { name: 'Acute Pharyngitis & Sore Throat', percentage: 48, risk: 'low', explanation: `Oropharyngeal mucosal inflammation matching reported symptoms ("${descText}"). Causes localized throat pain, redness, and discomfort during swallowing.`, action: 'Gargle with warm salt water 3 times daily. Take Paracetamol 650mg post-food for throat pain. Rest voice and stay hydrated.', specialist: 'ENT Specialist / General Physician' },
+        { name: 'Acute Palatine Tonsillitis', percentage: 25, risk: 'low', explanation: 'Infection and enlargement of palatine tonsils causing pain when swallowing and cervical lymph node tenderness.', action: 'Warm saline gargles, soft liquid diet, and consult physician for throat swab if fever persists.', specialist: 'ENT Specialist' },
+        { name: 'Viral Laryngitis & Vocal Strain', percentage: 14, risk: 'low', explanation: 'Laryngeal mucosal swelling causing throat soreness, tickling cough, and voice hoarseness.', action: 'Strict voice rest, steam inhalation twice daily, and avoid cold beverages.', specialist: 'ENT Specialist' },
+        { name: 'GERD Reflux Laryngopharyngitis (Silent Reflux)', percentage: 8, risk: 'low', explanation: 'Gastric acid rising to upper throat causing chronic throat clearing and burning pharyngeal discomfort.', action: 'Take Pantoprazole 40mg 30 mins before breakfast and avoid eating late at night.', specialist: 'Gastroenterologist / ENT' },
+        { name: 'Peritonsillar Abscess (Quinsy Risk)', percentage: 5, risk: 'high', explanation: 'Localized collection of pus behind tonsillar capsule requiring antibiotic drainage.', action: 'Seek immediate ENT clinical evaluation if severe one-sided throat pain occurs.', specialist: 'ENT Surgeon' }
+      ]
+    } else if (hasBurn) {
       mockSummary = `Clinical assessment for reported thermal injury description "${descText || 'Muscle / skin burn from fire'}": Diagnostic evaluation indicates thermal burn injury affecting dermal and underlying muscle tissue layers.`
       mockWarning = `SEEK EMERGENCY TRAUMA CARE IMMEDIATELY if burn covers a large area, involves face/hands/joints, causes skin charring/whiteness (3rd degree), or severe blistering.`
       mockConditions = [
