@@ -23,6 +23,7 @@ export default function NearbyHospitalsMap() {
   const [errorMsg, setErrorMsg] = useState('')
   const [selectedHospital, setSelectedHospital] = useState(null)
   const [isLiveGps, setIsLiveGps] = useState(false)
+  const [radarActive] = useState(true)
 
   const mapContainerRef = useRef(null)
   const mapInstanceRef = useRef(null)
@@ -267,7 +268,7 @@ export default function NearbyHospitalsMap() {
               🏥 Found {hospitals.length} Real Hospitals Nearby
             </span>
             <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 700 }}>
-              {isLiveGps ? '✓ Live GPS Location Active' : '📍 Delhi NCR Radar'}
+              {isLiveGps ? '✓ Live GPS Location Active' : radarActive ? '📍 Emergency Radar Active' : '📍 Delhi NCR Radar'}
             </span>
           </div>
 
