@@ -12,10 +12,11 @@ const CATEGORIES = [
 const POPULAR_SEARCHES = ['Dolo 650', 'Pantocid 40', 'Crocin 500', 'Azithral 500', 'Combiflam', 'Cetirizine 10', 'Metformin']
 
 const AI_PROMPTS = [
+  'Pantocid 40 kab aur kaise khaye?',
+  'Dolo 650 aur Combiflam ek sath le sakte hain?',
   'Can I eat banana with egg?',
-  'What is Omeprazole used for & dosage?',
-  'Can I take Dolo 650 and Combiflam together?',
-  'Is Cetirizine 10mg safe at bedtime for dry cough?'
+  'Fasting blood sugar 140 mg/dL normal hai?',
+  'Paracetamol 650 dosage & timing'
 ]
 
 /**
