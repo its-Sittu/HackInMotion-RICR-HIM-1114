@@ -52,7 +52,7 @@ export default function TodayDosesList({
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          Today's Scheduled Doses
+          Today&apos;s Scheduled Doses
         </h3>
         <span className="med-badge med-badge-indigo">
           {doseRecords.length} Doses Scheduled Today

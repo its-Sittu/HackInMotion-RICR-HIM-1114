@@ -210,7 +210,8 @@
     "Srishti",
     "Kumari",
     "Amit",
-    "OPENSTRMAP"
+    "OPENSTRMAP",
+    "schs"
   ],
   "ignorePaths": [
     "**/node_modules/**",

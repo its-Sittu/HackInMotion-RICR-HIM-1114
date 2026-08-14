@@ -16,9 +16,9 @@ import { detectMissedDoses, getActiveMissedDoses } from '../../services/missedDo
 import '../../styles/medication.css'
 
 export default function MedicationDashboard() {
-  const [schedules, setSchedules] = useState([])
-  const [doseRecords, setDoseRecords] = useState([])
-  const [missedDoses, setMissedDoses] = useState([])
+  const [schedules, setSchedules] = useState(() => getSchedules())
+  const [doseRecords, setDoseRecords] = useState(() => getDoseRecords())
+  const [missedDoses, setMissedDoses] = useState(() => getActiveMissedDoses())
   const [showForm, setShowForm] = useState(false)
   const [editingSchedule, setEditingSchedule] = useState(null)
   const [activeTab, setActiveTab] = useState('today') // 'today' | 'analytics' | 'schedule'
@@ -26,22 +26,12 @@ export default function MedicationDashboard() {
   const [notificationPermission, setNotificationPermission] = useState('default')
 
   const refreshAllData = () => {
-    const schs = getSchedules()
-    setSchedules(schs)
-
-    // Detect missed doses automatically
-    detectMissedDoses(30)
-
-    const doses = getDoseRecords()
-    setDoseRecords(doses)
-
-    const activeMissed = getActiveMissedDoses()
-    setMissedDoses(activeMissed)
+    setSchedules(getSchedules())
+    setDoseRecords(getDoseRecords())
+    setMissedDoses(getActiveMissedDoses())
   }
 
   useEffect(() => {
-    refreshAllData()
-
     // Request notification permission if supported
     requestNotificationPermission().then((perm) => {
       setNotificationPermission(perm)
@@ -153,7 +143,7 @@ export default function MedicationDashboard() {
             className={`med-btn ${activeTab === 'today' ? 'med-btn-primary' : 'med-btn-secondary'}`}
             onClick={() => { setActiveTab('today'); setShowForm(false); }}
           >
-            📋 Today's Doses
+            📋 Today&apos;s Doses
           </button>
           <button
             type="button"

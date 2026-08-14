@@ -33,7 +33,6 @@ const getInitials = (name) => {
 
 export default function Header() {
   const { user } = useAuth()
-  const [headerNotificationsActive] = useState(true)
   const greeting = getGreetingTime()
   const displayName = getUserDisplayName(user)
   const initials = getInitials(displayName)
