@@ -431,74 +431,10 @@ export default function MyHealth() {
           </div>
         </div>
 
-        {/* ── RIGHT: EXTRA HEALTH FEATURES & ALARM SUITE ─────────────────── */}
+        {/* ── RIGHT: MEDICATION ALARM SUITE ─────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
           {/* Medication Audio Alarm & Reminders */}
           <MedicationAlarm />
-
-          {/* Daily Hydration Tracker */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            border: '1px solid #e2e8f0',
-            padding: '1.4rem 1.6rem',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <span style={{ fontSize: '1.4rem' }}>💧</span>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Daily Hydration Tracker</h3>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Recommended: 2,500ml / day</span>
-                </div>
-              </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0284c7' }}>1,750 / 2,500 ml (70%)</span>
-            </div>
-
-            <div style={{ backgroundColor: '#e0f2fe', height: '10px', borderRadius: '10px', overflow: 'hidden', marginBottom: '1rem' }}>
-              <div style={{ backgroundColor: '#0284c7', height: '100%', width: '70%', borderRadius: '10px', transition: 'width 0.4s ease' }} />
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button type="button" style={{ backgroundColor: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd', borderRadius: '10px', padding: '0.5rem 0.9rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>
-                + 250ml Glass
-              </button>
-              <button type="button" style={{ backgroundColor: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd', borderRadius: '10px', padding: '0.5rem 0.9rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>
-                + 500ml Bottle
-              </button>
-            </div>
-          </div>
-
-          {/* BMI & Metabolism Calculator Card */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            border: '1px solid #e2e8f0',
-            padding: '1.4rem 1.6rem',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.8rem' }}>
-              <span style={{ fontSize: '1.4rem' }}>⚖️</span>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Biological BMI & BMR Metrics</h3>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Calculated from patient physical profile</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '1rem' }}>
-              <div style={{ backgroundColor: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>BMI Index</span>
-                <strong style={{ fontSize: '1.25rem', color: '#10b981', fontWeight: 800 }}>22.4 kg/m²</strong>
-                <span style={{ fontSize: '0.7rem', color: '#059669', display: 'block', fontWeight: 600, marginTop: '0.15rem' }}>✓ Optimal Normal Weight</span>
-              </div>
-
-              <div style={{ backgroundColor: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>BMR Metabolic Rate</span>
-                <strong style={{ fontSize: '1.25rem', color: '#6366f1', fontWeight: 800 }}>1,680 kcal/day</strong>
-                <span style={{ fontSize: '0.7rem', color: '#4f46e5', display: 'block', fontWeight: 600, marginTop: '0.15rem' }}>Standard Resting Energy</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
