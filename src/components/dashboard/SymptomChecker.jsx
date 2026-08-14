@@ -382,9 +382,28 @@ export default function SymptomChecker() {
           <div>
             {/* 1. AFFECTED AREAS */}
             <div style={{ marginBottom: '1.4rem' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
-                1. Affected Areas
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  1. Affected Areas
+                </label>
+                {selectedParts.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedParts([])}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#e11d48',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
 
               <div style={{
                 backgroundColor: '#f8fafc',
@@ -604,9 +623,34 @@ export default function SymptomChecker() {
               </span>
             </div>
 
-            <span style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700 }}>
-              Regions Evaluated: <strong>{analysisResult.bodyParts ? analysisResult.bodyParts.join(', ') : 'Selected Areas'}</strong>
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 700 }}>
+                Regions Evaluated: <strong>{analysisResult.bodyParts ? analysisResult.bodyParts.join(', ') : 'Selected Areas'}</strong>
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setAnalysisResult(null)}
+                style={{
+                  backgroundColor: '#fff1f2',
+                  color: '#e11d48',
+                  border: '1px solid #fecdd3',
+                  borderRadius: '10px',
+                  padding: '0.35rem 0.75rem',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 6px rgba(225, 29, 72, 0.08)'
+                }}
+              >
+                <span>🗑️</span>
+                <span>Clear Analysis</span>
+              </button>
+            </div>
           </div>
 
           {/* Clinical Executive Summary */}
