@@ -685,36 +685,38 @@ export const analyzeSymptomsHandler = async (req, res, next) => {
     if (geminiKey && geminiKey.trim()) {
       try {
         const promptText = `You are a Senior Clinical Diagnostic AI Specialist and Medical Knowledge Engine.
-Analyze the following patient symptom submission:
-- Selected Body Region(s): ${selectedParts.join(', ')} (${viewMode || 'Front View'})
-- Patient Description (Hindi / Hinglish / English): "${descText || 'Mild to moderate discomfort reported in selected body region.'}"
+CRITICAL MANDATE FROM PATIENT: Do NOT return generic pain templates! You MUST perform a targeted medical search and clinical evaluation strictly based on the patient's EXACT text description: "${descText || selectedParts.join(', ')}".
 
-Perform a comprehensive clinical evaluation. Cross-reference the patient's description and selected body parts against clinical diagnostic databases.
+Patient Case Submission:
+- Selected Body Region(s): ${selectedParts.join(', ')} (${viewMode || 'Front View'})
+- Exact Patient Symptom Description (Hindi / Hinglish / English): "${descText || selectedParts.join(', ')}"
+
+Perform a comprehensive clinical evaluation by searching medical diagnostic databases for the EXACT symptoms described above.
 Generate EXACTLY 5 expected medical conditions ranked by probability percentage.
 
 CRITICAL REQUIREMENTS:
 1. The percentage probabilities of the 5 conditions MUST SUM TO EXACTLY 100%.
-2. Explanations must directly address the patient's specific symptom description.
+2. Explanations MUST directly reference and evaluate the patient's EXACT reported text: "${descText || selectedParts.join(', ')}".
 3. Provide recommended OTC medicines, first aid, and the exact specialist doctor category (e.g. Gastroenterologist, Neurologist, Cardiologist, Orthopedic, Dermatologist, General Physician).
 
 Return JSON ONLY in this structure:
 {
-  "summary": "Clear clinical summary explaining the patient's reported symptoms and body region issues.",
+  "summary": "Clinical search summary analyzing the patient's exact reported text: \\"${descText || selectedParts.join(', ')}\\".",
   "urgencyLevel": "low|moderate|emergency",
   "conditions": [
     {
       "name": "Condition 1 Name",
       "percentage": 45,
       "risk": "low|moderate|high",
-      "explanation": "Direct clinical reason why patient's description matches this condition.",
-      "action": "Recommended home care, OTC medicine (e.g. Pantoprazole, Paracetamol), or first aid.",
+      "explanation": "Specific clinical reason why reported description \\"${descText || selectedParts.join(', ')}\\" indicates this condition.",
+      "action": "Recommended home care, OTC medicine, or first aid.",
       "specialist": "Gastroenterologist | Neurologist | Cardiologist | Orthopedic | General Physician | Dermatologist"
     },
     {
       "name": "Condition 2 Name",
       "percentage": 25,
       "risk": "low|moderate|high",
-      "explanation": "Clinical explanation for secondary cause.",
+      "explanation": "Clinical explanation for secondary cause based on user description.",
       "action": "Recommended action step",
       "specialist": "Specialist Type"
     },
@@ -722,7 +724,7 @@ Return JSON ONLY in this structure:
       "name": "Condition 3 Name",
       "percentage": 15,
       "risk": "low|moderate|high",
-      "explanation": "Clinical explanation for tertiary cause.",
+      "explanation": "Clinical explanation for tertiary cause based on user description.",
       "action": "Recommended action step",
       "specialist": "Specialist Type"
     },
@@ -730,7 +732,7 @@ Return JSON ONLY in this structure:
       "name": "Condition 4 Name",
       "percentage": 10,
       "risk": "low|moderate|high",
-      "explanation": "Clinical explanation for 4th cause.",
+      "explanation": "Clinical explanation for 4th cause based on user description.",
       "action": "Recommended action step",
       "specialist": "Specialist Type"
     },
@@ -738,12 +740,12 @@ Return JSON ONLY in this structure:
       "name": "Condition 5 Name",
       "percentage": 5,
       "risk": "low|moderate|high",
-      "explanation": "Clinical explanation for 5th cause.",
+      "explanation": "Clinical explanation for 5th cause based on user description.",
       "action": "Recommended action step",
       "specialist": "Specialist Type"
     }
   ],
-  "safetyWarning": "Clear emergency red-flag warning signs requiring immediate ER visit."
+  "safetyWarning": "Clear emergency red-flag warning signs requiring immediate ER visit for these specific symptoms."
 }`
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey.trim()}`
