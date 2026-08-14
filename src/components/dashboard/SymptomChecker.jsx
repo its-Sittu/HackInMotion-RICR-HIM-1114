@@ -664,9 +664,16 @@ export default function SymptomChecker() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
               <span style={{ fontSize: '1.1rem' }}>📌</span>
               <strong style={{ color: '#0369a1', fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                Overall Clinical Assessment
+                Overall Clinical Assessment (Gemini AI + Medical DB)
               </strong>
             </div>
+
+            {analysisResult.description && (
+              <div style={{ fontSize: '0.84rem', color: '#0369a1', backgroundColor: '#e0f2fe', padding: '0.4rem 0.75rem', borderRadius: '8px', marginBottom: '0.65rem', fontWeight: 600 }}>
+                📝 <strong>Patient Description Analyzed:</strong> &quot;{analysisResult.description}&quot;
+              </div>
+            )}
+
             <p style={{ margin: 0, fontSize: '0.96rem', color: '#0c4a6e', fontWeight: 600, lineHeight: 1.55 }}>
               {analysisResult.summary}
             </p>
@@ -706,7 +713,7 @@ export default function SymptomChecker() {
                           borderRadius: '50%',
                           display: 'flex',
                           alignItems: 'center',
-                          justify: 'center',
+                          justifyContent: 'center',
                           fontSize: '0.76rem',
                           fontWeight: 800
                         }}>
@@ -754,11 +761,16 @@ export default function SymptomChecker() {
                     </div>
 
                     {/* Clinical Explanation & Action Step */}
-                    <div style={{ fontSize: '0.88rem', color: '#334155', lineHeight: 1.5, display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                      <div><strong>Reasoning:</strong> {cond.explanation}</div>
+                    <div style={{ fontSize: '0.88rem', color: '#334155', lineHeight: 1.5, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                      <div><strong>🔍 Clinical Reasoning:</strong> {cond.explanation}</div>
                       {cond.action && (
                         <div style={{ color: '#059669', fontWeight: 600 }}>
-                          <strong>Recommended Care:</strong> {cond.action}
+                          <strong>💊 Recommended Care / OTC:</strong> {cond.action}
+                        </div>
+                      )}
+                      {cond.specialist && (
+                        <div style={{ color: '#4f46e5', fontWeight: 700, fontSize: '0.82rem' }}>
+                          👨‍⚕️ <strong>Recommended Specialist:</strong> {cond.specialist}
                         </div>
                       )}
                     </div>

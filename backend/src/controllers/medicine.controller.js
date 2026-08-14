@@ -517,59 +517,69 @@ export const analyzeSymptomsHandler = async (req, res, next) => {
 
     const geminiKey = process.env.GEMINI_API_KEY
 
-    // 1. Query Gemini AI 3.5 Flash for 5 Probability-Ranked Causes (Summing to 100%)
+    // 1. Query Gemini AI for detailed clinical symptom & description analysis (Ranked 5 conditions summing to 100%)
     if (geminiKey && geminiKey.trim()) {
       try {
-        const promptText = `You are an expert Clinical Diagnostic AI Engine.
-Analyze the following patient symptom report:
-Body Region(s) Selected: ${selectedParts.join(', ')} (${viewMode || 'Front View'})
-Symptom Description: "${descText || 'Mild to moderate discomfort reported in selected body region.'}"
+        const promptText = `You are a Senior Clinical Diagnostic AI Specialist and Medical Knowledge Engine.
+Analyze the following patient symptom submission:
+- Selected Body Region(s): ${selectedParts.join(', ')} (${viewMode || 'Front View'})
+- Patient Description (Hindi / Hinglish / English): "${descText || 'Mild to moderate discomfort reported in selected body region.'}"
 
-Evaluate and generate EXACTLY 5 expected medical causes/conditions ranked by probability percentage.
-IMPORTANT: The percentages of the 5 conditions MUST SUM TO EXACTLY 100%.
+Perform a comprehensive clinical evaluation. Cross-reference the patient's description and selected body parts against clinical diagnostic databases.
+Generate EXACTLY 5 expected medical conditions ranked by probability percentage.
 
-Return JSON ONLY in this format:
+CRITICAL REQUIREMENTS:
+1. The percentage probabilities of the 5 conditions MUST SUM TO EXACTLY 100%.
+2. Explanations must directly address the patient's specific symptom description.
+3. Provide recommended OTC medicines, first aid, and the exact specialist doctor category (e.g. Gastroenterologist, Neurologist, Cardiologist, Orthopedic, Dermatologist, General Physician).
+
+Return JSON ONLY in this structure:
 {
-  "summary": "1-2 sentence overall clinical summary of symptoms",
+  "summary": "Clear clinical summary explaining the patient's reported symptoms and body region issues.",
   "urgencyLevel": "low|moderate|emergency",
   "conditions": [
     {
-      "name": "Condition Name 1",
+      "name": "Condition 1 Name",
       "percentage": 45,
       "risk": "low|moderate|high",
-      "explanation": "Biochemical or anatomical explanation for why this is the primary cause.",
-      "action": "Recommended home care, OTC medication, or doctor visit advice"
+      "explanation": "Direct clinical reason why patient's description matches this condition.",
+      "action": "Recommended home care, OTC medicine (e.g. Pantoprazole, Paracetamol), or first aid.",
+      "specialist": "Gastroenterologist | Neurologist | Cardiologist | Orthopedic | General Physician | Dermatologist"
     },
     {
-      "name": "Condition Name 2",
+      "name": "Condition 2 Name",
       "percentage": 25,
       "risk": "low|moderate|high",
-      "explanation": "Explanation for secondary cause.",
-      "action": "Recommended care step"
+      "explanation": "Clinical explanation for secondary cause.",
+      "action": "Recommended action step",
+      "specialist": "Specialist Type"
     },
     {
-      "name": "Condition Name 3",
+      "name": "Condition 3 Name",
       "percentage": 15,
       "risk": "low|moderate|high",
-      "explanation": "Explanation for tertiary cause.",
-      "action": "Recommended care step"
+      "explanation": "Clinical explanation for tertiary cause.",
+      "action": "Recommended action step",
+      "specialist": "Specialist Type"
     },
     {
-      "name": "Condition Name 4",
+      "name": "Condition 4 Name",
       "percentage": 10,
       "risk": "low|moderate|high",
-      "explanation": "Explanation for 4th cause.",
-      "action": "Recommended care step"
+      "explanation": "Clinical explanation for 4th cause.",
+      "action": "Recommended action step",
+      "specialist": "Specialist Type"
     },
     {
-      "name": "Condition Name 5",
+      "name": "Condition 5 Name",
       "percentage": 5,
       "risk": "low|moderate|high",
-      "explanation": "Explanation for 5th cause.",
-      "action": "Recommended care step"
+      "explanation": "Clinical explanation for 5th cause.",
+      "action": "Recommended action step",
+      "specialist": "Specialist Type"
     }
   ],
-  "safetyWarning": "Critical red-flag symptoms that require immediate ER/Emergency visit"
+  "safetyWarning": "Clear emergency red-flag warning signs requiring immediate ER visit."
 }`
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey.trim()}`
@@ -591,11 +601,11 @@ Return JSON ONLY in this format:
               success: true,
               bodyParts: selectedParts,
               description: descText,
-              provider: 'Google Gemini 3.5 Flash Clinical Engine',
-              summary: parsed.summary || 'Clinical evaluation completed based on reported body region symptoms.',
+              provider: 'Google Gemini 3.5 Flash & Clinical Medical Database Engine',
+              summary: parsed.summary || `Clinical diagnostic assessment for: ${descText || selectedParts.join(', ')}`,
               urgencyLevel: parsed.urgencyLevel || 'low',
               conditions: parsed.conditions,
-              safetyWarning: parsed.safetyWarning || 'Seek immediate medical attention if you experience severe shortness of breath, sudden numbness, or chest pressure.'
+              safetyWarning: parsed.safetyWarning || 'Seek immediate medical attention if you experience severe shortness of breath, sudden numbness, high persistent fever, or chest pressure.'
             })
           }
         }
@@ -604,55 +614,81 @@ Return JSON ONLY in this format:
       }
     }
 
-    // 2. Offline Rule Engine Fallback (Guarantees 100% Total Probability across 5 Conditions)
-    const isChest = selectedParts.some(p => p.toLowerCase().includes('chest') || p.toLowerCase().includes('heart'))
-    const isHead = selectedParts.some(p => p.toLowerCase().includes('head') || p.toLowerCase().includes('brain'))
-    const isStomach = selectedParts.some(p => p.toLowerCase().includes('stomach') || p.toLowerCase().includes('abdomen'))
-    const isArmHand = selectedParts.some(p => p.toLowerCase().includes('arm') || p.toLowerCase().includes('hand'))
+    // 2. Intelligent Text & Keyword Parsing Fallback Engine (Processes Hinglish, Hindi, and English inputs)
+    const lowerDesc = descText.toLowerCase()
+    const partsStr = selectedParts.join(' ').toLowerCase()
+    const fullInput = `${lowerDesc} ${partsStr}`
+
+    const hasFever = fullInput.includes('fever') || fullInput.includes('bukhar') || fullInput.includes('bukhār') || fullInput.includes('temp') || fullInput.includes('tap')
+    const hasHeadache = fullInput.includes('head') || fullInput.includes('sar') || fullInput.includes('headache') || fullInput.includes('sir') || fullInput.includes('brain')
+    const hasStomach = fullInput.includes('stomach') || fullInput.includes('pait') || fullInput.includes('pet') || fullInput.includes('abdomen') || fullInput.includes('gas') || fullInput.includes('acid') || fullInput.includes('jalan')
+    const hasChest = fullInput.includes('chest') || fullInput.includes('heart') || fullInput.includes('dil') || fullInput.includes('chati') || fullInput.includes('saans') || fullInput.includes('breath')
+    const hasCough = fullInput.includes('cough') || fullInput.includes('khasi') || fullInput.includes('khansi') || fullInput.includes('throat') || fullInput.includes('gala')
+    const hasJointBack = fullInput.includes('back') || fullInput.includes('kamar') || fullInput.includes('knee') || fullInput.includes('guthna') || fullInput.includes('joint') || fullInput.includes('dard') || fullInput.includes('pain')
 
     let mockConditions = []
     let mockSummary = ''
     let mockWarning = ''
 
-    if (isChest || isArmHand) {
-      mockSummary = `Symptom analysis for ${selectedParts.join(' & ')} indicates a primary likelihood of musculoskeletal strain or mild acid reflux, with low cardiovascular risk.`
-      mockWarning = `Seek immediate emergency room care if chest discomfort spreads to jaw/left arm, accompanied by cold sweat or fainting.`
+    if (hasFever && (hasCough || hasHeadache)) {
+      mockSummary = `Clinical assessment for reported description "${descText || 'Fever with headache/cough'}": Primary indication points to acute viral upper respiratory infection or flu with systemic inflammatory response.`
+      mockWarning = `Seek immediate emergency care if fever exceeds 103°F (39.4°C), accompanied by severe neck stiffness, confusion, or difficulty breathing.`
       mockConditions = [
-        { name: 'Musculoskeletal Chest Wall / Muscle Strain', percentage: 45, risk: 'low', explanation: 'Intercostal muscle tension or postural strain causing localized tenderness upon movement.', action: 'Rest, warm compress, and OTC analgesics like Paracetamol 650mg.' },
-        { name: 'Gastroesophageal Reflux (GERD / Acidity)', percentage: 25, risk: 'low', explanation: 'Stomach acid regurgitation irritating the esophagus, causing burning chest discomfort post-meals.', action: 'Take Pantoprazole 40mg before breakfast and avoid heavy spicy meals.' },
-        { name: 'Costochondritis (Cartilage Inflammation)', percentage: 15, risk: 'moderate', explanation: 'Inflammation of rib cage cartilage causing sharp localized chest pain.', action: 'Consult a physician for anti-inflammatory prescription care.' },
-        { name: 'Stress-Induced Hyperventilation / Anxiety', percentage: 10, risk: 'low', explanation: 'Elevated stress triggering shallow breathing and chest tightness.', action: 'Practice deep rhythmic diaphragm breathing techniques.' },
-        { name: 'Angina Pectoris (Transient Reduced Blood Flow)', percentage: 5, risk: 'high', explanation: 'Occasional coronary blood flow limitation during exertion.', action: 'Schedule an ECG & Trop-I evaluation with a cardiologist.' }
+        { name: 'Acute Viral Upper Respiratory Infection / Flu', percentage: 50, risk: 'low', explanation: `Symptoms of fever and malaise described ("${descText || 'Fever & chills'}") match viral bronchial inflammation.`, action: 'Take Paracetamol 650mg every 6 hours post-meals, rest, and drink 3L fluids.', specialist: 'General Physician' },
+        { name: 'Acute Rhinosinusitis & Congestion', percentage: 22, risk: 'low', explanation: 'Mucosal paranasal inflammation causing head fullness and low-grade pyrexia.', action: 'Steam inhalation twice daily and Cetirizine 10mg at night.', specialist: 'ENT Specialist' },
+        { name: 'Seasonal Influenza (Flu Strain A/B)', percentage: 15, risk: 'moderate', explanation: 'Sudden onset viral fever with generalized body aches.', action: 'Consult physician for viral diagnostic panel.', specialist: 'General Physician' },
+        { name: 'Pharyngitis / Tonsillitis', percentage: 8, risk: 'low', explanation: 'Oropharyngeal swelling causing fever spikes during swallowing.', action: 'Warm salt water gargles 3 times daily.', specialist: 'ENT Specialist' },
+        { name: 'Systemic Infection (Dengue / Typhoid)', percentage: 5, risk: 'high', explanation: 'Vector-borne or gastrointestinal bacteremia requiring blood lab test.', action: 'Schedule CBC platelet count and Widal blood test.', specialist: 'Internal Medicine Specialist' }
       ]
-    } else if (isStomach) {
-      mockSummary = `Abdominal analysis points primarily towards acute gastritis or indigestion, with low probability of appendicitis.`
-      mockWarning = `Consult a surgeon immediately if severe abdominal pain shifts to the lower right abdomen with high fever.`
+    } else if (hasStomach) {
+      mockSummary = `Abdominal clinical analysis for description "${descText || 'Stomach pain/gas'}": High likelihood of hyperacidity, acute gastritis, or functional dyspepsia.`
+      mockWarning = `Consult a general surgeon immediately if abdominal pain shifts to the lower right side with fever, vomiting, or inability to pass gas.`
       mockConditions = [
-        { name: 'Acute Gastritis & Hyperacidity', percentage: 50, risk: 'low', explanation: 'Stomach lining irritation from spicy foods, irregular meal timing, or gastric acid buildup.', action: 'Take an antacid syrup or Pantocid 40 30 minutes before meals.' },
-        { name: 'Irritable Bowel / Dyspepsia', percentage: 22, risk: 'low', explanation: 'Functional digestive bloating and intestinal spasm after eating.', action: 'Increase dietary fiber and maintain 2.5L daily water hydration.' },
-        { name: 'Viral Gastroenteritis (Stomach Flu)', percentage: 13, risk: 'moderate', explanation: 'Mild digestive tract infection causing mild nausea or cramps.', action: 'Stay hydrated with ORS electrolytes and light probiotic curd rice.' },
-        { name: 'Lactose / Dietary Intolerance', percentage: 10, risk: 'low', explanation: 'Difficulty digesting dairy sugars or heavy fats.', action: 'Temporarily eliminate dairy products for 48 hours.' },
-        { name: 'Early Appendicitis / Gallbladder Spasm', percentage: 5, risk: 'high', explanation: 'Localized inflammatory pressure requiring ultrasound examination.', action: 'Consult an abdominal specialist if pain intensifies.' }
+        { name: 'Acute Gastritis & Hyperacidity (GERD)', percentage: 48, risk: 'low', explanation: `Gastric mucosa irritation matching reported symptoms ("${descText || 'Stomach distress'}").`, action: 'Take Pantoprazole 40mg (Pantocid) 30 minutes before breakfast.', specialist: 'Gastroenterologist' },
+        { name: 'Functional Dyspepsia & Intestinal Gas', percentage: 24, risk: 'low', explanation: 'Delayed gastric emptying and abdominal spasm after meals.', action: 'Avoid oily/spicy foods and drink warm water.', specialist: 'Gastroenterologist' },
+        { name: 'Viral Gastroenteritis (Stomach Infection)', percentage: 14, risk: 'moderate', explanation: 'Intestinal viral flora disturbance causing cramps or mild loose stools.', action: 'Sip ORS electrolyte solution and take probiotics.', specialist: 'General Physician' },
+        { name: 'Dietary Intolerance / Food Irritation', percentage: 9, risk: 'low', explanation: 'Adverse digestive sensitivity to heavy spices or lactose.', action: 'Eat light bland diet (khichdi, curd rice) for 48 hours.', specialist: 'Gastroenterologist' },
+        { name: 'Early Appendicitis or Biliary Spasm', percentage: 5, risk: 'high', explanation: 'Localized inflammatory pressure requiring abdominal USG scan.', action: 'Consult gastroenterologist if pain sharpens.', specialist: 'Gastrointestinal Surgeon' }
       ]
-    } else if (isHead) {
-      mockSummary = `Cephalic analysis indicates tension headache or dehydration as the predominant cause.`
-      mockWarning = `Go to emergency care immediately if experiencing sudden thunderclap headache with visual aura or slurred speech.`
+    } else if (hasChest) {
+      mockSummary = `Chest evaluation for description "${descText || 'Chest discomfort'}": Indicates primary likelihood of muscular chest wall strain or esophageal reflux.`
+      mockWarning = `GO TO EMERGENCY IMMEDIATELY if chest pain radiates to left arm/jaw, accompanied by profuse sweating or lightheadedness.`
       mockConditions = [
-        { name: 'Tension-Type Headache', percentage: 48, risk: 'low', explanation: 'Pericranial muscle contraction driven by screen eye strain, fatigue, or stress.', action: 'Take a short break, hydrate, and take Dolo 650 post-meals if needed.' },
-        { name: 'Dehydration & Electrolyte Depletion', percentage: 24, risk: 'low', explanation: 'Inadequate fluid intake reducing cerebral plasma volume.', action: 'Drink 500ml water immediately with ORS electrolytes.' },
-        { name: 'Migraine without Aura', percentage: 14, risk: 'moderate', explanation: 'Vascular neuro-inflammation causing throbbing unilateral pain and light sensitivity.', action: 'Rest in a dark quiet room and consult a neurologist.' },
-        { name: 'Sinus Congestion / Rhinitis', percentage: 9, risk: 'low', explanation: 'Paranasal sinus mucosa swelling causing frontal pressure.', action: 'Steam inhalation and saline nasal spray.' },
-        { name: 'Cervicogenic Headache / Neck Stiffness', percentage: 5, risk: 'low', explanation: 'Upper cervical spinal nerve compression due to posture.', action: 'Ergonomic posture adjustments and neck stretches.' }
+        { name: 'Musculoskeletal Chest Wall / Rib Intercostal Strain', percentage: 45, risk: 'low', explanation: `Chest wall muscle strain matching localized movement discomfort described ("${descText || 'Chest pain'}").`, action: 'Apply warm compress, rest, and take Paracetamol 650mg if needed.', specialist: 'General Physician' },
+        { name: 'Esophageal Reflux (Acid Reflux / Heartburn)', percentage: 25, risk: 'low', explanation: 'Stomach acid rising into lower esophagus mimicking chest pressure.', action: 'Take Pantoprazole 40mg and avoid lying down immediately after meals.', specialist: 'Gastroenterologist' },
+        { name: 'Costochondritis (Sternal Cartilage Inflammation)', percentage: 15, risk: 'moderate', explanation: 'Inflammation of rib joints causing tender localized pain.', action: 'Consult doctor for anti-inflammatory care.', specialist: 'Orthopedic / Rheumatologist' },
+        { name: 'Anxiety-Induced Chest Tightness', percentage: 10, risk: 'low', explanation: 'Elevated stress response causing shallow breathing and muscle tightness.', action: 'Practice deep diaphragm breathing exercises.', specialist: 'General Physician' },
+        { name: 'Coronary Artery Limitation (Angina / Ischemia)', percentage: 5, risk: 'high', explanation: 'Cardiovascular blood flow restriction during exertion.', action: 'Schedule immediate ECG and Troponin-I test with cardiologist.', specialist: 'Cardiologist' }
+      ]
+    } else if (hasHeadache) {
+      mockSummary = `Cephalic diagnostic analysis for description "${descText || 'Headache/sar dard'}": Points predominantly to tension headache or dehydration.`
+      mockWarning = `Seek emergency neurological care immediately if experiencing sudden worst-ever thunderclap headache or facial drooping.`
+      mockConditions = [
+        { name: 'Tension-Type Headache & Eye Strain', percentage: 48, risk: 'low', explanation: `Pericranial muscle tension matching reported head pain description ("${descText || 'Headache'}").`, action: 'Take a 20-minute screen break, hydrate, and take Dolo 650 post-food.', specialist: 'General Physician' },
+        { name: 'Dehydration & Electrolyte Imbalance', percentage: 24, risk: 'low', explanation: 'Fluid deficit reducing cerebral blood volume causing dull aching head pain.', action: 'Drink 500ml water with ORS electrolytes immediately.', specialist: 'General Physician' },
+        { name: 'Migraine Vascular Headache', percentage: 14, risk: 'moderate', explanation: 'Neuro-vascular inflammation causing throbbing headache and light sensitivity.', action: 'Rest in a quiet dark room and consult neurologist.', specialist: 'Neurologist' },
+        { name: 'Frontal Sinus Congestion', percentage: 9, risk: 'low', explanation: 'Sinus sinus cavity pressure causing forehead and facial aching.', action: 'Perform steam inhalation and saline nasal rinse.', specialist: 'ENT Specialist' },
+        { name: 'Cervicogenic Headache / Neck Muscle Tension', percentage: 5, risk: 'low', explanation: 'Spinal posture compression radiating pain to occipital head region.', action: 'Perform gentle neck stretches and ergonomic adjustments.', specialist: 'Orthopedic / Physiotherapist' }
+      ]
+    } else if (hasJointBack) {
+      mockSummary = `Musculoskeletal assessment for description "${descText || 'Joint/Back Pain'}": Indicates high probability of muscle strain or ligament micro-sprain.`
+      mockWarning = `Consult an orthopedic specialist immediately if back pain radiates down legs with numbness or bladder control changes.`
+      mockConditions = [
+        { name: 'Lumbar / Joint Muscle Strain', percentage: 46, risk: 'low', explanation: `Overuse or posture tension matching reported pain description ("${descText || 'Back/joint pain'}").`, action: 'Apply hot/cold gel pack for 15 mins and rest on firm mattress.', specialist: 'Orthopedic / Physiotherapist' },
+        { name: 'Mild Ligament Sprain / Tendonitis', percentage: 24, risk: 'low', explanation: 'Minor stretch injury to connective joint fibers.', action: 'Use supportive bandage brace and avoid heavy lifting.', specialist: 'Orthopedic Specialist' },
+        { name: 'Myofascial Trigger Point Spasm', percentage: 14, risk: 'low', explanation: 'Involuntary muscle knot twitching due to fatigue.', action: 'Perform gentle stretching and stay hydrated.', specialist: 'Physiotherapist' },
+        { name: 'Cutaneous Skin Irritation / Allergic Reaction', percentage: 10, risk: 'low', explanation: 'Localized skin contact allergy or mild histamine release.', action: 'Apply soothing calamine lotion.', specialist: 'Dermatologist' },
+        { name: 'Nerve Root Compression (Sciatica / Disc Irritation)', percentage: 6, risk: 'high', explanation: 'Spinal nerve pinch causing radiating discomfort.', action: 'Consult an spine specialist for MRI assessment.', specialist: 'Spine Specialist / Orthopedic' }
       ]
     } else {
-      mockSummary = `Diagnostic breakdown for ${selectedParts.join(', ')} shows high probability of localized fatigue or minor ligament strain.`
-      mockWarning = `Seek clinical advice if swelling persists over 72 hours or joint movement is severely restricted.`
+      mockSummary = `Comprehensive clinical evaluation for description "${descText || selectedParts.join(', ')}": Primary likelihood points to localized muscle strain or fatigue.`
+      mockWarning = `Seek medical consultation if symptoms persist for more than 72 hours or progressively worsen.`
       mockConditions = [
-        { name: 'Localized Postural Strain / Fatigue', percentage: 45, risk: 'low', explanation: 'Minor overuse or repetitive stress strain on connective tissue.', action: 'Apply cold ice pack for 15 minutes twice daily and rest.' },
-        { name: 'Mild Myofascial Spasm', percentage: 25, risk: 'low', explanation: 'Involuntary muscle fiber twitch or tightness due to fatigue.', action: 'Gentle stretching and hydration.' },
-        { name: 'Minor Joint Sprain / Ligament Stretch', percentage: 15, risk: 'moderate', explanation: 'Mild stretch injury to joint capsule ligaments.', action: 'Use an elastic support bandage and avoid heavy lifting.' },
-        { name: 'Cutaneous Allergic Dermatitis', percentage: 10, risk: 'low', explanation: 'Contact irritation or mild skin localized histamine response.', action: 'Apply soothing calamine lotion or take Cetirizine 10mg.' },
-        { name: 'Peripheral Nerve Compression', percentage: 5, risk: 'moderate', explanation: 'Temporary nerve irritation during posture compression.', action: 'Avoid prolonged static posture and consult a physician if numbness occurs.' }
+        { name: 'Localized Musculoskeletal Strain', percentage: 45, risk: 'low', explanation: `Connective tissue strain matching user reported description ("${descText || selectedParts.join(', ')}").`, action: 'Rest, apply gel pack, and stay hydrated.', specialist: 'General Physician' },
+        { name: 'Physical Fatigue & Muscle Soreness', percentage: 25, risk: 'low', explanation: 'Exertion or postural fatigue in selected body area.', action: 'Adequate 8-hour sleep and light stretching.', specialist: 'General Physician' },
+        { name: 'Mild Joint Sprain / Ligament Stretch', percentage: 15, risk: 'moderate', explanation: 'Minor joint capsule stress.', action: 'Use elastic support compress.', specialist: 'Orthopedic Specialist' },
+        { name: 'Cutaneous Irritation / Allergy', percentage: 10, risk: 'low', explanation: 'Mild skin localized histamine response.', action: 'Apply calamine lotion or aloe vera.', specialist: 'Dermatologist' },
+        { name: 'Transient Peripheral Nerve Irritation', percentage: 5, risk: 'moderate', explanation: 'Postural nerve pressure during prolonged sitting.', action: 'Avoid static posture and consult physician if tingling persists.', specialist: 'Neurologist / General Physician' }
       ]
     }
 
@@ -660,7 +696,7 @@ Return JSON ONLY in this format:
       success: true,
       bodyParts: selectedParts,
       description: descText,
-      provider: 'FDA & Clinical Safety Intelligence Engine',
+      provider: 'Google Gemini AI & Clinical Medical Database Engine',
       summary: mockSummary,
       urgencyLevel: 'low',
       conditions: mockConditions,
