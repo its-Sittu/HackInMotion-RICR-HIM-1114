@@ -485,15 +485,20 @@ export default function MyHealth() {
       {selectedDayKey && (
         <div style={{
           position: 'fixed',
-          top: 0, left: 0, width: '100vw', height: '100vh',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
           backgroundColor: 'rgba(15, 23, 42, 0.75)',
           backdropFilter: 'blur(6px)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justify: 'center',
-          padding: '1rem',
-          boxSizing: 'border-box'
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box',
+          margin: 0
         }}>
           <div style={{
             backgroundColor: '#ffffff',
@@ -501,8 +506,10 @@ export default function MyHealth() {
             maxWidth: '460px',
             width: '100%',
             padding: '1.8rem',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
-            animation: 'fadeInUp 0.25s ease-out'
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            animation: 'fadeInUp 0.25s ease-out',
+            margin: 'auto',
+            boxSizing: 'border-box'
           }}>
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9' }}>
