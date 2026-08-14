@@ -42,60 +42,48 @@ const playEcoTechPingSound = () => {
     const ctx = new AudioCtx()
     const now = ctx.currentTime
 
-    // 1. Warm Eco Solfeggio Glass Ping (528Hz -> 1056Hz)
+    // Note 1: Sweet High-Pitch Crystal Pop (C6 - 1046.5Hz)
     const osc1 = ctx.createOscillator()
     const gain1 = ctx.createGain()
     osc1.type = 'sine'
-    osc1.frequency.setValueAtTime(528, now)
-    osc1.frequency.exponentialRampToValueAtTime(1056, now + 0.05)
-    osc1.frequency.exponentialRampToValueAtTime(528, now + 0.3)
+    osc1.frequency.setValueAtTime(1046.5, now)
+    osc1.frequency.exponentialRampToValueAtTime(1318.5, now + 0.04) // E6 rise
 
-    gain1.gain.setValueAtTime(0.15, now)
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3)
+    gain1.gain.setValueAtTime(0.16, now)
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
 
-    // 2. Harmonic E5 Shimmer
+    // Note 2: Sweet Harmony Resolution (G6 - 1567.98Hz at +40ms)
     const osc2 = ctx.createOscillator()
     const gain2 = ctx.createGain()
     osc2.type = 'sine'
-    osc2.frequency.setValueAtTime(659.25, now)
-    osc2.frequency.exponentialRampToValueAtTime(1318.51, now + 0.07)
+    osc2.frequency.setValueAtTime(1567.98, now + 0.04)
+    osc2.frequency.exponentialRampToValueAtTime(2093.0, now + 0.12) // C7 chime
 
-    gain2.gain.setValueAtTime(0.08, now)
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
+    gain2.gain.setValueAtTime(0.001, now)
+    gain2.gain.setValueAtTime(0.18, now + 0.04)
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.22)
 
-    // 3. Smooth Low-pass Warm Eco Filter
+    // Sweet Lowpass Filter
     const filter = ctx.createBiquadFilter()
     filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(2200, now)
+    filter.frequency.setValueAtTime(3200, now)
 
-    // 4. Soft Spatial Echo Delay
-    const delay = ctx.createDelay()
-    delay.delayTime.setValueAtTime(0.12, now) // 120ms gentle echo tap
-
-    const feedback = ctx.createGain()
-    feedback.gain.setValueAtTime(0.35, now) // 35% gentle decay
-
-    // Connections
+    // Connect & Play
     osc1.connect(gain1)
     osc2.connect(gain2)
 
     gain1.connect(filter)
     gain2.connect(filter)
 
-    filter.connect(delay)
-    delay.connect(feedback)
-    feedback.connect(delay)
-
     filter.connect(ctx.destination)
-    delay.connect(ctx.destination)
 
     osc1.start(now)
-    osc2.start(now)
+    osc2.start(now + 0.04)
 
-    osc1.stop(now + 0.4)
-    osc2.stop(now + 0.45)
+    osc1.stop(now + 0.18)
+    osc2.stop(now + 0.25)
   } catch {
-    // Gracefully handle browser audio autoplay policies
+    // Gracefully handle browser audio policies
   }
 }
 
