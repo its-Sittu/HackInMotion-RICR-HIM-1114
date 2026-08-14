@@ -222,7 +222,7 @@ export default function SymptomChecker() {
               justify: 'center',
               alignItems: 'center',
               position: 'relative',
-              padding: '1.2rem 0 1.2rem 60px'
+              padding: '1.2rem 0 1.2rem 85px'
             }}>
               {/* Outer Cyan Glowing Body Aura */}
               <div style={{
