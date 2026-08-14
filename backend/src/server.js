@@ -18,7 +18,7 @@ const startServer = async () => {
     // 2. Start Express only after DB is ready
     const server = app.listen(PORT, () => {
       console.log(
-        `MediGuard backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`
+        `PulseMed backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`
       )
     })
 

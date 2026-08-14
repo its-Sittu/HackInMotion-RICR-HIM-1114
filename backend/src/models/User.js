@@ -4,10 +4,18 @@ const userSchema = new mongoose.Schema(
   {
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
+      required: [true, 'Phone number or Email is required'],
       unique: true,
       trim: true,
-      match: [/^\+?[1-9]\d{6,14}$/, 'Please enter a valid phone number']
+      validate: {
+        validator: function (v) {
+          if (!v) return false
+          const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+          const isPhone = /^\+?[1-9]\d{6,14}$/.test(v)
+          return isEmail || isPhone
+        },
+        message: 'Please enter a valid phone number or email address'
+      }
     },
     passwordHash: {
       type: String,
