@@ -40,52 +40,63 @@ const playEcoTechPingSound = () => {
     const AudioCtx = window.AudioContext || window.webkitAudioContext
     if (!AudioCtx) return
     const ctx = new AudioCtx()
-
     const now = ctx.currentTime
 
-    // 1. High Tech Eco Ping Oscillator
+    // 1. Crystal Tech Tone
     const osc1 = ctx.createOscillator()
     const gain1 = ctx.createGain()
-
     osc1.type = 'sine'
-    osc1.frequency.setValueAtTime(880, now) // A5 chime
-    osc1.frequency.exponentialRampToValueAtTime(1760, now + 0.08)
-    osc1.frequency.exponentialRampToValueAtTime(440, now + 0.35)
+    osc1.frequency.setValueAtTime(987.77, now) // B5 note
+    osc1.frequency.exponentialRampToValueAtTime(1975.53, now + 0.06) // B6 shimmer
+    osc1.frequency.exponentialRampToValueAtTime(493.88, now + 0.4)
 
-    gain1.gain.setValueAtTime(0.18, now)
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
+    gain1.gain.setValueAtTime(0.22, now)
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
 
-    // 2. Sub Harmonic Eco Resonance Oscillator
+    // 2. Sub Echo Resonance
     const osc2 = ctx.createOscillator()
     const gain2 = ctx.createGain()
-
     osc2.type = 'triangle'
-    osc2.frequency.setValueAtTime(523.25, now) // C5 note
-    osc2.frequency.exponentialRampToValueAtTime(261.63, now + 0.4)
+    osc2.frequency.setValueAtTime(659.25, now) // E5 note
+    osc2.frequency.exponentialRampToValueAtTime(329.63, now + 0.45)
 
-    gain2.gain.setValueAtTime(0.12, now)
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+    gain2.gain.setValueAtTime(0.14, now)
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45)
 
-    // 3. Futuristic Biquad Bandpass Filter for Eco Spatial Resonance
+    // 3. Multi-Tap Delay Echo Loop (Reverb Echo)
+    const delay = ctx.createDelay()
+    delay.delayTime.setValueAtTime(0.09, now) // 90ms echo delay tap
+
+    const feedback = ctx.createGain()
+    feedback.gain.setValueAtTime(0.48, now) // 48% echo feedback decay
+
+    // 4. Spatial Resonance Filter
     const filter = ctx.createBiquadFilter()
     filter.type = 'bandpass'
-    filter.frequency.setValueAtTime(1200, now)
-    filter.Q.setValueAtTime(8, now)
+    filter.frequency.setValueAtTime(1500, now)
+    filter.Q.setValueAtTime(10, now)
 
-    // Connect nodes
+    // Connect Primary Signal to Output and Delay
     osc1.connect(gain1)
     osc2.connect(gain2)
 
     gain1.connect(filter)
     gain2.connect(filter)
 
+    // Delay Echo Loop
+    filter.connect(delay)
+    delay.connect(feedback)
+    feedback.connect(delay)
+    feedback.connect(filter)
+
     filter.connect(ctx.destination)
+    delay.connect(ctx.destination)
 
     osc1.start(now)
     osc2.start(now)
 
-    osc1.stop(now + 0.4)
-    osc2.stop(now + 0.45)
+    osc1.stop(now + 0.5)
+    osc2.stop(now + 0.5)
   } catch {
     // Gracefully handle browser audio autoplay policies
   }
