@@ -241,6 +241,45 @@ const DEFAULT_FALLBACK_MEDICINES = [
     precautions: 'Inform doctor if allergic to penicillin. Finish prescribed course completely.',
     activeIngredients: 'Amoxicillin Trihydrate (500mg)',
     manufacturer: 'GlaxoSmithKline'
+  },
+  {
+    id: 'cetirizine-10',
+    brandName: 'Cetzine 10 / Okacet',
+    genericName: 'Cetirizine Hydrochloride 10mg',
+    category: 'Anti-Allergic',
+    imageUrl: '/images/medicines/med_yellow_tablets.png',
+    purpose: 'Relief from allergic runny nose, sneezing, watery eyes, and skin hives/itching.',
+    whenToTake: '1 tablet ONCE DAILY at bedtime (Raat ko sone se pehle).',
+    dosageSchedule: 'Night Bedtime (Raat ko)',
+    precautions: 'May cause mild drowsiness. Avoid driving or operating machinery after taking.',
+    activeIngredients: 'Cetirizine Hydrochloride (10mg)',
+    manufacturer: 'Dr. Reddy Labs'
+  },
+  {
+    id: 'glycomet-500',
+    brandName: 'Glycomet 500 / Metformin',
+    genericName: 'Metformin Hydrochloride 500mg',
+    category: 'Diabetes Care',
+    imageUrl: '/images/medicines/med_cream_ovals.png',
+    purpose: 'Type-2 Diabetes management to control blood sugar levels.',
+    whenToTake: '1 tablet twice daily WITH or IMMEDIATELY AFTER meals (Breakfast & Dinner).',
+    dosageSchedule: 'With Meals (Khana khate waqt)',
+    precautions: 'Regular blood glucose monitoring is required. Avoid excessive alcohol.',
+    activeIngredients: 'Metformin Hydrochloride (500mg)',
+    manufacturer: 'USV Ltd'
+  },
+  {
+    id: 'aspirin-75',
+    brandName: 'Ecosprin 75 / Aspirin',
+    genericName: 'Aspirin (Acetylsalicylic Acid) 75mg',
+    category: 'Blood Thinner & Heart Care',
+    imageUrl: '/images/medicines/med_red_white_pills.png',
+    purpose: 'Prevention of heart attacks, stroke, and blood clot formation.',
+    whenToTake: '1 tablet once daily after main meal (Lunch or Dinner) at the same time.',
+    dosageSchedule: 'Post-Meal (Khana khane ke baad)',
+    precautions: 'Must be taken under medical supervision. Avoid if bleeding disorders exist.',
+    activeIngredients: 'Aspirin (75mg)',
+    manufacturer: 'USV Private Limited'
   }
 ]
 
