@@ -100,7 +100,7 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Real-time clock interval checking scheduled alarms
+  // Real-time clock interval checking scheduled alarms every 1 second
   useEffect(() => {
     const checkClock = () => {
       const now = new Date()
@@ -120,7 +120,8 @@ export default function MedicationAlarm() {
       })
     }
 
-    const interval = setInterval(checkClock, 3000)
+    checkClock()
+    const interval = setInterval(checkClock, 1000)
     return () => clearInterval(interval)
   }, [alarms, activeRingingAlarm])
 
@@ -169,7 +170,7 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Modify alarm time
+  // Modify alarm time (Re-activates alarm so sound will play at exact new time!)
   const handleSaveModifiedTime = (alarmId) => {
     if (!editTimeValue.trim()) return
 
@@ -179,12 +180,19 @@ export default function MedicationAlarm() {
 
     let hour = parseInt(h, 10)
     const ampm = hour >= 12 ? 'PM' : 'AM'
-    hour = hour % 12 === 0 ? 12 : hour % 12
-    const formatted12h = `${String(hour).padStart(2, '0')}:${m} ${ampm}`
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12
+    const formatted12h = `${String(displayHour).padStart(2, '0')}:${m} ${ampm}`
+    const period = hour < 12 ? 'Subah (Morning)' : hour < 17 ? 'Dopahar (Afternoon)' : hour < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
 
     setAlarms(prev => prev.map(item => {
       if (item.id === alarmId) {
-        return { ...item, time: formatted12h, status: 'ACTIVE' }
+        return {
+          ...item,
+          time: formatted12h,
+          period,
+          status: 'ACTIVE', // Re-activate so sound triggers at exact new time!
+          takenTime: null
+        }
       }
       return item
     }))
@@ -468,7 +476,10 @@ export default function MedicationAlarm() {
                     type="button"
                     onClick={() => {
                       setEditingAlarmId(item.id)
-                      setEditTimeValue('08:00')
+                      const now = new Date()
+                      const h = String(now.getHours()).padStart(2, '0')
+                      const m = String(now.getMinutes()).padStart(2, '0')
+                      setEditTimeValue(`${h}:${m}`)
                     }}
                     style={{
                       backgroundColor: '#f1f5f9',
