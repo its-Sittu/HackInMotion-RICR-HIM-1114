@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const INITIAL_ALARMS = [
@@ -7,7 +7,7 @@ const INITIAL_ALARMS = [
     medicine: 'Pantocid 40mg (Pantoprazole)',
     time: '08:00',
     instruction: 'Pre-Breakfast (Khali Pet 30 mins before food)',
-    status: 'ACTIVE', // 'ACTIVE' | 'TAKEN' | 'SNOOZED'
+    status: 'ACTIVE', // 'ACTIVE' | 'TAKEN' | 'SNOOZED' | 'MISSED'
     color: '#6366f1'
   },
   {
@@ -28,6 +28,12 @@ const INITIAL_ALARMS = [
   }
 ]
 
+const INITIAL_EMERGENCY_CONTACTS = [
+  { id: 'c1', priority: 1, name: 'Ramesh Sharma', role: 'Father (Primary Guardian)', phone: '+91 98765 43210' },
+  { id: 'c2', priority: 2, name: 'Priya Sharma', role: 'Spouse (Secondary Guardian)', phone: '+91 98765 43211' },
+  { id: 'c3', priority: 3, name: 'Dr. Rajesh Kumar', role: 'Family Doctor', phone: '+91 98765 43212' }
+]
+
 export default function MedicationAlarm() {
   const [alarms, setAlarms] = useState(() => {
     try {
@@ -38,7 +44,21 @@ export default function MedicationAlarm() {
     }
   })
 
+  const [emergencyContacts, setEmergencyContacts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pulsemed_emergency_contacts')
+      return saved ? JSON.parse(saved) : INITIAL_EMERGENCY_CONTACTS
+    } catch {
+      return INITIAL_EMERGENCY_CONTACTS
+    }
+  })
+
   const [activeRingingAlarm, setActiveRingingAlarm] = useState(null)
+  const [ringingTimer, setRingingTimer] = useState(60)
+
+  // Modals state
+  const [showContactsModal, setShowContactsModal] = useState(false)
+  const [sosDispatchedModal, setSosDispatchedModal] = useState(null)
 
   // Phone-Style Alarm Time Picker Modal state
   const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
@@ -61,6 +81,14 @@ export default function MedicationAlarm() {
       // localStorage optional
     }
   }, [alarms])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_emergency_contacts', JSON.stringify(emergencyContacts))
+    } catch {
+      // localStorage optional
+    }
+  }, [emergencyContacts])
 
   // Open Phone-Style Alarm Time Picker Modal for an alarm
   const openTimePickerModal = (alarm) => {
@@ -211,6 +239,80 @@ export default function MedicationAlarm() {
     }
   }, [activeRingingAlarm])
 
+  // Handle 1-Minute Unanswered Alarm Ringing Timeout -> Emergency SOS Alert Dispatch
+  const handleUnansweredAlarmSos = useCallback(async (alarm) => {
+    if (!alarm) return
+
+    setAlarms(prev => prev.map(item => {
+      if (item.id === alarm.id) {
+        return { ...item, status: 'MISSED' }
+      }
+      return item
+    }))
+
+    setActiveRingingAlarm(null)
+
+    try {
+      await fetch('/api/health/send-emergency-sos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contacts: emergencyContacts,
+          medicine: alarm.medicine,
+          time: alarm.time,
+          instruction: alarm.instruction
+        })
+      })
+    } catch (err) {
+      console.error('Emergency SOS API dispatch error:', err)
+    }
+
+    saveActivityToMedicalHistory({
+      title: `🚨 EMERGENCY SOS ALERT: Missed ${alarm.medicine}`,
+      category: 'Medicines',
+      typeIcon: '🚨',
+      status: 'EMERGENCY ALERT 🚨',
+      statusBg: '#ffe4e6',
+      statusColor: '#be123c',
+      summary: `1-minute alarm rang with NO response for "${alarm.medicine}" (${alarm.time}). Automated Emergency SOS sent to 3 Priority Family Contacts.`,
+      doctorNote: `Emergency SOS Dispatched to Family Contacts: 1. ${emergencyContacts[0]?.name || 'P1'} (${emergencyContacts[0]?.phone}), 2. ${emergencyContacts[1]?.name || 'P2'}, 3. ${emergencyContacts[2]?.name || 'P3'}`,
+      details: [
+        `Medicine Missed: ${alarm.medicine}`,
+        `Scheduled Time: ${alarm.time}`,
+        `Ringing Timer: 60 Seconds Elapsed Unanswered`,
+        `Priority 1 (${emergencyContacts[0]?.role}): ${emergencyContacts[0]?.name} (${emergencyContacts[0]?.phone}) - NOTIFIED ✅`,
+        `Priority 2 (${emergencyContacts[1]?.role}): ${emergencyContacts[1]?.name} (${emergencyContacts[1]?.phone}) - NOTIFIED ✅`,
+        `Priority 3 (${emergencyContacts[2]?.role}): ${emergencyContacts[2]?.name} (${emergencyContacts[2]?.phone}) - NOTIFIED ✅`
+      ]
+    })
+
+    setSosDispatchedModal({
+      alarm,
+      contacts: emergencyContacts
+    })
+  }, [emergencyContacts])
+
+  // 60-Second Ringing Countdown Effect
+  useEffect(() => {
+    let timer = null
+    if (activeRingingAlarm) {
+      timer = setInterval(() => {
+        setRingingTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            handleUnansweredAlarmSos(activeRingingAlarm)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (timer) clearInterval(timer)
+    }
+  }, [activeRingingAlarm, handleUnansweredAlarmSos])
+
   // Mark medicine as TAKEN ✅
   const handleMarkTaken = (alarmId) => {
     const targetMed = alarms.find(a => a.id === alarmId)
@@ -312,38 +414,61 @@ export default function MedicationAlarm() {
       `}</style>
 
       {/* Card Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.6rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           <span style={{ fontSize: '1.5rem' }}>⏰</span>
           <div>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-              Medication Alarm & Reminders (24h)
+              Medication Alarm & SOS System (24h)
             </h3>
             <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              24-Hour Sound Reminders & Adherence Tracker
+              24-Hour Sound Reminders & 1-Min Family Emergency SOS
             </span>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowAddModal(true)}
-          style={{
-            backgroundColor: '#EEF2FF',
-            color: '#4F46E5',
-            border: '1px solid #C7D2FE',
-            borderRadius: '10px',
-            padding: '0.45rem 0.85rem',
-            fontSize: '0.78rem',
-            fontWeight: 800,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem'
-          }}
-        >
-          ➕ Add Alarm
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setShowContactsModal(true)}
+            style={{
+              backgroundColor: '#fff1f2',
+              color: '#e11d48',
+              border: '1px solid #fecdd3',
+              borderRadius: '10px',
+              padding: '0.45rem 0.75rem',
+              fontSize: '0.76rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+            title="Manage 3 Priority Family Emergency Contacts"
+          >
+            🚨 3 Priority Contacts
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            style={{
+              backgroundColor: '#EEF2FF',
+              color: '#4F46E5',
+              border: '1px solid #C7D2FE',
+              borderRadius: '10px',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            ➕ Add Alarm
+          </button>
+        </div>
       </div>
 
       {/* ── ACTIVE RINGING ALARM BANNER (TRIGGERED WHEN CLOCK MATCHES ALARM) ── */}
@@ -364,14 +489,30 @@ export default function MedicationAlarm() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <span style={{ fontSize: '2rem' }}>🔔</span>
             <div>
-              <span style={{ fontSize: '0.7rem', color: '#be123c', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block' }}>
-                🔊 ALARM RINGING NOW! ({activeRingingAlarm.time})
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.7rem', color: '#be123c', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  🔊 ALARM RINGING NOW! ({activeRingingAlarm.time})
+                </span>
+                <span style={{
+                  backgroundColor: '#e11d48',
+                  color: '#ffffff',
+                  fontSize: '0.7rem',
+                  fontWeight: 900,
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '12px'
+                }}>
+                  ⏱️ {ringingTimer}s until Family SOS
+                </span>
+              </div>
+
               <h4 style={{ margin: '0.1rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#881337' }}>
                 {activeRingingAlarm.medicine}
               </h4>
-              <span style={{ fontSize: '0.78rem', color: '#9f1239', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.78rem', color: '#9f1239', fontWeight: 600, display: 'block' }}>
                 📌 {activeRingingAlarm.instruction}
+              </span>
+              <span style={{ fontSize: '0.72rem', color: '#be123c', fontWeight: 700, marginTop: '0.2rem', display: 'block' }}>
+                ⚠️ If unanswered in {ringingTimer} seconds, automated SOS alert will be sent to 3 priority contacts.
               </span>
             </div>
           </div>
@@ -799,6 +940,192 @@ export default function MedicationAlarm() {
                 ✓ Save Alarm
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 3 PRIORITY FAMILY EMERGENCY CONTACTS MODAL ────────────────── */}
+      {showContactsModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '520px',
+            width: '100%',
+            padding: '1.8rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                  🚨 3 Priority Family Emergency Contacts
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#e11d48', fontWeight: 700 }}>
+                  Automated SOS alert will be sent to these 3 contacts if 1-min alarm goes unanswered.
+                </span>
+              </div>
+              <button type="button" onClick={() => setShowContactsModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.4rem' }}>
+              {emergencyContacts.map((contact, idx) => (
+                <div key={contact.id || idx} style={{
+                  backgroundColor: idx === 0 ? '#fff1f2' : '#f8fafc',
+                  border: idx === 0 ? '1.5px solid #fecdd3' : '1px solid #e2e8f0',
+                  borderRadius: '16px',
+                  padding: '0.95rem 1.1rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{
+                      backgroundColor: idx === 0 ? '#be123c' : idx === 1 ? '#4338ca' : '#0369a1',
+                      color: '#ffffff',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '0.15rem 0.55rem',
+                      borderRadius: '8px'
+                    }}>
+                      {idx === 0 ? '🥇 Priority 1 (Primary Guardian)' : idx === 1 ? '🥈 Priority 2 (Secondary)' : '🥉 Priority 3 (Doctor / Kin)'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                        Contact Name & Relation:
+                      </label>
+                      <input
+                        type="text"
+                        value={contact.name}
+                        onChange={(e) => {
+                          const updated = [...emergencyContacts]
+                          updated[idx].name = e.target.value
+                          setEmergencyContacts(updated)
+                        }}
+                        placeholder="e.g. Ramesh Sharma (Father)"
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.45rem 0.65rem', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                        Mobile Phone Number:
+                      </label>
+                      <input
+                        type="text"
+                        value={contact.phone}
+                        onChange={(e) => {
+                          const updated = [...emergencyContacts]
+                          updated[idx].phone = e.target.value
+                          setEmergencyContacts(updated)
+                        }}
+                        placeholder="+91 9876543210"
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.45rem 0.65rem', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button type="button" onClick={() => setShowContactsModal(false)} style={{ backgroundColor: '#6366f1', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer', width: '100%', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)' }}>
+                ✓ Save Emergency Contacts
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SOS ALERT DISPATCHED MODAL (WHEN 1-MIN ALARM GOES UNANSWERED) ── */}
+      {sosDispatchedModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '480px',
+            width: '100%',
+            padding: '1.8rem',
+            boxShadow: '0 25px 60px rgba(225, 29, 72, 0.4)',
+            border: '3px solid #e11d48',
+            boxSizing: 'border-box',
+            margin: 'auto',
+            animation: 'fadeInUp 0.25s ease-out'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
+              <span style={{ fontSize: '3.2rem', display: 'block', marginBottom: '0.4rem', animation: 'pulseRing 1.2s infinite' }}>🚨</span>
+              <h3 style={{ margin: '0 0 0.3rem 0', fontSize: '1.3rem', fontWeight: 900, color: '#be123c' }}>
+                EMERGENCY SOS ALERT DISPATCHED!
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.86rem', color: '#881337', fontWeight: 600 }}>
+                1-minute medication alarm rang with <strong>NO RESPONSE</strong> from patient.
+              </p>
+            </div>
+
+            <div style={{ backgroundColor: '#ffe4e6', borderRadius: '16px', padding: '1rem 1.1rem', marginBottom: '1.2rem', border: '1px solid #fecdd3' }}>
+              <strong style={{ fontSize: '0.92rem', color: '#9f1239', display: 'block', marginBottom: '0.4rem' }}>
+                💊 Missed Medication: {sosDispatchedModal.alarm?.medicine}
+              </strong>
+              <span style={{ fontSize: '0.8rem', color: '#be123c', display: 'block' }}>
+                🕒 Scheduled Time: {sosDispatchedModal.alarm?.time} • {sosDispatchedModal.alarm?.instruction}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: '1.4rem' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
+                Notified Family Emergency Contacts:
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                {sosDispatchedModal.contacts?.map((c, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8fafc', padding: '0.45rem 0.75rem', borderRadius: '10px', fontSize: '0.8rem', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontWeight: 700, color: '#0f172a' }}>P{i+1}: {c.name} ({c.role})</span>
+                    <span style={{ color: '#059669', fontWeight: 800 }}>ALERT SENT ✅</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSosDispatchedModal(null)}
+              style={{
+                backgroundColor: '#be123c',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '0.75rem 1rem',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                width: '100%',
+                boxShadow: '0 4px 14px rgba(190, 18, 60, 0.4)'
+              }}
+            >
+              Acknowledge Emergency Alert & Close
+            </button>
           </div>
         </div>
       )}
