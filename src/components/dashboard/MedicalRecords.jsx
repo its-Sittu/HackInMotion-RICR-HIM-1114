@@ -102,6 +102,23 @@ export default function MedicalRecords() {
     }
   }, [records])
 
+  // Listen to real-time activity logs from across the application
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        const saved = localStorage.getItem('pulsemed_medical_records')
+        if (saved) {
+          setRecords(JSON.parse(saved))
+        }
+      } catch {
+        // optional
+      }
+    }
+
+    window.addEventListener('pulsemed_medical_history_updated', handleUpdate)
+    return () => window.removeEventListener('pulsemed_medical_history_updated', handleUpdate)
+  }, [])
+
   const handleDeleteRecord = (id) => {
     setRecords(prev => prev.filter(rec => rec.id !== id))
     setDeleteConfirmId(null)
@@ -110,9 +127,10 @@ export default function MedicalRecords() {
     }
   }
 
-  const handleResetDefaults = () => {
-    setRecords(INITIAL_RECORDS)
-    localStorage.removeItem('pulsemed_medical_records')
+  const handleClearAllHistory = () => {
+    setRecords([])
+    localStorage.setItem('pulsemed_medical_records', JSON.stringify([]))
+    setSelectedRecord(null)
   }
 
   const filteredRecords = records.filter(rec => {
@@ -214,7 +232,7 @@ export default function MedicalRecords() {
               </div>
             </div>
 
-            {/* Quick Stats Badges */}
+            {/* Quick Stats & Action Buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <div style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -233,24 +251,45 @@ export default function MedicalRecords() {
                 </div>
               </div>
 
-              {records.length < INITIAL_RECORDS.length && (
+              {records.length > 0 && (
                 <button
                   type="button"
-                  onClick={handleResetDefaults}
+                  onClick={handleClearAllHistory}
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px solid rgba(255, 255, 255, 0.16)',
+                    backgroundColor: 'rgba(225, 29, 72, 0.2)',
+                    border: '1px solid rgba(225, 29, 72, 0.4)',
+                    color: '#fecdd3',
                     borderRadius: '12px',
                     padding: '0.5rem 0.85rem',
-                    color: '#a5b4fc',
                     fontSize: '0.78rem',
                     fontWeight: 700,
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
                   }}
+                  title="Wipe all logged history"
                 >
-                  🔄 Restore Default Records
+                  🗑️ Clear All History
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => { setRecords(INITIAL_RECORDS); localStorage.setItem('pulsemed_medical_records', JSON.stringify(INITIAL_RECORDS)) }}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.16)',
+                  color: '#e2e8f0',
+                  borderRadius: '12px',
+                  padding: '0.5rem 0.85rem',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 Restore Defaults
+              </button>
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const POPULAR_INTERACTIONS = [
   { drug1: 'Dolo 650', drug2: 'Combiflam', label: '⚡ Dolo 650 + Combiflam' },
@@ -38,6 +39,25 @@ export default function DrugInteractionChecker() {
       const data = await res.json()
       if (data.success) {
         setResult(data)
+
+        const isHigh = data.severity === 'high'
+        const isMod = data.severity === 'moderate'
+
+        saveActivityToMedicalHistory({
+          title: `Interaction Check: ${d1} + ${d2}`,
+          category: 'Drug Interactions',
+          typeIcon: '🧪',
+          status: isHigh ? 'HIGH RISK 🚨' : isMod ? 'CAUTION ⚠️' : 'SAFE ✅',
+          statusBg: isHigh ? '#ffe4e6' : isMod ? '#fef3c7' : '#d1fae5',
+          statusColor: isHigh ? '#be123c' : isMod ? '#b45309' : '#059669',
+          summary: data.summary || `Interaction check between ${d1} and ${d2}`,
+          doctorNote: data.note || `Source: ${data.source || 'FDA Clinical Safety Database'}`,
+          details: [
+            `Medicines Checked: ${d1}, ${d2} ${showThird && drug3.trim() ? `, ${drug3.trim()}` : ''}`,
+            `Risk Classification: ${data.riskClassification || 'Interaction Evaluated'}`,
+            `Source: ${data.source || 'FDA Database & Gemini AI'}`
+          ]
+        })
       }
     } catch {
       setResult({

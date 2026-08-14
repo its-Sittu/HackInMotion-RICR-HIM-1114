@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MedicationAlarm from './MedicationAlarm'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const INITIAL_MARKED_DAYS = {
   '2026-08-10': { status: 'TAKEN', note: 'Morning & Night doses taken on time', typeIcon: '💊', color: '#10b981', bg: '#d1fae5' },
@@ -101,6 +102,22 @@ export default function MyHealth() {
         bg
       }
     }))
+
+    saveActivityToMedicalHistory({
+      title: `Calendar Health Day Marked (${selectedDayKey})`,
+      category: 'Lab Reports',
+      typeIcon,
+      status: `${modalStatus} ✅`,
+      statusBg: bg,
+      statusColor: color,
+      summary: `Marked day ${selectedDayKey} as ${modalStatus}. Note: ${modalNote.trim() || 'Health Day Logged'}`,
+      doctorNote: modalNote.trim() || `Health day status set to ${modalStatus}`,
+      details: [
+        `Date Marked: ${selectedDayKey}`,
+        `Status: ${modalStatus}`,
+        `Patient Note: ${modalNote.trim() || 'None'}`
+      ]
+    })
 
     setSelectedDayKey(null)
   }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 // Body parts definition for SVG Interactive Mannequin
 const BODY_PARTS_CONFIG = {
@@ -79,6 +80,24 @@ export default function SymptomChecker() {
       const data = await res.json()
       if (data.success) {
         setAnalysisResult(data)
+
+        const topCond = data.conditions?.[0]
+        saveActivityToMedicalHistory({
+          title: `Symptom Check: ${selectedParts.join(', ')}`,
+          category: 'Symptom Checks',
+          typeIcon: '🩺',
+          status: 'ANALYZED ✅',
+          statusBg: '#d1fae5',
+          statusColor: '#059669',
+          summary: data.summary || `Symptom analysis for ${selectedParts.join(', ')}`,
+          doctorNote: topCond ? `Primary Suspected Cause: ${topCond.name} (${topCond.percentage}% probability). Care: ${topCond.action}` : 'Symptom analysis completed.',
+          details: [
+            `Body Regions Evaluated: ${selectedParts.join(', ')}`,
+            `Reported Description: "${description.trim() || 'Selected body regions'}"`,
+            `Primary Cause: ${topCond ? `${topCond.name} (${topCond.percentage}%)` : 'Analyzed'}`,
+            `AI Provider: ${data.provider || 'Google Gemini AI Engine'}`
+          ]
+        })
       }
     } catch {
       setAnalysisResult({

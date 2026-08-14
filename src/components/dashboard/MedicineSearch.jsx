@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const CATEGORIES = [
   { id: 'All', label: '🌐 All Medicines' },
@@ -226,6 +227,22 @@ export default function MedicineSearch() {
       const data = await res.json()
       if (data.success) {
         setAiResponse(data)
+
+        saveActivityToMedicalHistory({
+          title: `AI Search: "${textToAsk.trim()}"`,
+          category: 'Medicines',
+          typeIcon: '🤖',
+          status: 'SEARCHED 🔎',
+          statusBg: '#f3e8ff',
+          statusColor: '#7e22ce',
+          summary: `Asked Gemini AI: "${textToAsk.trim()}"`,
+          doctorNote: `AI Search Provider: ${data.provider || 'Google Gemini 3.5 Flash Medical Search'}`,
+          details: [
+            `Question Prompt: "${textToAsk.trim()}"`,
+            `Provider Engine: ${data.provider || 'Google Gemini AI'}`,
+            `Query Processed: Real Medical Database & Clinical Search`
+          ]
+        })
       }
     } catch {
       setAiResponse({

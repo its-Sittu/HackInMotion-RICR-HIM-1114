@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const INITIAL_ALARMS = [
   {
@@ -212,12 +213,34 @@ export default function MedicationAlarm() {
 
   // Mark medicine as TAKEN ✅
   const handleMarkTaken = (alarmId) => {
+    const targetMed = alarms.find(a => a.id === alarmId)
+    const takenTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+
     setAlarms(prev => prev.map(item => {
       if (item.id === alarmId) {
-        return { ...item, status: 'TAKEN', takenTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) }
+        return { ...item, status: 'TAKEN', takenTime }
       }
       return item
     }))
+
+    if (targetMed) {
+      saveActivityToMedicalHistory({
+        title: `Medicine Taken: ${targetMed.medicine}`,
+        category: 'Medicines',
+        typeIcon: '💊',
+        status: 'TAKEN ✅',
+        statusBg: '#d1fae5',
+        statusColor: '#059669',
+        summary: `Confirmed dose taken at ${takenTime}. Medicine: ${targetMed.medicine}`,
+        doctorNote: `Dose confirmed by patient. Instruction: ${targetMed.instruction}`,
+        details: [
+          `Medicine: ${targetMed.medicine}`,
+          `Time Scheduled: ${targetMed.time}`,
+          `Food Instruction: ${targetMed.instruction}`,
+          `Status: Dose Taken & Logged ✅`
+        ]
+      })
+    }
 
     if (activeRingingAlarm && activeRingingAlarm.id === alarmId) {
       setActiveRingingAlarm(null)
