@@ -1,338 +1,537 @@
 /* ─── Typography & Core System ──────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
-.landing-screen {
-  position: relative;
+html, body {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  background-color: #fafafc;
+  overflow-x: hidden;
+}
+
+.landing-container {
   width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
   background: #fafafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  user-select: none;
+  color: #0f172a;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
   box-sizing: border-box;
 }
 
-/* ─── Atmospheric Ambient Glows (Matches Reference Lighting) ─── */
-.ambient-glow {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  filter: blur(60px);
+/* ─── Sticky Navbar ────────────────────────────────────────── */
+.landing-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
-.glow-purple {
-  width: 320px;
-  height: 320px;
-  top: -40px;
-  left: -40px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(250, 250, 252, 0) 70%);
+.landing-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.glow-blue {
-  width: 340px;
-  height: 340px;
-  top: -30px;
-  right: -40px;
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.20) 0%, rgba(250, 250, 252, 0) 70%);
-}
-
-.glow-red {
-  width: 300px;
-  height: 300px;
-  bottom: 12%;
-  left: -30px;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.16) 0%, rgba(250, 250, 252, 0) 70%);
-}
-
-.glow-orange {
-  width: 300px;
-  height: 300px;
-  bottom: 14%;
-  right: -30px;
-  background: radial-gradient(circle, rgba(249, 115, 22, 0.16) 0%, rgba(250, 250, 252, 0) 70%);
-}
-
-.glow-green {
-  width: 360px;
-  height: 360px;
-  bottom: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(34, 197, 94, 0.18) 0%, rgba(250, 250, 252, 0) 70%);
-}
-
-/* ─── 3D Medical Organs (100% Transparent, No Boxes/Borders) ─── */
-.organ-frame {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
+.landing-nav-logo-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.organ-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
+.landing-nav-brand {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ── Organ Positions (Exact Reference Composition) ── */
-
-/* 1. Purple Brain (Top-Left) */
-.organ-pos-brain {
-  width: clamp(140px, 36vw, 290px);
-  height: clamp(140px, 36vw, 290px);
-  top: 1%;
-  left: -1%;
-  animation: floatBrain 8s ease-in-out infinite;
+.landing-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-/* 2. Blue Lungs (Top-Right) */
-.organ-pos-lungs {
-  width: clamp(160px, 42vw, 340px);
-  height: clamp(160px, 42vw, 340px);
-  top: 0%;
-  right: -2%;
-  animation: floatLungs 9s ease-in-out infinite 0.5s;
+.landing-nav-link {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #475569;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
 }
 
-/* 3. Red Heart (Mid/Lower-Left) */
-.organ-pos-heart {
-  width: clamp(135px, 35vw, 280px);
-  height: clamp(135px, 35vw, 280px);
-  bottom: 12%;
-  left: -1%;
-  animation: floatHeart 7.5s ease-in-out infinite 1s;
+.landing-nav-link:hover {
+  color: #6366f1;
 }
 
-/* 4. Orange Kidney (Mid/Lower-Right) */
-.organ-pos-kidney {
-  width: clamp(135px, 35vw, 280px);
-  height: clamp(135px, 35vw, 280px);
-  bottom: 14%;
-  right: -1%;
-  animation: floatKidney 8.5s ease-in-out infinite 1.5s;
+.landing-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
 }
 
-/* 5. Green Stomach (Bottom-Center) */
-.organ-pos-stomach {
-  width: clamp(165px, 44vw, 350px);
-  height: clamp(165px, 44vw, 350px);
-  bottom: -4%;
-  left: 50%;
-  transform: translateX(-50%);
-  animation: floatStomach 8s ease-in-out infinite 0.8s;
+.btn-nav-guest {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 0.55rem 1.1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* ── Smooth, Subtle Gentle Floating (Thoda Move) ── */
-@keyframes floatBrain {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(1deg); }
+.btn-nav-guest:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
-@keyframes floatLungs {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-9px) rotate(-1deg); }
+.btn-nav-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  transition: all 0.2s ease;
 }
 
-@keyframes floatHeart {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-7px) scale(1.02); }
+.btn-nav-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
 }
 
-@keyframes floatKidney {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(1.2deg); }
-}
-
-@keyframes floatStomach {
-  0%, 100% { transform: translateX(-50%) translateY(0px); }
-  50% { transform: translateX(-50%) translateY(-8px); }
-}
-
-/* ─── Center Hero Content ────────────────────────────────────── */
-.landing-center-content {
-  position: relative;
-  z-index: 10;
+/* ─── Generic Section Style (5 Sliding Sections) ───────────── */
+.landing-slide-section {
+  width: 100vw;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 0 1.25rem;
-  max-width: 440px;
+  padding: 80px 2rem 40px 2rem;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ─── Brand Mark ─────────────────────────────────────────── */
-.landing-brand {
+/* ─── SECTION 1: HERO SLIDE ────────────────────────────────── */
+.section-hero {
+  background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 60%), #fafafc;
+}
+
+.hero-content-box {
+  max-width: 960px;
+  text-align: center;
+  z-index: 5;
+  margin: auto;
+}
+
+.hero-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 0.45rem 1.1rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #4f46e5;
+  margin-bottom: 1.4rem;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -1px;
+  margin: 0 0 1.2rem 0;
+  background: linear-gradient(135deg, #0f172a 0%, #312e81 60%, #4338ca 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 600;
+  color: #475569;
+  max-width: 760px;
+  margin: 0 auto 2rem auto;
+  line-height: 1.6;
+}
+
+.hero-actions-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
   margin-bottom: 2.5rem;
 }
 
-.landing-brand-icon {
+.btn-hero-cta {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2.2rem;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.25s ease;
+}
+
+.btn-hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(99, 102, 241, 0.5);
+}
+
+.btn-hero-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1.5px solid #cbd5e1;
+  padding: 0.95rem 1.8rem;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+}
+
+.btn-hero-secondary:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* Floating 5-Feature Quick Strip */
+.hero-vitals-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.hero-vital-pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 0.65rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* ─── SECTION 2: WORKFLOW SLIDE (5-STEP WORKFLOW) ──────────── */
+.section-workflow {
+  background: #ffffff;
+}
+
+.section-header-center {
+  text-align: center;
+  max-width: 750px;
+  margin-bottom: 2.8rem;
+}
+
+.section-badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: #eef2ff;
+  padding: 0.3rem 0.85rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.5px;
+}
+
+.section-desc {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.workflow-steps-grid {
+  display: grid;
+  gridTemplateColumns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.workflow-step-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.workflow-step-card:hover {
+  transform: translateY(-4px);
+  background: #ffffff;
+  border-color: #c7d2fe;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
+}
+
+.step-number-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.step-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.step-card-title {
+  fontSize: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.45rem 0;
+}
+
+.step-card-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ─── SECTION 3: FEATURES SUITE SLIDE ──────────────────────── */
+.section-features {
+  background: #f8fafc;
+}
+
+.features-grid-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.4rem;
+  max-width: 1150px;
+  width: 100%;
+}
+
+.feature-suite-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.feature-suite-card:hover {
+  transform: translateY(-4px);
+  border-color: #818cf8;
+  box-shadow: 0 16px 36px rgba(99, 102, 241, 0.12);
+}
+
+.feature-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.feature-icon-box {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+  font-size: 1.45rem;
 }
 
-.landing-brand-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a24;
-  letter-spacing: -0.03em;
+.feature-card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
 }
 
-/* ─── CTA Pill Button (Exact Reference Apple Design) ────────── */
-.hero-cta-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
+.feature-card-text {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.55;
+  margin: 0 0 1.2rem 0;
 }
 
-.btn-continue-guest {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  padding: 0.95rem 2.2rem;
+.feature-card-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  display: inline-block;
+  align-self: flex-start;
+}
+
+/* ─── SECTION 4: ANALYTICS SHOWCASE SLIDE ──────────────────── */
+.section-analytics {
   background: #ffffff;
-  color: #1e1e2d;
-  font-family: inherit;
-  font-size: 1.02rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  border-radius: 999px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  cursor: pointer;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.06),
-    0 4px 12px rgba(99, 102, 241, 0.06);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  outline: none;
 }
 
-.btn-continue-guest:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 14px 35px rgba(0, 0, 0, 0.09),
-    0 6px 16px rgba(99, 102, 241, 0.12);
-  border-color: #cbd5e1;
-  color: #6366f1;
+.analytics-preview-box {
+  max-width: 1050px;
+  width: 100%;
+  background: #fafafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 26px;
+  padding: 2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.04);
 }
 
-.btn-continue-guest:active {
-  transform: translateY(0px) scale(1);
+.analytics-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.6rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.btn-continue-guest svg {
-  transition: transform 0.2s ease;
+.analytics-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.4rem;
 }
 
-.btn-continue-guest:hover svg {
-  transform: translateX(4px);
+.analytics-demo-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 1.4rem;
 }
 
-/* ─── Desktop Optimization ───────────────────────────────────── */
-@media (min-width: 1024px) {
-  .organ-pos-brain {
-    top: 4%;
-    left: 8%;
-  }
-
-  .organ-pos-lungs {
-    top: 3%;
-    right: 8%;
-  }
-
-  .organ-pos-heart {
-    bottom: 8%;
-    left: 10%;
-  }
-
-  .organ-pos-kidney {
-    bottom: 10%;
-    right: 10%;
-  }
-
-  .organ-pos-stomach {
-    bottom: -3%;
-  }
-
-  .landing-center-content {
-    max-width: 500px;
-  }
+/* ─── SECTION 5: FOOTER & CTA SLIDE ────────────────────────── */
+.section-footer {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  color: #ffffff;
 }
 
-/* ─── Mobile Optimization (Exact Phone Reference Composition) ── */
-@media (max-width: 480px) {
-  .landing-screen {
-    padding: 0;
+.cta-banner-box {
+  max-width: 900px;
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.cta-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.5px;
+}
+
+.cta-subtitle {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  max-width: 650px;
+  margin: 0 auto 2.2rem auto;
+  line-height: 1.6;
+}
+
+.landing-footer-bottom {
+  width: 100%;
+  max-width: 1100px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* ─── Animations ────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Responsive Adjustments ────────────────────────────────── */
+@media (max-width: 768px) {
+  .landing-navbar {
+    padding: 0 1.2rem;
   }
 
-  .organ-pos-brain {
-    top: 2%;
-    left: -4%;
+  .landing-slide-section {
+    padding: 90px 1.2rem 40px 1.2rem;
   }
 
-  .organ-pos-lungs {
-    top: 1%;
-    right: -5%;
-  }
-
-  .organ-pos-heart {
-    bottom: 14%;
-    left: -3%;
-  }
-
-  .organ-pos-kidney {
-    bottom: 16%;
-    right: -3%;
-  }
-
-  .organ-pos-stomach {
-    bottom: -2%;
-  }
-
-  .landing-center-content {
-    padding: 0 1.25rem;
-    max-width: 320px;
-  }
-
-  .hero-main-title {
-    font-size: 1.85rem;
-    line-height: 1.18;
-  }
-
-  .hero-sub-title {
-    font-size: 0.86rem;
-    max-width: 260px;
-  }
-
-  .btn-continue-guest {
-    padding: 0.85rem 1.8rem;
-    font-size: 0.95rem;
+  .landing-nav-links {
+    display: none;
   }
 }
