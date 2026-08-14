@@ -1,51 +1,63 @@
 import React, { useState } from 'react'
 
-const BODY_PARTS_FRONT = [
-  { id: 'head', name: 'Head / Brain', icon: '🧠', coords: 'Top Center' },
-  { id: 'neck', name: 'Neck / Throat', icon: '🦒', coords: 'Upper Middle' },
-  { id: 'chest', name: 'Chest / Lungs / Heart', icon: '🫀', coords: 'Chest Region' },
-  { id: 'stomach', name: 'Stomach / Abdomen', icon: '🫄', coords: 'Abdominal Region' },
-  { id: 'right_arm', name: 'Right Arm', icon: '💪', coords: 'Upper Right' },
-  { id: 'right_hand', name: 'Right Hand', icon: '✋', coords: 'Lower Right' },
-  { id: 'left_arm', name: 'Left Arm', icon: '💪', coords: 'Upper Left' },
-  { id: 'left_hand', name: 'Left Hand', icon: '🤚', coords: 'Lower Left' },
-  { id: 'right_leg', name: 'Right Leg', icon: '🦵', coords: 'Leg Right' },
-  { id: 'left_leg', name: 'Left Leg', icon: '🦵', coords: 'Leg Left' }
-]
-
-const BODY_PARTS_BACK = [
-  { id: 'head_back', name: 'Head / Occipital', icon: '🧠', coords: 'Upper Back Head' },
-  { id: 'neck_back', name: 'Upper Spine / Neck', icon: '🦴', coords: 'Cervical Spine' },
-  { id: 'upper_back', name: 'Upper Back / Shoulders', icon: '🪨', coords: 'Thoracic Region' },
-  { id: 'lower_back', name: 'Lower Back / Lumbar', icon: '⚡', coords: 'Lumbar Region' },
-  { id: 'glutes', name: 'Hip / Glutes', icon: '🦵', coords: 'Pelvic Region' },
-  { id: 'right_leg_back', name: 'Right Calf / Hamstring', icon: '🦵', coords: 'Lower Right Back' },
-  { id: 'left_leg_back', name: 'Left Calf / Hamstring', icon: '🦵', coords: 'Lower Left Back' }
-]
+// Body parts definition for SVG Interactive Mannequin
+const BODY_PARTS_CONFIG = {
+  front: [
+    { id: 'head', label: 'Head / Brain', type: 'circle', cx: 150, cy: 52, r: 26 },
+    { id: 'neck', label: 'Neck / Throat', type: 'rect', x: 141, y: 80, width: 18, height: 16, rx: 4 },
+    { id: 'chest', label: 'Chest / Lungs / Heart', type: 'polygon', points: '118,98 182,98 176,155 124,155' },
+    { id: 'stomach', label: 'Stomach / Abdomen', type: 'polygon', points: '124,158 176,158 171,215 129,215' },
+    { id: 'pelvis', label: 'Pelvis / Hips', type: 'polygon', points: '129,218 171,218 176,252 124,252' },
+    { id: 'right_arm_upper', label: 'Right Arm', type: 'polygon', points: '88,102 114,99 104,162 80,162' },
+    { id: 'right_arm_lower', label: 'Right Hand', type: 'polygon', points: '78,165 102,165 92,228 70,228' },
+    { id: 'left_arm_upper', label: 'Left Arm', type: 'polygon', points: '186,99 212,102 220,162 196,162' },
+    { id: 'left_arm_lower', label: 'Left Hand', type: 'polygon', points: '198,165 222,165 230,228 208,228' },
+    { id: 'right_leg_upper', label: 'Right Leg (Thigh)', type: 'polygon', points: '127,255 147,255 144,350 126,350' },
+    { id: 'right_leg_lower', label: 'Right Foot', type: 'polygon', points: '126,353 144,353 142,440 122,440' },
+    { id: 'left_leg_upper', label: 'Left Leg (Thigh)', type: 'polygon', points: '153,255 173,255 174,350 156,350' },
+    { id: 'left_leg_lower', label: 'Left Foot', type: 'polygon', points: '156,353 174,353 178,440 158,440' }
+  ],
+  back: [
+    { id: 'head_back', label: 'Head / Occipital', type: 'circle', cx: 150, cy: 52, r: 26 },
+    { id: 'neck_back', label: 'Upper Spine / Neck', type: 'rect', x: 141, y: 80, width: 18, height: 16, rx: 4 },
+    { id: 'upper_back', label: 'Upper Back / Shoulders', type: 'polygon', points: '118,98 182,98 176,155 124,155' },
+    { id: 'lower_back', label: 'Lower Back / Lumbar', type: 'polygon', points: '124,158 176,158 171,215 129,215' },
+    { id: 'glutes', label: 'Glutes / Hips', type: 'polygon', points: '129,218 171,218 176,252 124,252' },
+    { id: 'right_arm_back', label: 'Right Shoulder / Arm', type: 'polygon', points: '88,102 114,99 104,162 80,162' },
+    { id: 'right_hand_back', label: 'Right Hand Back', type: 'polygon', points: '78,165 102,165 92,228 70,228' },
+    { id: 'left_arm_back', label: 'Left Shoulder / Arm', type: 'polygon', points: '186,99 212,102 220,162 196,162' },
+    { id: 'left_hand_back', label: 'Left Hand Back', type: 'polygon', points: '198,165 222,165 230,228 208,228' },
+    { id: 'right_leg_back', label: 'Right Hamstring', type: 'polygon', points: '127,255 147,255 144,350 126,350' },
+    { id: 'right_calf', label: 'Right Calf / Ankle', type: 'polygon', points: '126,353 144,353 142,440 122,440' },
+    { id: 'left_leg_back', label: 'Left Hamstring', type: 'polygon', points: '153,255 173,255 174,350 156,350' },
+    { id: 'left_calf', label: 'Left Calf / Ankle', type: 'polygon', points: '156,353 174,353 178,440 158,440' }
+  ]
+}
 
 export default function SymptomChecker() {
   const [viewMode, setViewMode] = useState('front') // 'front' | 'back'
-  const [selectedParts, setSelectedParts] = useState(['Right Arm', 'Right Hand'])
+  const [selectedParts, setSelectedParts] = useState(['Left Arm', 'Left Hand'])
   const [description, setDescription] = useState('')
   const [reportFile, setReportFile] = useState(null)
 
   const [loading, setLoading] = useState(false)
   const [analysisResult, setAnalysisResult] = useState(null)
+  const [hoveredPart, setHoveredPart] = useState(null)
 
-  const currentPartsList = viewMode === 'front' ? BODY_PARTS_FRONT : BODY_PARTS_BACK
+  const activePartsList = BODY_PARTS_CONFIG[viewMode]
 
-  const toggleBodyPart = (partName) => {
+  const togglePart = (label) => {
     setSelectedParts(prev => {
-      if (prev.includes(partName)) {
-        return prev.filter(p => p !== partName)
+      if (prev.includes(label)) {
+        return prev.filter(p => p !== label)
       } else {
-        return [...prev, partName]
+        return [...prev, label]
       }
     })
   }
 
-  const removePart = (partName) => {
-    setSelectedParts(prev => prev.filter(p => p !== partName))
+  const removePart = (label) => {
+    setSelectedParts(prev => prev.filter(p => p !== label))
   }
 
   const handleRunAnalysis = async () => {
@@ -93,185 +105,109 @@ export default function SymptomChecker() {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        .body-part-shape {
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        .body-part-shape:hover {
+          filter: drop-shadow(0 0 10px #38bdf8);
+          opacity: 0.9;
+        }
       `}</style>
 
-      {/* ── ULTRA-EXECUTIVE HERO BANNER ───────────────────────────────────── */}
-      <div style={{
-        background: 'linear-gradient(135deg, #090d16 0%, #111827 40%, #064e3b 100%)',
-        borderRadius: '22px',
-        padding: '1.8rem 2rem',
-        marginBottom: '1.6rem',
-        color: '#ffffff',
-        boxShadow: '0 20px 50px -15px rgba(15, 23, 42, 0.6)',
-        position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%)',
-          pointerEvents: 'none'
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                width: '50px',
-                height: '50px',
-                borderRadius: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justify: 'center',
-                fontSize: '1.45rem',
-                boxShadow: '0 8px 20px rgba(16, 185, 129, 0.35)',
-                flexShrink: 0,
-                marginTop: '0.1rem'
-              }}>
-                🩺
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.3rem' }}>
-                  <span style={{
-                    color: '#34d399',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    letterSpacing: '1.2px',
-                    textTransform: 'uppercase'
-                  }}>
-                    Interactive Clinical Diagnostic Engine
-                  </span>
-
-                  <span style={{
-                    backgroundColor: 'rgba(52, 211, 153, 0.15)',
-                    color: '#34d399',
-                    border: '1px solid rgba(52, 211, 153, 0.35)',
-                    padding: '0.18rem 0.6rem',
-                    borderRadius: '20px',
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem'
-                  }}>
-                    <span style={{ width: '6px', height: '6px', backgroundColor: '#34d399', borderRadius: '50%', display: 'inline-block', animation: 'pulseDot 1.8s infinite' }} />
-                    100% PROBABILITY ENGINE
-                  </span>
-                </div>
-
-                <h1 style={{
-                  fontSize: '1.7rem',
-                  fontWeight: 800,
-                  margin: 0,
-                  letterSpacing: '-0.5px',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>
-                  Body Map Symptom & Clinical Analyzer
-                </h1>
-              </div>
-            </div>
-
-            {/* Selected Count Indicator */}
-            <div style={{
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid rgba(52, 211, 153, 0.3)',
-              borderRadius: '14px',
-              padding: '0.5rem 0.95rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              <span style={{ fontSize: '0.9rem' }}>🎯</span>
-              <span style={{ fontSize: '0.82rem', color: '#a7f3d0', fontWeight: 700 }}>
-                {selectedParts.length} Body Area{selectedParts.length !== 1 ? 's' : ''} Selected
-              </span>
-            </div>
-          </div>
-
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0, maxWidth: '760px', lineHeight: 1.5 }}>
-            Select affected body regions on the interactive map, describe your symptoms, and receive an AI clinical analysis broken down into <strong>Top 5 expected causes totaling 100% probability</strong>.
-          </p>
-        </div>
-      </div>
-
-      {/* ── MAIN 2-COLUMN LAYOUT: BODY MAP (LEFT) & SYMPTOM FORM (RIGHT) ────── */}
+      {/* ── MAIN 2-COLUMN LAYOUT ────────────────────────────────────────── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(430px, 1fr))',
         gap: '1.6rem',
         marginBottom: '1.8rem',
         alignItems: 'stretch'
       }}>
 
-        {/* ── LEFT PANEL: INTERACTIVE BODY MAP ──────────────────────────── */}
+        {/* ── LEFT PANEL: IDENTICAL SVG HUMAN BODY MANNEQUIN MAP ───────── */}
         <div style={{
-          backgroundColor: '#090d16',
-          borderRadius: '22px',
+          backgroundColor: '#0b101d',
+          borderRadius: '24px',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           padding: '1.6rem',
-          boxShadow: '0 12px 35px rgba(0,0,0,0.2)',
+          boxShadow: '0 16px 45px rgba(0,0,0,0.4)',
           display: 'flex',
           flexDirection: 'column',
           justify: 'space-between',
-          color: '#ffffff'
+          color: '#ffffff',
+          position: 'relative'
         }}>
           <div>
-            {/* Header & View Mode Switcher */}
+            {/* Header Row: Body Map Title & Badge on Left, View Switcher on Center/Right */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <div>
-                <h3 style={{ margin: '0 0 0.2rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>
+                <h3 style={{ margin: '0 0 0.15rem 0', fontSize: '1.35rem', fontWeight: 800, color: '#10b981', letterSpacing: '-0.3px' }}>
                   Body Map
                 </h3>
                 <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 500 }}>
-                  {viewMode === 'front' ? 'Front View' : 'Back View'} • Tap to Select Area
+                  Front/Back View • Select Area
                 </span>
               </div>
 
-              {/* View Switcher Pills */}
+              {/* Top Right Counter Pill */}
+              <div style={{
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                borderRadius: '20px',
+                padding: '0.35rem 0.85rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.78rem',
+                color: '#34d399',
+                fontWeight: 700
+              }}>
+                <span>✓</span>
+                <span>{selectedParts.length} Selected</span>
+              </div>
+            </div>
+
+            {/* Front View / Back View Switcher Pills */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
               <div style={{
                 display: 'inline-flex',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                padding: '0.2rem',
-                borderRadius: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                padding: '0.28rem',
+                borderRadius: '14px',
                 border: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <button
                   type="button"
                   onClick={() => setViewMode('front')}
                   style={{
-                    padding: '0.4rem 0.85rem',
-                    borderRadius: '9px',
+                    padding: '0.5rem 1.3rem',
+                    borderRadius: '10px',
                     border: 'none',
-                    fontSize: '0.78rem',
+                    fontSize: '0.84rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    backgroundColor: viewMode === 'front' ? '#10b981' : 'transparent',
-                    color: viewMode === 'front' ? '#ffffff' : '#cbd5e1',
+                    backgroundColor: viewMode === 'front' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
+                    color: viewMode === 'front' ? '#34d399' : '#94a3b8',
+                    borderLeft: viewMode === 'front' ? '2px solid #10b981' : 'none',
                     transition: 'all 0.2s ease'
                   }}
                 >
                   Front View
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setViewMode('back')}
                   style={{
-                    padding: '0.4rem 0.85rem',
-                    borderRadius: '9px',
+                    padding: '0.5rem 1.3rem',
+                    borderRadius: '10px',
                     border: 'none',
-                    fontSize: '0.78rem',
+                    fontSize: '0.84rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    backgroundColor: viewMode === 'back' ? '#10b981' : 'transparent',
-                    color: viewMode === 'back' ? '#ffffff' : '#cbd5e1',
+                    backgroundColor: viewMode === 'back' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
+                    color: viewMode === 'back' ? '#34d399' : '#94a3b8',
+                    borderLeft: viewMode === 'back' ? '2px solid #10b981' : 'none',
                     transition: 'all 0.2s ease'
                   }}
                 >
@@ -280,104 +216,174 @@ export default function SymptomChecker() {
               </div>
             </div>
 
-            {/* 2D Anatomy Map Grid with Interactive Glowing Body Regions */}
+            {/* ── IDENTICAL SVG ANATOMICAL MANNEQUIN CANVAS ──────────────────── */}
             <div style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.6)',
-              borderRadius: '18px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              padding: '1.2rem',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '0.8rem',
-              minHeight: '340px',
-              alignContent: 'center'
+              display: 'flex',
+              justify: 'center',
+              alignItems: 'center',
+              position: 'relative',
+              padding: '1rem 0'
             }}>
-              {currentPartsList.map(part => {
-                const isSelected = selectedParts.includes(part.name)
-                return (
-                  <button
-                    key={part.id}
-                    type="button"
-                    onClick={() => toggleBodyPart(part.name)}
-                    style={{
-                      backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-                      border: isSelected ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '14px',
-                      padding: '0.75rem 0.9rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justify: 'space-between',
-                      cursor: 'pointer',
-                      boxShadow: isSelected ? '0 0 16px rgba(16, 185, 129, 0.35)' : 'none',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{part.icon}</span>
-                      <div style={{ textAlign: 'left' }}>
-                        <span style={{
-                          display: 'block',
-                          fontSize: '0.84rem',
-                          fontWeight: isSelected ? 800 : 600,
-                          color: isSelected ? '#34d399' : '#f1f5f9'
-                        }}>
-                          {part.name}
-                        </span>
-                        <span style={{ fontSize: '0.68rem', color: '#64748b' }}>{part.coords}</span>
-                      </div>
-                    </div>
+              {/* Outer Cyan Glowing Body Aura */}
+              <div style={{
+                position: 'absolute',
+                width: '180px',
+                height: '380px',
+                background: 'radial-gradient(ellipse at center, rgba(56, 189, 248, 0.12) 0%, transparent 70%)',
+                pointerEvents: 'none'
+              }} />
 
-                    {isSelected && (
-                      <span style={{
-                        backgroundColor: '#10b981',
-                        color: '#ffffff',
-                        fontSize: '0.65rem',
-                        fontWeight: 900,
-                        padding: '0.18rem 0.45rem',
-                        borderRadius: '6px',
-                        letterSpacing: '0.5px'
-                      }}>
-                        SELECTED
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
+              <svg
+                width="300"
+                height="460"
+                viewBox="0 0 300 460"
+                style={{ overflow: 'visible' }}
+              >
+                {/* Outer Faint Anatomical Body Silhouette Outline */}
+                <g opacity="0.15" stroke="#38bdf8" strokeWidth="2" fill="none">
+                  <circle cx="150" cy="52" r="32" />
+                  <path d="M 115,95 Q 150,85 185,95 L 225,160 L 235,230 L 205,230 L 195,165 L 178,250 L 180,350 L 180,445 L 155,445 L 150,260 L 145,445 L 120,445 L 120,350 L 122,250 L 105,165 L 95,230 L 65,230 L 75,160 Z" />
+                </g>
+
+                {/* Interactive Body Parts Polygons & Shapes */}
+                {activePartsList.map((part) => {
+                  const isSelected = selectedParts.includes(part.label)
+
+                  const fillColor = isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.04)'
+                  const strokeColor = isSelected ? '#34d399' : 'rgba(255, 255, 255, 0.2)'
+                  const strokeWidth = isSelected ? 2.5 : 1.5
+                  const filterStyle = isSelected ? 'drop-shadow(0 0 12px #10b981)' : 'none'
+
+                  return (
+                    <g key={part.id} onClick={() => togglePart(part.label)} className="body-part-shape">
+                      {part.type === 'circle' && (
+                        <circle
+                          cx={part.cx}
+                          cy={part.cy}
+                          r={part.r}
+                          fill={fillColor}
+                          stroke={strokeColor}
+                          strokeWidth={strokeWidth}
+                          style={{ filter: filterStyle }}
+                          onMouseEnter={() => setHoveredPart(part.label)}
+                          onMouseLeave={() => setHoveredPart(null)}
+                        />
+                      )}
+
+                      {part.type === 'rect' && (
+                        <rect
+                          x={part.x}
+                          y={part.y}
+                          width={part.width}
+                          height={part.height}
+                          rx={part.rx}
+                          fill={fillColor}
+                          stroke={strokeColor}
+                          strokeWidth={strokeWidth}
+                          style={{ filter: filterStyle }}
+                          onMouseEnter={() => setHoveredPart(part.label)}
+                          onMouseLeave={() => setHoveredPart(null)}
+                        />
+                      )}
+
+                      {part.type === 'polygon' && (
+                        <polygon
+                          points={part.points}
+                          fill={fillColor}
+                          stroke={strokeColor}
+                          strokeWidth={strokeWidth}
+                          style={{ filter: filterStyle }}
+                          onMouseEnter={() => setHoveredPart(part.label)}
+                          onMouseLeave={() => setHoveredPart(null)}
+                        />
+                      )}
+
+                      {/* FLOATING NEON "SELECTED" BADGE ON SELECTED SEGMENTS */}
+                      {isSelected && (
+                        <g transform={`translate(${
+                          part.id.includes('left_arm') ? 228 :
+                          part.id.includes('right_arm') ? 35 :
+                          part.id.includes('chest') ? 185 :
+                          part.id.includes('stomach') ? 180 : 185
+                        }, ${
+                          part.id.includes('upper') || part.id.includes('arm') ? (part.cy || 130) :
+                          part.id.includes('lower') || part.id.includes('hand') ? 195 :
+                          part.id.includes('head') ? 45 : 175
+                        })`}>
+                          <rect
+                            x="0"
+                            y="0"
+                            width="58"
+                            height="18"
+                            rx="4"
+                            fill="#10b981"
+                            stroke="#34d399"
+                            strokeWidth="1"
+                            style={{ filter: 'drop-shadow(0 2px 8px rgba(16, 185, 129, 0.6))' }}
+                          />
+                          <text
+                            x="29"
+                            y="12"
+                            fill="#ffffff"
+                            fontSize="8.5"
+                            fontWeight="900"
+                            textAnchor="middle"
+                            letterSpacing="0.8"
+                          >
+                            SELECTED
+                          </text>
+                        </g>
+                      )}
+                    </g>
+                  )
+                })}
+              </svg>
+            </div>
+
+            {/* Hover Tooltip display */}
+            <div style={{ textAlign: 'center', height: '24px', marginTop: '0.4rem' }}>
+              {hoveredPart && (
+                <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 700 }}>
+                  👉 Click to toggle: {hoveredPart}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Tip Note */}
+          {/* Bottom Tip Callout Box */}
           <div style={{
             marginTop: '1.2rem',
-            paddingTop: '0.8rem',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
+            padding: '0.85rem 1rem',
+            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
+            borderRadius: '14px',
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
+            alignItems: 'flex-start',
+            gap: '0.6rem'
           }}>
-            <span style={{ fontSize: '1rem', color: '#38bdf8' }}>ℹ️</span>
-            <span style={{ fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.4 }}>
-              <strong>Tip:</strong> Tap any body area above to toggle selection. Multiple areas can be selected simultaneously for comprehensive clinical assessment.
+            <span style={{ fontSize: '1rem', color: '#38bdf8', flexShrink: 0, marginTop: '0.1rem' }}>ℹ️</span>
+            <span style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45 }}>
+              <strong style={{ color: '#38bdf8' }}>Tip:</strong> Click directly on any body segment above (Head, Chest, Arms, Legs). Selected parts will glow green with a <strong>SELECTED</strong> badge.
             </span>
           </div>
         </div>
 
-        {/* ── RIGHT PANEL: SYMPTOM INPUT FORM ───────────────────────────── */}
+        {/* ── RIGHT PANEL: SYMPTOMS & DIAGNOSTIC FORM ───────────────────── */}
         <div style={{
           backgroundColor: '#ffffff',
-          borderRadius: '22px',
+          borderRadius: '24px',
           border: '1px solid #e2e8f0',
-          padding: '1.6rem',
+          padding: '1.8rem',
           boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
           display: 'flex',
           flexDirection: 'column',
           justify: 'space-between'
         }}>
           <div>
-            {/* 1. AFFECTED AREAS CHIPS */}
+            {/* 1. AFFECTED AREAS */}
             <div style={{ marginBottom: '1.4rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
-                1. Affected Areas Selected
+              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
+                1. Affected Areas
               </label>
 
               <div style={{
@@ -398,8 +404,8 @@ export default function SymptomChecker() {
                       color: '#059669',
                       border: '1px solid #a7f3d0',
                       borderRadius: '10px',
-                      padding: '0.3rem 0.7rem',
-                      fontSize: '0.82rem',
+                      padding: '0.32rem 0.75rem',
+                      fontSize: '0.84rem',
                       fontWeight: 700,
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -426,20 +432,20 @@ export default function SymptomChecker() {
                   ))
                 ) : (
                   <span style={{ fontSize: '0.84rem', color: '#94a3b8', fontStyle: 'italic' }}>
-                    No body region selected. Tap areas on the Body Map left.
+                    No body region selected. Click segments on the Body Map left.
                   </span>
                 )}
               </div>
             </div>
 
-            {/* 2. SYMPTOMS / ALLERGIES DESCRIPTION TEXTAREA */}
+            {/* 2. SYMPTOMS / ALLERGIES */}
             <div style={{ marginBottom: '1.4rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
-                2. Symptoms / Pain Description / Allergies
+              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
+                2. Symptoms / Allergies
               </label>
 
               <textarea
-                placeholder="Describe your symptoms in detail e.g. Sharp throbbing pain after eating, duration (2 days), severity (scale 1-10), or food allergies..."
+                placeholder="Describe your pain, swelling, duration, or allergies e.g. Pain in arm and shoulder for 2 days..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={5}
@@ -449,7 +455,7 @@ export default function SymptomChecker() {
                   border: '1.5px solid #10b981',
                   backgroundColor: '#ffffff',
                   padding: '0.85rem 1rem',
-                  fontSize: '0.92rem',
+                  fontSize: '0.94rem',
                   fontWeight: 500,
                   color: '#0f172a',
                   outline: 'none',
@@ -461,34 +467,33 @@ export default function SymptomChecker() {
               />
             </div>
 
-            {/* 3. UPLOAD PHOTO OR REPORT (PDF) DROPZONE */}
+            {/* 3. UPLOAD PHOTO OR REPORT (PDF) */}
             <div style={{ marginBottom: '1.4rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
-                3. Upload Photo or Medical Report (PDF / Optional)
+              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.6rem' }}>
+                3. Upload Photo or Report (PDF)
               </label>
 
               <div style={{
                 border: '2px dashed #cbd5e1',
                 borderRadius: '14px',
                 backgroundColor: '#f8fafc',
-                padding: '1.1rem',
+                padding: '1.2rem',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}>
-                <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.3rem' }}>📤</span>
-                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#334155', display: 'block' }}>
-                  {reportFile ? `Attached: ${reportFile.name}` : 'Click to attach Lab Report (PDF) or Skin Photo'}
+                <span style={{ fontSize: '1.6rem', display: 'block', marginBottom: '0.3rem' }}>📤</span>
+                <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#334155', display: 'block' }}>
+                  {reportFile ? `Attached: ${reportFile.name}` : 'Click to upload Photo or PDF'}
                 </span>
-                <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                  Supports PNG, JPG, PDF up to 10MB
+                <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                  Attach clear photos of skin issues or medical lab reports
                 </span>
                 <input
                   type="file"
                   accept="image/*,.pdf"
                   onChange={(e) => setReportFile(e.target.files[0] || null)}
                   style={{ display: 'none' }}
-                  id="report-file-upload"
                 />
               </div>
             </div>
@@ -501,16 +506,16 @@ export default function SymptomChecker() {
             disabled={loading || (selectedParts.length === 0 && !description.trim())}
             style={{
               width: '100%',
-              height: '48px',
+              height: '50px',
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               color: '#ffffff',
               border: 'none',
               borderRadius: '14px',
-              fontSize: '0.94rem',
+              fontSize: '0.96rem',
               fontWeight: 800,
               cursor: loading || (selectedParts.length === 0 && !description.trim()) ? 'not-allowed' : 'pointer',
               opacity: loading || (selectedParts.length === 0 && !description.trim()) ? 0.6 : 1,
-              boxShadow: '0 8px 22px rgba(16, 185, 129, 0.3)',
+              boxShadow: '0 8px 22px rgba(16, 185, 129, 0.35)',
               display: 'inline-flex',
               alignItems: 'center',
               justify: 'center',
@@ -519,7 +524,7 @@ export default function SymptomChecker() {
             }}
           >
             <span>⚡</span>
-            <span>{loading ? 'Running AI Clinical Diagnostic...' : 'Run Clinical Analysis >'}</span>
+            <span>{loading ? 'Evaluating Symptoms...' : 'Run Clinical Analysis >'}</span>
           </button>
         </div>
       </div>
