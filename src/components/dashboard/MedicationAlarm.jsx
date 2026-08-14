@@ -69,48 +69,62 @@ export default function MedicationAlarm() {
   const openTimePickerModal = (alarm) => {
     setModifyModalAlarm(alarm)
 
-    // Parse existing time string e.g. "08:00 AM"
     try {
+      // Parse existing time string e.g. "14:30" or "08:00 AM"
       const parts = alarm.time.split(' ')
+      let hStr = '08'
+      let mStr = '00'
+
       if (parts.length === 2) {
+        // 12h format e.g. "02:30 PM"
         const [h, m] = parts[0].split(':')
-        setPickerHour(String(h).padStart(2, '0'))
-        setPickerMinute(String(m).padStart(2, '0'))
-        setPickerAmpm(parts[1].toUpperCase())
+        let hNum = parseInt(h, 10)
+        if (parts[1].toUpperCase() === 'PM' && hNum < 12) hNum += 12
+        if (parts[1].toUpperCase() === 'AM' && hNum === 12) hNum = 0
+        hStr = String(hNum).padStart(2, '0')
+        mStr = String(m).padStart(2, '0')
       } else {
-        const now = new Date()
-        const hours = now.getHours()
-        setPickerHour(String(hours % 12 === 0 ? 12 : hours % 12).padStart(2, '0'))
-        setPickerMinute(String(now.getMinutes()).padStart(2, '0'))
-        setPickerAmpm(hours >= 12 ? 'PM' : 'AM')
+        const [h, m] = alarm.time.split(':')
+        if (h && m) {
+          hStr = String(parseInt(h, 10)).padStart(2, '0')
+          mStr = String(parseInt(m, 10)).padStart(2, '0')
+        } else {
+          const now = new Date()
+          hStr = String(now.getHours()).padStart(2, '0')
+          mStr = String(now.getMinutes()).padStart(2, '0')
+        }
       }
+
+      setPickerHour(hStr)
+      setPickerMinute(mStr)
     } catch {
-      setPickerHour('08')
-      setPickerMinute('00')
-      setPickerAmpm('AM')
+      const now = new Date()
+      setPickerHour(String(now.getHours()).padStart(2, '0'))
+      setPickerMinute(String(now.getMinutes()).padStart(2, '0'))
     }
   }
 
-
-
-  // Save selected phone alarm time
+  // Save selected phone alarm time (24-Hour Format: 00 to 23)
   const handleSavePickerTime = () => {
     if (!modifyModalAlarm) return
 
-    const formattedTimeStr = `${pickerHour}:${pickerMinute} ${pickerAmpm}`
+    const hNum = parseInt(pickerHour, 10)
+    const mNum = parseInt(pickerMinute, 10)
 
     // Calculate period
-    let h24 = parseInt(pickerHour, 10)
-    if (pickerAmpm === 'PM' && h24 < 12) h24 += 12
-    if (pickerAmpm === 'AM' && h24 === 12) h24 = 0
+    const period = hNum < 12 ? 'Subah (Morning)' : hNum < 17 ? 'Dopahar (Afternoon)' : hNum < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
 
-    const period = h24 < 12 ? 'Subah (Morning)' : h24 < 17 ? 'Dopahar (Afternoon)' : h24 < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
+    // Display formatted time (e.g. 14:30 or 08:00 AM)
+    const ampm = hNum >= 12 ? 'PM' : 'AM'
+    const displayHour = hNum % 12 === 0 ? 12 : hNum % 12
+    const formatted12h = `${String(displayHour).padStart(2, '0')}:${String(mNum).padStart(2, '0')} ${ampm}`
 
     setAlarms(prev => prev.map(item => {
       if (item.id === modifyModalAlarm.id) {
         return {
           ...item,
-          time: formattedTimeStr,
+          time: formatted12h,
+          time24: `${pickerHour}:${pickerMinute}`,
           period,
           status: 'ACTIVE', // Re-activate so sound triggers at exact new time!
           takenTime: null
@@ -133,7 +147,6 @@ export default function MedicationAlarm() {
         ctx.resume()
       }
 
-      // Harmonic Crystal Chime Frequencies (E5, G#5, B5, E6)
       const notes = [659.25, 830.61, 987.77, 1318.51]
       const startTime = ctx.currentTime
 
@@ -170,10 +183,16 @@ export default function MedicationAlarm() {
       const ampm = hours >= 12 ? 'PM' : 'AM'
       const formattedHours = hours % 12 === 0 ? 12 : hours % 12
       const formattedMinutes = String(minutes).padStart(2, '0')
-      const formattedTimeStr = `${String(formattedHours).padStart(2, '0')}:${formattedMinutes} ${ampm}`
+      const formatted12h = `${String(formattedHours).padStart(2, '0')}:${formattedMinutes} ${ampm}`
+      const formatted24h = `${String(hours).padStart(2, '0')}:${formattedMinutes}`
 
       alarms.forEach(alarm => {
-        if (alarm.status === 'ACTIVE' && alarm.time.toUpperCase() === formattedTimeStr.toUpperCase()) {
+        const isMatch = alarm.status === 'ACTIVE' && (
+          alarm.time.toUpperCase() === formatted12h.toUpperCase() ||
+          (alarm.time24 && alarm.time24 === formatted24h)
+        )
+
+        if (isMatch) {
           if (!activeRingingAlarm || activeRingingAlarm.id !== alarm.id) {
             setActiveRingingAlarm(alarm)
           }
@@ -620,9 +639,9 @@ export default function MedicationAlarm() {
                     cursor: 'pointer'
                   }}
                 >
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const val = String(i + 1).padStart(2, '0')
-                    return <option key={val} value={val}>{val}</option>
+                  {Array.from({ length: 24 }).map((_, i) => {
+                    const val = String(i).padStart(2, '0')
+                    return <option key={val} value={val}>{val} ({i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`})</option>
                   })}
                 </select>
               </div>
@@ -653,48 +672,6 @@ export default function MedicationAlarm() {
                     return <option key={val} value={val}>{val}</option>
                   })}
                 </select>
-              </div>
-
-              {/* AM / PM Toggle Pill */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>AM / PM</span>
-                <div style={{ display: 'flex', backgroundColor: '#e2e8f0', borderRadius: '12px', padding: '0.2rem' }}>
-                  <button
-                    type="button"
-                    onClick={() => setPickerAmpm('AM')}
-                    style={{
-                      border: 'none',
-                      borderRadius: '10px',
-                      backgroundColor: pickerAmpm === 'AM' ? '#6366f1' : 'transparent',
-                      color: pickerAmpm === 'AM' ? '#ffffff' : '#475569',
-                      fontWeight: 800,
-                      padding: '0.5rem 0.75rem',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    AM
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPickerAmpm('PM')}
-                    style={{
-                      border: 'none',
-                      borderRadius: '10px',
-                      backgroundColor: pickerAmpm === 'PM' ? '#6366f1' : 'transparent',
-                      color: pickerAmpm === 'PM' ? '#ffffff' : '#475569',
-                      fontWeight: 800,
-                      padding: '0.5rem 0.75rem',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    PM
-                  </button>
-                </div>
               </div>
             </div>
 
