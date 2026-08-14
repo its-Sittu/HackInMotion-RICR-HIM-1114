@@ -1,33 +1,40 @@
 /* ─── Google Fonts ──────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
-/* ─── Reset & Global ─────────────────────────────────────────── */
+/* ─── Reset & Global Cinematic Linear Gradient Theme System ─────────────── */
 :root {
-  --text: #64748b;
-  --text-h: #0f172a;
-  --bg: #f1f5f9;
-  --border: #e2e8f0;
-  --accent: #6366f1;
-  --accent-soft: rgba(99, 102, 241, 0.08);
-  --accent-border: rgba(99, 102, 241, 0.15);
-  --card-bg: #ffffff;
-  --sidebar-bg: #ffffff;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
+  --text: #cbd5e1;
+  --text-h: #ffffff;
+  --bg: linear-gradient(135deg, #0a0f1d 0%, #0f172a 35%, #1e1b4b 70%, #090d16 100%);
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --accent-border: rgba(56, 189, 248, 0.25);
+  --card-bg: rgba(15, 23, 42, 0.82);
+  --sidebar-bg: rgba(15, 23, 42, 0.92);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 25px 65px rgba(0, 0, 0, 0.65);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
 
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   color: var(--text);
   background: var(--bg);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body { margin: 0; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0f1d 0%, #0f172a 35%, #1e1b4b 70%, #090d16 100%) !important;
+  background-attachment: fixed !important;
+  color: #f8fafc;
+}
 
 #root {
   width: 100%;
@@ -43,4 +50,4 @@ body { margin: 0; }
 
 *, *::before, *::after { box-sizing: border-box; }
 p { margin: 0; }
-h1, h2, h3, h4 { margin: 0; font-weight: 700; color: var(--text-h); }
+h1, h2, h3, h4 { margin: 0; font-weight: 800; color: #ffffff; }
