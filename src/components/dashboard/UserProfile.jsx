@@ -19,6 +19,7 @@ export default function UserProfile() {
   const [savedSuccess, setSavedSuccess] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [passwordMsg, setPasswordMsg] = useState('')
+  const [profileValid] = useState(true)
 
   const handleChange = (e) => {
     const { name, value } = e.target
