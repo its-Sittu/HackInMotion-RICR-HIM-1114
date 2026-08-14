@@ -244,8 +244,7 @@ export const sendEmergencySms = async (phone, message) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          route: 'v3',
-          sender_id: 'TXTIND',
+          route: 'q',
           message: message,
           language: 'english',
           flash: 0,
