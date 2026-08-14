@@ -1,11 +1,82 @@
-/* ─── Dashboard Overall Layout ──────────────────────────────── */
+/* ─── Day (Light) Mode vs Black (Dark) Mode Live System ────────── */
+body.light-theme {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .dash-layout {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .medisafe-sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .sidebar-brand-row .brand-name {
+  color: #0f172a !important;
+}
+
+body.light-theme .nav-item-btn {
+  color: #475569 !important;
+}
+
+body.light-theme .nav-item-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .nav-item-btn.active {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(6, 182, 212, 0.12) 100%) !important;
+  color: #0284c7 !important;
+}
+
+body.light-theme .dash-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme .dash-card,
+body.light-theme .auth-card {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07) !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .dash-card-title,
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4,
+body.light-theme .auth-title,
+body.light-theme .auth-label {
+  color: #0f172a !important;
+}
+
+body.light-theme p,
+body.light-theme span {
+  color: #334155;
+}
+
+body.light-theme .auth-input {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .auth-input::placeholder {
+  color: #94a3b8 !important;
+}
+
 .dash-layout {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: #f8faff;
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #1e293b;
+  background: #0b0f19;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  color: #f8fafc;
 }
 
 /* ─── Sidebar Styling ────────────────────────────────────────── */

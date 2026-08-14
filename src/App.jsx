@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -6,6 +7,17 @@ import AuthPage from './pages/AuthPage'
 import DashboardPage from './pages/DashboardPage'
 
 function App() {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('medisafe_theme_mode') || 'dark'
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme')
+      document.body.classList.remove('dark-theme')
+    } else {
+      document.body.classList.add('dark-theme')
+      document.body.classList.remove('light-theme')
+    }
+  }, [])
+
   return (
     <AuthProvider>
       <BrowserRouter>
