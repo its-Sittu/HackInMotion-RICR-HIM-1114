@@ -4,8 +4,7 @@ const INITIAL_ALARMS = [
   {
     id: 'alarm-1',
     medicine: 'Pantocid 40mg (Pantoprazole)',
-    time: '08:00 AM',
-    period: 'Subah (Morning)',
+    time: '08:00',
     instruction: 'Pre-Breakfast (Khali Pet 30 mins before food)',
     status: 'ACTIVE', // 'ACTIVE' | 'TAKEN' | 'SNOOZED'
     color: '#6366f1'
@@ -13,8 +12,7 @@ const INITIAL_ALARMS = [
   {
     id: 'alarm-2',
     medicine: 'Dolo 650mg (Paracetamol)',
-    time: '02:00 PM',
-    period: 'Dopahar (Afternoon)',
+    time: '14:00',
     instruction: 'After Food (Khane Ke Baad)',
     status: 'ACTIVE',
     color: '#059669'
@@ -22,8 +20,7 @@ const INITIAL_ALARMS = [
   {
     id: 'alarm-3',
     medicine: 'Metformin 500mg',
-    time: '09:30 PM',
-    period: 'Raat (Night)',
+    time: '21:30',
     instruction: 'With Dinner (Khane Ke Sath)',
     status: 'ACTIVE',
     color: '#d97706'
@@ -46,7 +43,6 @@ export default function MedicationAlarm() {
   const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
   const [pickerHour, setPickerHour] = useState('08')
   const [pickerMinute, setPickerMinute] = useState('00')
-  const [pickerAmpm, setPickerAmpm] = useState('AM')
 
   // Add new alarm modal state
   const [showAddModal, setShowAddModal] = useState(false)
@@ -70,13 +66,13 @@ export default function MedicationAlarm() {
     setModifyModalAlarm(alarm)
 
     try {
-      // Parse existing time string e.g. "14:30" or "08:00 AM"
+      // Parse existing 24h time string e.g. "14:30" or "08:00 AM"
       const parts = alarm.time.split(' ')
       let hStr = '08'
       let mStr = '00'
 
       if (parts.length === 2) {
-        // 12h format e.g. "02:30 PM"
+        // 12h legacy format e.g. "02:30 PM"
         const [h, m] = parts[0].split(':')
         let hNum = parseInt(h, 10)
         if (parts[1].toUpperCase() === 'PM' && hNum < 12) hNum += 12
@@ -104,28 +100,17 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Save selected phone alarm time (24-Hour Format: 00 to 23)
+  // Save selected phone alarm time (Pure 24-Hour Format: 00 to 23)
   const handleSavePickerTime = () => {
     if (!modifyModalAlarm) return
 
-    const hNum = parseInt(pickerHour, 10)
-    const mNum = parseInt(pickerMinute, 10)
-
-    // Calculate period
-    const period = hNum < 12 ? 'Subah (Morning)' : hNum < 17 ? 'Dopahar (Afternoon)' : hNum < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
-
-    // Display formatted time (e.g. 14:30 or 08:00 AM)
-    const ampm = hNum >= 12 ? 'PM' : 'AM'
-    const displayHour = hNum % 12 === 0 ? 12 : hNum % 12
-    const formatted12h = `${String(displayHour).padStart(2, '0')}:${String(mNum).padStart(2, '0')} ${ampm}`
+    const formatted24h = `${pickerHour}:${pickerMinute}`
 
     setAlarms(prev => prev.map(item => {
       if (item.id === modifyModalAlarm.id) {
         return {
           ...item,
-          time: formatted12h,
-          time24: `${pickerHour}:${pickerMinute}`,
-          period,
+          time: formatted24h,
           status: 'ACTIVE', // Re-activate so sound triggers at exact new time!
           takenTime: null
         }
@@ -178,16 +163,18 @@ export default function MedicationAlarm() {
   useEffect(() => {
     const checkClock = () => {
       const now = new Date()
-      const hours = now.getHours()
-      const minutes = now.getMinutes()
-      const ampm = hours >= 12 ? 'PM' : 'AM'
-      const formattedHours = hours % 12 === 0 ? 12 : hours % 12
-      const formattedMinutes = String(minutes).padStart(2, '0')
-      const formatted12h = `${String(formattedHours).padStart(2, '0')}:${formattedMinutes} ${ampm}`
-      const formatted24h = `${String(hours).padStart(2, '0')}:${formattedMinutes}`
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      const formatted24h = `${hours}:${minutes}`
+
+      // Also 12h format for legacy items
+      const h12 = now.getHours() % 12 === 0 ? 12 : now.getHours() % 12
+      const ampm = now.getHours() >= 12 ? 'PM' : 'AM'
+      const formatted12h = `${String(h12).padStart(2, '0')}:${minutes} ${ampm}`
 
       alarms.forEach(alarm => {
         const isMatch = alarm.status === 'ACTIVE' && (
+          alarm.time === formatted24h ||
           alarm.time.toUpperCase() === formatted12h.toUpperCase() ||
           (alarm.time24 && alarm.time24 === formatted24h)
         )
@@ -227,7 +214,7 @@ export default function MedicationAlarm() {
   const handleMarkTaken = (alarmId) => {
     setAlarms(prev => prev.map(item => {
       if (item.id === alarmId) {
-        return { ...item, status: 'TAKEN', takenTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+        return { ...item, status: 'TAKEN', takenTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) }
       }
       return item
     }))
@@ -250,23 +237,17 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Add new medicine alarm
+  // Add new medicine alarm (24-Hour Format)
   const handleAddNewAlarm = () => {
     if (!newMedName.trim()) return
 
     const [h, m] = newMedTime.split(':')
-    let hour = parseInt(h, 10)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    hour = hour % 12 === 0 ? 12 : hour % 12
-    const formatted12h = `${String(hour).padStart(2, '0')}:${m} ${ampm}`
-
-    const period = hour < 12 ? 'Subah (Morning)' : hour < 17 ? 'Dopahar (Afternoon)' : hour < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
+    const formatted24h = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
     const newAlarm = {
       id: `alarm-${Date.now()}`,
       medicine: newMedName.trim(),
-      time: formatted12h,
-      period,
+      time: formatted24h,
       instruction: newMedInstruction,
       status: 'ACTIVE',
       color: '#818cf8'
@@ -313,10 +294,10 @@ export default function MedicationAlarm() {
           <span style={{ fontSize: '1.5rem' }}>⏰</span>
           <div>
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
-              Medication Alarm & Reminders
+              Medication Alarm & Reminders (24h)
             </h3>
             <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              Subah / Shaam Audio Sound Reminders & Adherence Tracker
+              24-Hour Sound Reminders & Adherence Tracker
             </span>
           </div>
         </div>
@@ -457,14 +438,9 @@ export default function MedicationAlarm() {
               </button>
 
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: item.status === 'TAKEN' ? '#15803d' : '#0f172a' }}>
-                    {item.medicine}
-                  </h4>
-                  <span style={{ fontSize: '0.65rem', backgroundColor: '#e2e8f0', color: '#475569', padding: '0.1rem 0.4rem', borderRadius: '6px', fontWeight: 700 }}>
-                    {item.period}
-                  </span>
-                </div>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: item.status === 'TAKEN' ? '#15803d' : '#0f172a' }}>
+                  {item.medicine}
+                </h4>
 
                 <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'block', marginTop: '0.15rem' }}>
                   📋 {item.instruction}
