@@ -91,17 +91,7 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Quick Preset: +1 Min or +5 Min ahead of current time
-  const applyQuickOffsetPreset = (minsToAdd) => {
-    const target = new Date(Date.now() + minsToAdd * 60 * 1000)
-    const hours = target.getHours()
-    const ampm = hours >= 12 ? 'PM' : 'AM'
-    const displayHour = hours % 12 === 0 ? 12 : hours % 12
 
-    setPickerHour(String(displayHour).padStart(2, '0'))
-    setPickerMinute(String(target.getMinutes()).padStart(2, '0'))
-    setPickerAmpm(ampm)
-  }
 
   // Save selected phone alarm time
   const handleSavePickerTime = () => {
@@ -597,50 +587,7 @@ export default function MedicationAlarm() {
               </button>
             </div>
 
-            {/* Quick Presets Bar */}
-            <div style={{ marginBottom: '1.4rem' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.5rem' }}>
-                ⚡ Quick Presets (1-Click Test):
-              </label>
 
-              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => applyQuickOffsetPreset(1)}
-                  style={{ backgroundColor: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', borderRadius: '8px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-                >
-                  ⚡ +1 Min (Test Sound)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyQuickOffsetPreset(5)}
-                  style={{ backgroundColor: '#e0e7ff', color: '#3730a3', border: '1px solid #c7d2fe', borderRadius: '8px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-                >
-                  +5 Min
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPickerHour('08'); setPickerMinute('00'); setPickerAmpm('AM') }}
-                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  🌅 08:00 AM
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPickerHour('02'); setPickerMinute('00'); setPickerAmpm('PM') }}
-                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  ☀️ 02:00 PM
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setPickerHour('08'); setPickerMinute('00'); setPickerAmpm('PM') }}
-                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  🌆 08:00 PM
-                </button>
-              </div>
-            </div>
 
             {/* Phone Clock Time Picker Wheel Box */}
             <div style={{
