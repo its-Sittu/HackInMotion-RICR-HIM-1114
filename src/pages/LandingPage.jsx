@@ -1,20 +1,40 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Medical3DCanvas from '../components/landing/Medical3DCanvas'
 import '../styles/landing.css'
 
 export default function LandingPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // Track page scroll progress (0.0 to 1.0)
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0
+
+      setScrollProgress(progress)
+      setIsScrolled(scrollTop > 50)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleGuestContinue = () => {
     const guestUser = {
       _id: 'guest_user_id',
-      phone: 'guest@pulsemed.com',
+      phone: 'guest@medisafe.com',
       name: 'Guest User',
       isPhoneVerified: true
     }
-    const guestToken = 'pulsemed_guest_session_token'
+    const guestToken = 'medisafe_guest_session_token'
     login(guestToken, guestUser)
     navigate('/dashboard')
   }
@@ -31,316 +51,210 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="landing-container">
-      {/* ── STICKY NAVBAR ───────────────────────────────────────── */}
-      <header className="landing-navbar">
-        <div className="landing-nav-logo" onClick={() => scrollToSection('hero-slide')}>
-          <div className="landing-nav-logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <div className="medisafe-landing">
+      {/* ── 3D CONTINUOUS SCROLL CANVAS ───────────────────────── */}
+      <Medical3DCanvas scrollProgress={scrollProgress} />
+
+      {/* ── FLOATING GLASS NAVBAR ────────────────────────────── */}
+      <header className={`medisafe-navbar ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="medisafe-logo" onClick={() => scrollToSection('sec-hero')}>
+          <div className="medisafe-logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          <span className="landing-nav-brand">PulseMed</span>
+          <span className="medisafe-brand-name">MEDISAFE</span>
         </div>
 
-        <nav className="landing-nav-links">
-          <span className="landing-nav-link" onClick={() => scrollToSection('hero-slide')}>Overview</span>
-          <span className="landing-nav-link" onClick={() => scrollToSection('workflow-slide')}>How It Works</span>
-          <span className="landing-nav-link" onClick={() => scrollToSection('features-slide')}>Features</span>
-          <span className="landing-nav-link" onClick={() => scrollToSection('analytics-slide')}>Analytics</span>
+        <nav className="medisafe-nav-menu">
+          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-hero')}>Home</span>
+          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-heart')}>How It Works</span>
+          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-lungs')}>Safety</span>
+          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-capabilities')}>Features</span>
         </nav>
 
-        <div className="landing-nav-actions">
-          <button type="button" className="btn-nav-guest" onClick={handleGuestContinue}>
-            Guest Access
+        <div className="medisafe-nav-actions">
+          <button type="button" className="btn-nav-login" onClick={handleSignIn}>
+            Login
           </button>
-          <button type="button" className="btn-nav-primary" onClick={handleSignIn}>
-            Sign In / Register
+          <button type="button" className="btn-nav-start" onClick={handleGuestContinue}>
+            Get Started
           </button>
         </div>
       </header>
 
-      {/* ── SLIDE 1: HERO SECTION ───────────────────────────────── */}
-      <section id="hero-slide" className="landing-slide-section section-hero">
-        <div className="hero-content-box">
-          <div className="hero-pill-badge">
-            <span>✨ AI-Powered Clinical Intelligence Platform</span>
+      {/* ── CONTINUOUS SCROLL SECTIONS ────────────────────────── */}
+      <div className="medisafe-scroll-wrapper">
+        {/* ── SECTION 1: HERO (HEART) ────────────────────────── */}
+        <section id="sec-hero" className="medisafe-section">
+          <div className="hero-badge-pill">
+            <span>✨ AI-Powered Clinical Safety Engine</span>
           </div>
 
-          <h1 className="hero-title">
-            Next-Generation Patient Bio-Rhythm & Medication Safety Engine
+          <h1 className="hero-main-heading">
+            MEDISAFE
           </h1>
 
-          <p className="hero-subtitle">
-            Real-time drug interaction scanning, smart audio alarms with emergency SMS alerts, synchronized clinical diet schedules, and body symptom evaluation.
+          <p className="hero-tagline">
+            &ldquo;Because no patient should get hurt by the medicine that was supposed to help them.&rdquo;
           </p>
 
-          <div className="hero-actions-row">
-            <button type="button" className="btn-hero-cta" onClick={handleGuestContinue}>
-              <span>🚀 Launch Interactive Dashboard</span>
+          <span className="hero-support-text">
+            Smart Medicine Safety &amp; Drug Interaction Assistant
+          </span>
+
+          <div className="hero-btn-row">
+            <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
+              <span>Explore MediSafe</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
 
-            <button type="button" className="btn-hero-secondary" onClick={() => scrollToSection('workflow-slide')}>
-              <span>📖 Explore 5-Step Workflow</span>
+            <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
+              <span>Continue as Guest</span>
             </button>
           </div>
 
-          <div className="hero-vitals-strip">
-            <div className="hero-vital-pill">
-              <span>⏰ Audio Alarms + Emergency Alerts</span>
-            </div>
-            <div className="hero-vital-pill">
-              <span>⚡ FDA Drug Interaction Scanner</span>
-            </div>
-            <div className="hero-vital-pill">
-              <span>🥗 Healthy Diet & Schedule Board</span>
-            </div>
-            <div className="hero-vital-pill">
-              <span>🩺 ENT & Body Symptom Evaluator</span>
-            </div>
-            <div className="hero-vital-pill">
-              <span>📊 Multi-Feature Analytics</span>
-            </div>
+          <div className="scroll-explore-indicator">
+            SCROLL TO EXPLORE ↓
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── SLIDE 2: PROJECT WORKFLOW (5-STEP HOW IT WORKS) ──────── */}
-      <section id="workflow-slide" className="landing-slide-section section-workflow">
-        <div className="section-header-center">
-          <span className="section-badge">Simple 5-Step Workflow</span>
-          <h2 className="section-title">How PulseMed Clinical Engine Works</h2>
-          <p className="section-desc">
-            An end-to-end patient workflow designed for seamless medication compliance, safety checking, and diet synchronization.
-          </p>
-        </div>
-
-        <div className="workflow-steps-grid">
-          {/* Step 1 */}
-          <div className="workflow-step-card">
-            <div className="step-number-badge">1</div>
-            <span className="step-card-icon">🔐</span>
-            <h3 className="step-card-title">Instant Secure Auth</h3>
-            <p className="step-card-desc">
-              Sign in via Indian phone OTP authentication or instantly test using Guest Mode access.
+        {/* ── SECTION 2: HEART → LUNGS TRANSITION ───────────── */}
+        <section id="sec-heart" className="medisafe-section">
+          <div className="anatomical-quote-box">
+            <h2 className="anatomical-heading">
+              &ldquo;Every dose affects the body.&rdquo;
+            </h2>
+            <p className="anatomical-subtext">
+              Understanding what we take is the first step toward safer care.
             </p>
           </div>
+        </section>
 
-          {/* Step 2 */}
-          <div className="workflow-step-card">
-            <div className="step-number-badge">2</div>
-            <span className="step-card-icon">⏰</span>
-            <h3 className="step-card-title">Set Audio Alarms</h3>
-            <p className="step-card-desc">
-              Schedule morning/evening medication reminders with phone-style audio ringing and automatic SMS/Email family alerts.
+        {/* ── SECTION 3: LUNGS → KIDNEYS TRANSITION ──────────── */}
+        <section id="sec-lungs" className="medisafe-section">
+          <div className="anatomical-quote-box">
+            <h2 className="anatomical-heading">
+              &ldquo;Every medicine has a journey.&rdquo;
+            </h2>
+            <p className="anatomical-subtext">
+              The body processes every dose. MediSafe helps you understand the risks before they interact.
             </p>
           </div>
+        </section>
 
-          {/* Step 3 */}
-          <div className="workflow-step-card">
-            <div className="step-number-badge">3</div>
-            <span className="step-card-icon">⚡</span>
-            <h3 className="step-card-title">Scan Drug Interactions</h3>
-            <p className="step-card-desc">
-              Input multiple medicines to evaluate active compound overlaps, contraindications, and overdose risks via FDA databases.
+        {/* ── SECTION 4: KIDNEYS → FULL HUMAN HOLOGRAPHIC ANATOMY ── */}
+        <section id="sec-human" className="medisafe-section">
+          <div className="anatomical-quote-box" style={{ maxWidth: '850px' }}>
+            <h2 className="anatomical-heading">
+              Visualizing Safety Across Human Systems
+            </h2>
+            <p className="anatomical-subtext">
+              MediSafe protects the human body by scanning chemical compound overlaps, timing constraints, and daily bio-rhythms.
             </p>
-          </div>
 
-          {/* Step 4 */}
-          <div className="workflow-step-card">
-            <div className="step-number-badge">4</div>
-            <span className="step-card-icon">🩺</span>
-            <h3 className="step-card-title">Evaluate Symptoms</h3>
-            <p className="step-card-desc">
-              Check ENT, throat, or burn symptoms to receive clinical severity scores, red flags, and triage recommendations.
-            </p>
-          </div>
-
-          {/* Step 5 */}
-          <div className="workflow-step-card">
-            <div className="step-number-badge">5</div>
-            <span className="step-card-icon">🥗</span>
-            <h3 className="step-card-title">Sync Diet & Log Intake</h3>
-            <p className="step-card-desc">
-              Follow pre/post meal clinical diet schedules, mark food consumed, and track overall health adherence analytics.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SLIDE 3: CORE FEATURES SUITE ────────────────────────── */}
-      <section id="features-slide" className="landing-slide-section section-features">
-        <div className="section-header-center">
-          <span className="section-badge">Core Capabilities</span>
-          <h2 className="section-title">Built for Modern Patient Bio-Rhythm Care</h2>
-          <p className="section-desc">
-            Explore the specialized modules engineered for patient safety, daily adherence, and clinical precision.
-          </p>
-        </div>
-
-        <div className="features-grid-main">
-          {/* Feature 1 */}
-          <div className="feature-suite-card">
-            <div>
-              <div className="feature-card-header">
-                <div className="feature-icon-box" style={{ backgroundColor: '#eef2ff', color: '#4f46e5' }}>
-                  ⏰
-                </div>
-                <h3 className="feature-card-title">Smart Audio Alarms</h3>
+            <div className="orbiting-panels-container">
+              <div className="orbiting-panel-badge">
+                <span>💊 Medication Safety</span>
               </div>
-              <p className="feature-card-text">
-                Ringing medication alarms with custom time modification, snooze control, and Fast2SMS & EmailJS emergency alerts.
-              </p>
-            </div>
-            <span className="feature-card-tag" style={{ backgroundColor: '#eef2ff', color: '#4338ca' }}>
-              Real Audio & Alerts
-            </span>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="feature-suite-card">
-            <div>
-              <div className="feature-card-header">
-                <div className="feature-icon-box" style={{ backgroundColor: '#d1fae5', color: '#059669' }}>
-                  ⚡
-                </div>
-                <h3 className="feature-card-title">FDA Interaction Engine</h3>
+              <div className="orbiting-panel-badge">
+                <span>⚡ Drug Interaction</span>
               </div>
-              <p className="feature-card-text">
-                Evaluates active drug compounds to detect dangerous overlaps, contraindications, and active compound duplication.
-              </p>
-            </div>
-            <span className="feature-card-tag" style={{ backgroundColor: '#d1fae5', color: '#047857' }}>
-              FDA Clinical Engine
-            </span>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="feature-suite-card">
-            <div>
-              <div className="feature-card-header">
-                <div className="feature-icon-box" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
-                  🥗
-                </div>
-                <h3 className="feature-card-title">Healthy Food Planning Board</h3>
+              <div className="orbiting-panel-badge">
+                <span>⚠️ Risk Detection</span>
               </div>
-              <p className="feature-card-text">
-                Meal schedules synchronized with medication doses, calorie target tracking, diet tags, and mark-consumed status logger.
-              </p>
-            </div>
-            <span className="feature-card-tag" style={{ backgroundColor: '#fef3c7', color: '#b45309' }}>
-              Medication Sync
-            </span>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="feature-suite-card">
-            <div>
-              <div className="feature-card-header">
-                <div className="feature-icon-box" style={{ backgroundColor: '#f0f9ff', color: '#0284c7' }}>
-                  🩺
-                </div>
-                <h3 className="feature-card-title">ENT & Body Symptom Evaluator</h3>
+              <div className="orbiting-panel-badge">
+                <span>⏰ Medication Reminder</span>
               </div>
-              <p className="feature-card-text">
-                Detailed symptom diagnostic checker providing clinical severity indices, red flag warnings, and first-aid care plans.
-              </p>
-            </div>
-            <span className="feature-card-tag" style={{ backgroundColor: '#f0f9ff', color: '#0369a1' }}>
-              Clinical Triage
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SLIDE 4: ANALYTICS & INSIGHTS SHOWCASE ───────────────── */}
-      <section id="analytics-slide" className="landing-slide-section section-analytics">
-        <div className="section-header-center">
-          <span className="section-badge">Live Analytics Engine</span>
-          <h2 className="section-title">Patient Bio-Rhythm Analytics & Insights</h2>
-          <p className="section-desc">
-            Aggregating performance metrics across doses taken, healthy meals consumed, symptom checks, and drug safety scans.
-          </p>
-        </div>
-
-        <div className="analytics-preview-box">
-          <div className="analytics-preview-header">
-            <div>
-              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>
-                📊 Multi-Feature Health Score: 99 / 100 Optimal
-              </h3>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
-                Live patient adherence index calculated dynamically across modules
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ backgroundColor: '#d1fae5', color: '#047857', padding: '0.3rem 0.75rem', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                ✓ 98% Dose Adherence
-              </span>
-              <span style={{ backgroundColor: '#eef2ff', color: '#4338ca', padding: '0.3rem 0.75rem', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 800 }}>
-                ✓ 100% Drug Safety Ratio
-              </span>
+              <div className="orbiting-panel-badge">
+                <span>🩺 AI Health Assistant</span>
+              </div>
+              <div className="orbiting-panel-badge">
+                <span>👨‍👩‍👧 Caregiver Alerts</span>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div className="analytics-demo-grid">
-            <div className="analytics-demo-card">
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                🥧 Donut Feature Distribution
-              </h4>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5 }}>
-                Visualizes the proportion of Medications (37%), Healthy Meals (49%), Symptom Checks (12%), and Lab Reports (2%).
+        {/* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES) ─────── */}
+        <section id="sec-capabilities" className="medisafe-section">
+          <div className="capabilities-header">
+            <span className="hero-badge-pill">Capabilities</span>
+            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0.4rem 0 0.8rem 0' }}>
+              One place for safer medication decisions.
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: '1.05rem', margin: 0 }}>
+              Comprehensive clinical tools built to prevent prescription errors and empower patient safety.
+            </p>
+          </div>
+
+          <div className="capabilities-grid">
+            {/* Capability 1 */}
+            <div className="capability-card">
+              <span className="capability-icon">⚡</span>
+              <h3 className="capability-title">1. Drug Interaction Detection</h3>
+              <p className="capability-desc">
+                Check medicines before they interact. Instant active compound scanning powered by clinical databases.
               </p>
             </div>
 
-            <div className="analytics-demo-card">
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                📊 7-Day Performance Bar Graph
-              </h4>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5 }}>
-                Continuous bio-rhythm tracking highlighting daily compliance trends with live score indicators.
+            {/* Capability 2 */}
+            <div className="capability-card">
+              <span className="capability-icon">🛡️</span>
+              <h3 className="capability-title">2. Medication Safety</h3>
+              <p className="capability-desc">
+                Understand complex pharmacological risks and side effects explained in simple, empowering language.
+              </p>
+            </div>
+
+            {/* Capability 3 */}
+            <div className="capability-card">
+              <span className="capability-icon">⏰</span>
+              <h3 className="capability-title">3. Smart Reminders</h3>
+              <p className="capability-desc">
+                Never lose track of your medication schedule with phone-style audio alarms and meal synchronization.
+              </p>
+            </div>
+
+            {/* Capability 4 */}
+            <div className="capability-card">
+              <span className="capability-icon">👨‍👩‍👧</span>
+              <h3 className="capability-title">4. Caregiver Protection</h3>
+              <p className="capability-desc">
+                Keep trusted family members informed via instant SMS and Email notifications when doses are unanswered.
               </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── SLIDE 5: EXECUTIVE FOOTER & CTA ─────────────────────── */}
-      <section id="footer-slide" className="landing-slide-section section-footer">
-        <div className="cta-banner-box">
-          <h2 className="cta-title">Ready to Experience PulseMed AI Patient Care?</h2>
-          <p className="cta-subtitle">
-            Join thousands of patients taking control of their medication timing, drug safety, and daily bio-rhythms today.
-          </p>
+        {/* ── SECTION 6: FINAL CALL TO ACTION ────────────────── */}
+        <section id="sec-cta" className="medisafe-section">
+          <div className="final-cta-box">
+            <h2 className="final-cta-heading">
+              Your medicines should help you.<br />MediSafe helps you take them safely.
+            </h2>
 
-          <div className="hero-actions-row">
-            <button type="button" className="btn-hero-cta" onClick={handleGuestContinue}>
-              <span>🚀 Open Dashboard Now</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
+            <div className="hero-btn-row">
+              <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
+                <span>Get Started</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
 
-            <button type="button" className="btn-hero-secondary" onClick={handleSignIn} style={{ background: 'rgba(255,255,255,0.1)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}>
-              <span>🔑 Sign In / Register Account</span>
-            </button>
+              <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
+                <span>Continue as Guest</span>
+              </button>
+            </div>
+
+            <p className="final-cta-support">
+              AI-powered medication safety • Drug interaction detection • Smart reminders
+            </p>
           </div>
-        </div>
-
-        <div className="landing-footer-bottom">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, color: '#ffffff' }}>
-            <span style={{ fontSize: '1.2rem' }}>🏥</span> PulseMed Platform • HackInMotion (RICR-HIM-1114)
-          </div>
-
-          <div>
-            Built for HackInMotion 2026 • AI Patient Health & Bio-Rhythm Care
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   )
 }
