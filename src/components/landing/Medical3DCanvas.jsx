@@ -248,30 +248,20 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         ambientMat.color.setHex(0xf59e0b)
         scene.fog.color.setHex(0x3f2305)
       }
-      // STAGE 4 & 5: FULL HUMAN ANATOMY & MEDISAFE SOLUTION -> ROYAL INDIGO & VIOLET THEME
+      // STAGE 4 & 5: FULL HOLOGRAPHIC HUMAN ANATOMY & MEDISAFE SOLUTION
       else {
         const stageP = (p - 0.72) / 0.28
 
         humanGroup.position.x = rightOffsetX
         humanGroup.rotation.y = elapsedTime * 0.35
         humanGroup.position.z = lerp(0, 1.2, stageP)
-        spineMat.opacity = lerp(0.8, 0.45, stageP)
-        particleMat.opacity = lerp(0.9, 0.55, stageP)
+        spineMat.opacity = lerp(0.8, 0.6, stageP)
+        particleMat.opacity = lerp(0.9, 0.75, stageP)
 
-        heartMesh.position.set(rightOffsetX - 0.3, 0.9, 0.4)
-        heartMesh.rotation.y = heartSlowRotate
-        heartMesh.scale.set(0.85, 0.85, 1)
-        heartMesh.material.opacity = 0.7
-
-        lungsMesh.position.set(rightOffsetX + 0.2, 0.9, 0.2)
-        lungsMesh.rotation.y = lungsSlowRotate
-        lungsMesh.scale.set(0.95, 0.95, 1)
-        lungsMesh.material.opacity = 0.7
-
-        kidneyMesh.position.set(rightOffsetX - 0.1, -0.7, 0.2)
-        kidneyMesh.rotation.y = kidneySlowRotate
-        kidneyMesh.scale.set(0.75, 0.75, 1)
-        kidneyMesh.material.opacity = 0.7
+        // Smoothly fade out individual organ meshes to avoid overlapping clutter
+        heartMesh.material.opacity = lerp(0.1, 0, stageP)
+        lungsMesh.material.opacity = lerp(0.05, 0, stageP)
+        kidneyMesh.material.opacity = lerp(0.35, 0, stageP)
 
         ambientMat.color.setHex(0xa855f7)
         scene.fog.color.setHex(0x130b2b)
