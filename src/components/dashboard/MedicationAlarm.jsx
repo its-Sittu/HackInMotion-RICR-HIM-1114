@@ -29,9 +29,9 @@ const INITIAL_ALARMS = [
 ]
 
 const INITIAL_EMERGENCY_CONTACTS = [
-  { id: 'c1', priority: 1, name: 'Ramesh Sharma', role: 'Father (Primary Guardian)', phone: '+91 98765 43210' },
-  { id: 'c2', priority: 2, name: 'Priya Sharma', role: 'Spouse (Secondary Guardian)', phone: '+91 98765 43211' },
-  { id: 'c3', priority: 3, name: 'Dr. Rajesh Kumar', role: 'Family Doctor', phone: '+91 98765 43212' }
+  { id: 'c1', priority: 1, name: 'Ramesh Sharma', role: 'Father (Primary Guardian)', phone: '+91 98765 43210', email: 'father@gmail.com' },
+  { id: 'c2', priority: 2, name: 'Priya Sharma', role: 'Spouse (Secondary Guardian)', phone: '+91 98765 43211', email: 'spouse@gmail.com' },
+  { id: 'c3', priority: 3, name: 'Dr. Rajesh Kumar', role: 'Family Doctor', phone: '+91 98765 43212', email: 'dr.rajesh@gmail.com' }
 ]
 
 export default function MedicationAlarm() {
@@ -761,7 +761,7 @@ export default function MedicationAlarm() {
                     {contact.name}
                   </strong>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
-                    {contact.role} • 📞 {contact.phone}
+                    {contact.role} • 📞 {contact.phone} • ✉️ {contact.email || 'Email'}
                   </span>
                 </div>
               </div>
@@ -1120,9 +1120,9 @@ export default function MedicationAlarm() {
                     </span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.6rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                     <div>
-                      <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                      <label style={{ fontSize: '0.68rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
                         Contact Name & Relation:
                       </label>
                       <input
@@ -1133,14 +1133,14 @@ export default function MedicationAlarm() {
                           updated[idx].name = e.target.value
                           setEmergencyContacts(updated)
                         }}
-                        placeholder="e.g. Ramesh Sharma (Father)"
-                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.45rem 0.65rem', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box' }}
+                        placeholder="e.g. Ramesh Sharma"
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.4rem 0.55rem', fontSize: '0.78rem', outline: 'none', boxSizing: 'border-box' }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
-                        Mobile Phone Number:
+                      <label style={{ fontSize: '0.68rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                        Mobile Phone (SMS):
                       </label>
                       <input
                         type="text"
@@ -1151,7 +1151,24 @@ export default function MedicationAlarm() {
                           setEmergencyContacts(updated)
                         }}
                         placeholder="+91 9876543210"
-                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.45rem 0.65rem', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box' }}
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.4rem 0.55rem', fontSize: '0.78rem', outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.68rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                        Email ID (FREE Alert):
+                      </label>
+                      <input
+                        type="email"
+                        value={contact.email || ''}
+                        onChange={(e) => {
+                          const updated = [...emergencyContacts]
+                          updated[idx].email = e.target.value
+                          setEmergencyContacts(updated)
+                        }}
+                        placeholder="father@gmail.com"
+                        style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.4rem 0.55rem', fontSize: '0.78rem', outline: 'none', boxSizing: 'border-box' }}
                       />
                     </div>
                   </div>
