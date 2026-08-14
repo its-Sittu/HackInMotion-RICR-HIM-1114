@@ -744,17 +744,6 @@ export default function SymptomChecker() {
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <span style={{
-                          backgroundColor: isHigh ? '#ffe4e6' : isMod ? '#fef3c7' : '#d1fae5',
-                          color: isHigh ? '#be123c' : isMod ? '#b45309' : '#047857',
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          padding: '0.2rem 0.55rem',
-                          borderRadius: '8px',
-                          textTransform: 'uppercase'
-                        }}>
-                          {cond.risk || 'Low Risk'}
-                        </span>
                         <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0f172a' }}>
                           {pct}%
                         </span>
