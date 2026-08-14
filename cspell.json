@@ -181,7 +181,10 @@
     "Cervicogenic",
     "Myofascial",
     "glutes",
-    "Glutes"
+    "Glutes",
+    "Sittu",
+    "Rahul",
+    "Rajesh"
   ],
   "ignorePaths": [
     "**/node_modules/**",
