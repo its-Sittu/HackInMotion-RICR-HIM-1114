@@ -1,4 +1,4 @@
-/* ─── MediSafe Reference Image-Exact Dual-Tone 3D Scroll System ─── */
+/* ─── MediSafe Senior Executive 50/50 Split-Screen 3D Scroll System ─── */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 html, body {
@@ -20,29 +20,29 @@ html, body {
   transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reference Image Dual-Tone Linear Gradients (Red/Magenta Left + Cyan/Blue Right) */
+/* Senior Executive Dual-Tone Gradients (50/50 Left Visual / Right Text) */
 .medisafe-landing.theme-hero {
-  background: radial-gradient(circle at 18% 40%, rgba(244, 63, 94, 0.35) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(6, 182, 212, 0.3) 0%, transparent 55%),
-              linear-gradient(105deg, #4c0519 0%, #1e1b4b 42%, #030712 100%);
+  background: radial-gradient(circle at 18% 45%, rgba(244, 63, 94, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 82% 30%, rgba(6, 182, 212, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #380415 0%, #1e1b4b 42%, #030712 100%);
 }
 
 .medisafe-landing.theme-lungs {
-  background: radial-gradient(circle at 18% 40%, rgba(16, 185, 129, 0.35) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(2, 132, 199, 0.3) 0%, transparent 55%),
-              linear-gradient(105deg, #022c22 0%, #034e7b 42%, #030712 100%);
+  background: radial-gradient(circle at 18% 45%, rgba(16, 185, 129, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 82% 30%, rgba(2, 132, 199, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #01221b 0%, #034e7b 42%, #030712 100%);
 }
 
 .medisafe-landing.theme-kidneys {
-  background: radial-gradient(circle at 18% 40%, rgba(245, 158, 11, 0.35) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(139, 92, 246, 0.3) 0%, transparent 55%),
-              linear-gradient(105deg, #451a03 0%, #311b92 42%, #030712 100%);
+  background: radial-gradient(circle at 18% 45%, rgba(245, 158, 11, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 82% 30%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #331302 0%, #311b92 42%, #030712 100%);
 }
 
 .medisafe-landing.theme-human {
-  background: radial-gradient(circle at 18% 40%, rgba(217, 70, 239, 0.35) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(99, 102, 241, 0.35) 0%, transparent 55%),
-              linear-gradient(105deg, #3b0764 0%, #1e1b4b 42%, #030712 100%);
+  background: radial-gradient(circle at 18% 45%, rgba(217, 70, 239, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 82% 30%, rgba(99, 102, 241, 0.4) 0%, transparent 55%),
+              linear-gradient(105deg, #2a0547 0%, #1e1b4b 42%, #030712 100%);
 }
 
 /* ─── Floating Glassmorphism Navbar (Borderless) ──────────────── */
@@ -65,7 +65,7 @@ html, body {
 }
 
 .medisafe-navbar.scrolled {
-  background: rgba(15, 23, 42, 0.88);
+  background: rgba(15, 23, 42, 0.9);
   height: 62px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -156,7 +156,7 @@ html, body {
   box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
 }
 
-/* ─── Scroll Overlay Sections (Right Column Content Layout - Image Exact) ─── */
+/* ─── Scroll Overlay Sections (Executive 50/50 Split Layout) ───────── */
 .medisafe-scroll-wrapper {
   position: relative;
   z-index: 2;
@@ -167,22 +167,22 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* Align Content to the RIGHT Side */
+  align-items: flex-start;
   justify-content: center;
-  padding: 100px 5vw 60px 42vw; /* Leave Left Side open for 3D Heart */
+  padding: 100px 5vw 60px 48vw; /* Clean 50/50 Split Spacing */
   box-sizing: border-box;
   position: relative;
   text-align: left;
 }
 
-/* Right Content Column Constraints (Matching Image Layout) */
+/* Right Content Column Constraints (Width: 48%) */
 .hero-content-col {
-  max-width: clamp(480px, 52vw, 680px);
+  max-width: clamp(480px, 46vw, 640px);
   z-index: 5;
   width: 100%;
 }
 
-/* ── SECTION 1: HERO (HEART ON LEFT SIDE) ───────────────────── */
+/* ── SECTION 1: HERO ─────────────────────────────────────────── */
 .hero-badge-pill {
   display: inline-flex;
   align-items: center;
@@ -302,7 +302,7 @@ html, body {
   border: none;
   border-radius: 28px;
   padding: 2.6rem 3rem;
-  max-width: clamp(480px, 50vw, 650px);
+  max-width: clamp(480px, 46vw, 640px);
   width: 100%;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
   text-align: left;
@@ -337,7 +337,7 @@ html, body {
   margin: 0;
 }
 
-/* ── REFERENCE-INSPIRED FLOATING GLASS FEATURE CARDS ────────── */
+/* ── FLOATING GLASS FEATURE CARDS ────────────────────────────── */
 .reference-feature-pills-row {
   display: flex;
   flex-wrap: wrap;
@@ -392,9 +392,9 @@ html, body {
   font-weight: 700;
 }
 
-/* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES CARDS - BORDERLESS) ── */
+/* ── SECTION 5: CAPABILITIES ────────────────────────────────── */
 .capabilities-header {
-  max-width: clamp(480px, 50vw, 650px);
+  max-width: clamp(480px, 46vw, 640px);
   width: 100%;
   margin-bottom: 2.5rem;
   text-align: left;
@@ -402,9 +402,9 @@ html, body {
 
 .capabilities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.4rem;
-  max-width: clamp(520px, 55vw, 750px);
+  max-width: clamp(500px, 48vw, 700px);
   width: 100%;
 }
 
@@ -445,9 +445,9 @@ html, body {
   margin: 0;
 }
 
-/* ── SECTION 6: FINAL CTA SLIDE (BORDERLESS) ───────────────── */
+/* ── SECTION 6: FINAL CTA SLIDE ────────────────────────────── */
 .final-cta-box {
-  max-width: clamp(480px, 52vw, 720px);
+  max-width: clamp(480px, 48vw, 680px);
   width: 100%;
   background: radial-gradient(circle at 30% 50%, rgba(244, 63, 94, 0.28) 0%, rgba(15, 23, 42, 0.88) 75%);
   border: none;

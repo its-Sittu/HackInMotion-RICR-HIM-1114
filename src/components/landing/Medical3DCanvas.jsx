@@ -18,7 +18,7 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
 
     // 1. Scene setup with fog
     const scene = new THREE.Scene()
-    scene.fog = new THREE.FogExp2(0x0a0518, 0.035)
+    scene.fog = new THREE.FogExp2(0x0a0518, 0.032)
 
     // 2. Camera setup
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100)
@@ -32,56 +32,134 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     renderer.toneMappingExposure = 1.45
     container.appendChild(renderer.domElement)
 
-    // 4. Dual-Tone Lighting System (Red/Magenta Left + Cyan/Blue Right)
+    // 4. Multi-Directional Lighting for Volumetric 3D Depth
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.6)
     scene.add(ambientLight)
 
-    // Left Crimson/Magenta Light (for Heart Glow)
-    const leftHeartLight = new THREE.PointLight(0xf43f5e, 7.5, 22)
-    leftHeartLight.position.set(-3.5, 0.5, 4)
-    scene.add(leftHeartLight)
+    const keyCrimsonLight = new THREE.PointLight(0xf43f5e, 8.0, 24)
+    keyCrimsonLight.position.set(-3.5, 1.0, 4)
+    scene.add(keyCrimsonLight)
 
-    // Right Cyan/Blue Light (for Background Aura)
-    const rightCyanLight = new THREE.PointLight(0x06b6d4, 6.0, 22)
-    rightCyanLight.position.set(4, 1, 3)
+    const backGlowLight = new THREE.PointLight(0xe11d48, 6.0, 20)
+    backGlowLight.position.set(-3.5, -1.0, -3)
+    scene.add(backGlowLight)
+
+    const rightCyanLight = new THREE.PointLight(0x06b6d4, 6.5, 24)
+    rightCyanLight.position.set(4, 1.5, 3)
     scene.add(rightCyanLight)
 
-    // 5. Texture Loader & Organ Meshes
+    // 5. Texture Loader & Volumetric 3D Organ Factory
     const textureLoader = new THREE.TextureLoader()
 
-    const createOrganMesh = (textureUrl, size = 5.8) => {
-      const geometry = new THREE.PlaneGeometry(size, size)
+    const createVolumetricOrgan = (textureUrl, size = 6.2, glowHex = 0xf43f5e) => {
+      const organGroup = new THREE.Group()
+
       const texture = textureLoader.load(textureUrl)
       texture.colorSpace = THREE.SRGBColorSpace
-      const material = new THREE.MeshStandardMaterial({
+
+      // Front Face Plane
+      const frontMat = new THREE.MeshStandardMaterial({
         map: texture,
         transparent: true,
-        roughness: 0.1,
-        metalness: 0.45,
+        roughness: 0.12,
+        metalness: 0.4,
         depthWrite: false,
-        side: THREE.DoubleSide
+        side: THREE.FrontSide
       })
-      return new THREE.Mesh(geometry, material)
+      const frontPlane = new THREE.Mesh(new THREE.PlaneGeometry(size, size), frontMat)
+      frontPlane.position.z = 0.18
+      organGroup.add(frontPlane)
+
+      // Back Face Plane (Rotated 180 deg for full 3D rotation coverage)
+      const backMat = new THREE.MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        roughness: 0.12,
+        metalness: 0.4,
+        depthWrite: false,
+        side: THREE.BackSide
+      })
+      const backPlane = new THREE.Mesh(new THREE.PlaneGeometry(size, size), backMat)
+      backPlane.position.z = -0.18
+      backPlane.rotation.y = Math.PI
+      organGroup.add(backPlane)
+
+      // 3D Inner Volumetric Glow Core (Gives full volumetric 3D depth!)
+      const coreGeo = new THREE.SphereGeometry(size * 0.36, 32, 32)
+      coreGeo.scale(1.0, 1.15, 0.65)
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: glowHex,
+        emissive: glowHex,
+        emissiveIntensity: 0.45,
+        transparent: true,
+        opacity: 0.82,
+        roughness: 0.2,
+        metalness: 0.3
+      })
+      const coreMesh = new THREE.Mesh(coreGeo, coreMat)
+      organGroup.add(coreMesh)
+
+      // Outer Volumetric Aura Mesh
+      const auraGeo = new THREE.SphereGeometry(size * 0.42, 24, 24)
+      auraGeo.scale(1.05, 1.2, 0.75)
+      const auraMat = new THREE.MeshBasicMaterial({
+        color: glowHex,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.25
+      })
+      const auraMesh = new THREE.Mesh(auraGeo, auraMat)
+      organGroup.add(auraMesh)
+
+      return { organGroup, frontMat, backMat, coreMat, auraMat }
     }
 
     const isMobile = width < 768
-    const leftOffsetX = isMobile ? 0 : -2.6
+    const leftOffsetX = isMobile ? 0 : -2.85
 
-    // 3D Heart on the LEFT Side (Matching Reference Image)
-    const heartMesh = createOrganMesh('/images/heart.png', isMobile ? 4.2 : 6.4)
-    heartMesh.position.set(leftOffsetX, 0, 0)
-    scene.add(heartMesh)
+    // Volumetric 3D Heart on the LEFT Side (50/50 Split Layout)
+    const {
+      organGroup: heartGroup,
+      frontMat: heartFrontMat,
+      backMat: heartBackMat,
+      coreMat: heartCoreMat,
+      auraMat: heartAuraMat
+    } = createVolumetricOrgan('/images/heart.png', isMobile ? 4.4 : 6.8, 0xf43f5e)
 
-    // 3D Lungs & Kidneys on Left Side for Transitions
-    const lungsMesh = createOrganMesh('/images/lungs.png', isMobile ? 4.4 : 6.4)
-    lungsMesh.position.set(leftOffsetX - 4, 0, -3)
-    lungsMesh.material.opacity = 0
-    scene.add(lungsMesh)
+    heartGroup.position.set(leftOffsetX, 0, 0)
+    scene.add(heartGroup)
 
-    const kidneyMesh = createOrganMesh('/images/kidney.png', isMobile ? 3.8 : 5.4)
-    kidneyMesh.position.set(leftOffsetX + 4, -4, -6)
-    kidneyMesh.material.opacity = 0
-    scene.add(kidneyMesh)
+    // Volumetric 3D Lungs
+    const {
+      organGroup: lungsGroup,
+      frontMat: lungsFrontMat,
+      backMat: lungsBackMat,
+      coreMat: lungsCoreMat,
+      auraMat: lungsAuraMat
+    } = createVolumetricOrgan('/images/lungs.png', isMobile ? 4.6 : 7.0, 0x06b6d4)
+
+    lungsGroup.position.set(leftOffsetX - 4, 0, -3)
+    lungsFrontMat.opacity = 0
+    lungsBackMat.opacity = 0
+    lungsCoreMat.opacity = 0
+    lungsAuraMat.opacity = 0
+    scene.add(lungsGroup)
+
+    // Volumetric 3D Kidneys
+    const {
+      organGroup: kidneyGroup,
+      frontMat: kidneyFrontMat,
+      backMat: kidneyBackMat,
+      coreMat: kidneyCoreMat,
+      auraMat: kidneyAuraMat
+    } = createVolumetricOrgan('/images/kidney.png', isMobile ? 4.0 : 5.8, 0xf59e0b)
+
+    kidneyGroup.position.set(leftOffsetX + 4, -4, -6)
+    kidneyFrontMat.opacity = 0
+    kidneyBackMat.opacity = 0
+    kidneyCoreMat.opacity = 0
+    kidneyAuraMat.opacity = 0
+    scene.add(kidneyGroup)
 
     // 6. Holographic Body Group
     const humanGroup = new THREE.Group()
@@ -131,7 +209,7 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     scene.add(humanGroup)
 
     // 7. Dual-Tone Energetic Particle Cloud (Red Around Heart + Cyan On Right)
-    const leftRedParticlesCount = 350
+    const leftRedParticlesCount = 380
     const leftRedGeo = new THREE.BufferGeometry()
     const leftRedPos = new Float32Array(leftRedParticlesCount * 3)
 
@@ -143,10 +221,10 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     leftRedGeo.setAttribute('position', new THREE.BufferAttribute(leftRedPos, 3))
 
     const leftRedMat = new THREE.PointsMaterial({
-      size: 0.08,
+      size: 0.085,
       color: 0xf43f5e,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending
     })
     const leftRedParticles = new THREE.Points(leftRedGeo, leftRedMat)
@@ -173,6 +251,14 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     const rightCyanParticles = new THREE.Points(rightCyanGeo, rightCyanMat)
     scene.add(rightCyanParticles)
 
+    // Helper to set group opacity
+    const setOrganOpacity = (front, back, core, aura, opacityVal) => {
+      front.opacity = opacityVal
+      back.opacity = opacityVal
+      core.opacity = opacityVal * 0.8
+      aura.opacity = opacityVal * 0.3
+    }
+
     // 8. Animation Frame Loop
     let animationFrameId
     let clock = new THREE.Clock()
@@ -188,31 +274,32 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
       leftRedParticles.rotation.y = elapsedTime * 0.08
       rightCyanParticles.rotation.y = -elapsedTime * 0.05
 
-      // Continuous Slow 3D Heart Rotation on Y-Axis
+      // Continuous Slow 3D Volumetric Heart Rotation on Y-Axis
       const heartSlowRotate = elapsedTime * 0.4
       const heartBeat = 1 + Math.sin(elapsedTime * 3.8) * 0.065
 
-      // STAGE 1: HERO - HEART ON LEFT SIDE (0.0 to 0.22)
+      // STAGE 1: HERO - VOLUMETRIC 3D HEART ON LEFT SIDE (0.0 to 0.22)
       if (p <= 0.22) {
         const stageP = p / 0.22
 
-        heartMesh.position.x = lerp(leftOffsetX, leftOffsetX + 0.3, stageP)
-        heartMesh.position.y = lerp(0, 0.4, stageP)
-        heartMesh.position.z = lerp(0, -1.2, stageP)
-        heartMesh.rotation.y = heartSlowRotate
-        heartMesh.scale.set(heartBeat, heartBeat, 1)
-        heartMesh.material.opacity = lerp(1, 0.5, stageP)
+        heartGroup.position.x = lerp(leftOffsetX, leftOffsetX + 0.3, stageP)
+        heartGroup.position.y = lerp(0, 0.4, stageP)
+        heartGroup.position.z = lerp(0, -1.2, stageP)
+        heartGroup.rotation.y = heartSlowRotate
+        heartGroup.scale.set(heartBeat, heartBeat, heartBeat)
+        setOrganOpacity(heartFrontMat, heartBackMat, heartCoreMat, heartAuraMat, lerp(1, 0.5, stageP))
 
-        lungsMesh.position.x = lerp(leftOffsetX - 4, leftOffsetX, stageP)
-        lungsMesh.position.y = lerp(-1, 0, stageP)
-        lungsMesh.position.z = lerp(-4, 0, stageP)
-        lungsMesh.material.opacity = lerp(0, 0.9, stageP)
+        lungsGroup.position.x = lerp(leftOffsetX - 4, leftOffsetX, stageP)
+        lungsGroup.position.y = lerp(-1, 0, stageP)
+        lungsGroup.position.z = lerp(-4, 0, stageP)
+        setOrganOpacity(lungsFrontMat, lungsBackMat, lungsCoreMat, lungsAuraMat, lerp(0, 0.9, stageP))
 
-        kidneyMesh.material.opacity = 0
+        setOrganOpacity(kidneyFrontMat, kidneyBackMat, kidneyCoreMat, kidneyAuraMat, 0)
         spineMat.opacity = 0
         particleMat.opacity = 0
 
-        leftHeartLight.color.setHex(0xf43f5e)
+        keyCrimsonLight.color.setHex(0xf43f5e)
+        backGlowLight.color.setHex(0xe11d48)
         rightCyanLight.color.setHex(0x06b6d4)
         scene.fog.color.setHex(0x0a0518)
       }
@@ -221,24 +308,25 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         const stageP = (p - 0.22) / 0.26
         const lungsBreath = 1 + Math.sin(elapsedTime * 2.5) * 0.05
 
-        lungsMesh.scale.set(lungsBreath, lungsBreath, 1)
-        lungsMesh.rotation.y = elapsedTime * 0.28
-        lungsMesh.position.x = lerp(leftOffsetX, leftOffsetX - 0.8, stageP)
-        lungsMesh.position.y = lerp(0, 0.6, stageP)
-        lungsMesh.position.z = lerp(0, -1.8, stageP)
-        lungsMesh.material.opacity = lerp(0.9, 0.25, stageP)
+        lungsGroup.scale.set(lungsBreath, lungsBreath, lungsBreath)
+        lungsGroup.rotation.y = elapsedTime * 0.28
+        lungsGroup.position.x = lerp(leftOffsetX, leftOffsetX - 0.8, stageP)
+        lungsGroup.position.y = lerp(0, 0.6, stageP)
+        lungsGroup.position.z = lerp(0, -1.8, stageP)
+        setOrganOpacity(lungsFrontMat, lungsBackMat, lungsCoreMat, lungsAuraMat, lerp(0.9, 0.25, stageP))
 
-        heartMesh.material.opacity = lerp(0.5, 0.1, stageP)
+        setOrganOpacity(heartFrontMat, heartBackMat, heartCoreMat, heartAuraMat, lerp(0.5, 0.1, stageP))
 
-        kidneyMesh.position.x = lerp(leftOffsetX + 4, leftOffsetX, stageP)
-        kidneyMesh.position.y = lerp(-3, 0, stageP)
-        kidneyMesh.position.z = lerp(-5, 0, stageP)
-        kidneyMesh.material.opacity = lerp(0, 0.95, stageP)
+        kidneyGroup.position.x = lerp(leftOffsetX + 4, leftOffsetX, stageP)
+        kidneyGroup.position.y = lerp(-3, 0, stageP)
+        kidneyGroup.position.z = lerp(-5, 0, stageP)
+        setOrganOpacity(kidneyFrontMat, kidneyBackMat, kidneyCoreMat, kidneyAuraMat, lerp(0, 0.95, stageP))
 
         spineMat.opacity = 0
         particleMat.opacity = 0
 
-        leftHeartLight.color.setHex(0x10b981)
+        keyCrimsonLight.color.setHex(0x10b981)
+        backGlowLight.color.setHex(0x059669)
         rightCyanLight.color.setHex(0x0284c7)
         scene.fog.color.setHex(0x021c16)
       }
@@ -247,15 +335,15 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         const stageP = (p - 0.48) / 0.24
         const kidneyPulse = 1 + Math.sin(elapsedTime * 3.2) * 0.06
 
-        kidneyMesh.scale.set(kidneyPulse, kidneyPulse, 1)
-        kidneyMesh.rotation.y = elapsedTime * 0.32
-        kidneyMesh.position.x = lerp(leftOffsetX, leftOffsetX + 0.4, stageP)
-        kidneyMesh.position.y = lerp(0, -0.8, stageP)
-        kidneyMesh.position.z = lerp(0, -3.5, stageP)
-        kidneyMesh.material.opacity = lerp(0.95, 0.35, stageP)
+        kidneyGroup.scale.set(kidneyPulse, kidneyPulse, kidneyPulse)
+        kidneyGroup.rotation.y = elapsedTime * 0.32
+        kidneyGroup.position.x = lerp(leftOffsetX, leftOffsetX + 0.4, stageP)
+        kidneyGroup.position.y = lerp(0, -0.8, stageP)
+        kidneyGroup.position.z = lerp(0, -3.5, stageP)
+        setOrganOpacity(kidneyFrontMat, kidneyBackMat, kidneyCoreMat, kidneyAuraMat, lerp(0.95, 0.35, stageP))
 
-        lungsMesh.material.opacity = lerp(0.25, 0.05, stageP)
-        heartMesh.material.opacity = lerp(0.1, 0.05, stageP)
+        setOrganOpacity(lungsFrontMat, lungsBackMat, lungsCoreMat, lungsAuraMat, lerp(0.25, 0.05, stageP))
+        setOrganOpacity(heartFrontMat, heartBackMat, heartCoreMat, heartAuraMat, lerp(0.1, 0.05, stageP))
 
         humanGroup.position.x = leftOffsetX
         humanGroup.position.z = lerp(-12, 0, stageP)
@@ -263,7 +351,8 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         spineMat.opacity = lerp(0, 0.8, stageP)
         particleMat.opacity = lerp(0, 0.9, stageP)
 
-        leftHeartLight.color.setHex(0xf59e0b)
+        keyCrimsonLight.color.setHex(0xf59e0b)
+        backGlowLight.color.setHex(0xd97706)
         rightCyanLight.color.setHex(0x8b5cf6)
         scene.fog.color.setHex(0x1e0f04)
       }
@@ -277,11 +366,12 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         spineMat.opacity = lerp(0.8, 0.6, stageP)
         particleMat.opacity = lerp(0.9, 0.75, stageP)
 
-        heartMesh.material.opacity = lerp(0.1, 0, stageP)
-        lungsMesh.material.opacity = lerp(0.05, 0, stageP)
-        kidneyMesh.material.opacity = lerp(0.35, 0, stageP)
+        setOrganOpacity(heartFrontMat, heartBackMat, heartCoreMat, heartAuraMat, lerp(0.1, 0, stageP))
+        setOrganOpacity(lungsFrontMat, lungsBackMat, lungsCoreMat, lungsAuraMat, lerp(0.05, 0, stageP))
+        setOrganOpacity(kidneyFrontMat, kidneyBackMat, kidneyCoreMat, kidneyAuraMat, lerp(0.35, 0, stageP))
 
-        leftHeartLight.color.setHex(0xd946ef)
+        keyCrimsonLight.color.setHex(0xd946ef)
+        backGlowLight.color.setHex(0xc084fc)
         rightCyanLight.color.setHex(0x6366f1)
         scene.fog.color.setHex(0x12092b)
       }
