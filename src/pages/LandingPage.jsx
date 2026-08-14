@@ -52,7 +52,7 @@ export default function LandingPage() {
 
   return (
     <div className="medisafe-landing">
-      {/* ── 3D CONTINUOUS SCROLL CANVAS ───────────────────────── */}
+      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ON RIGHT SIDE) ─────── */}
       <Medical3DCanvas scrollProgress={scrollProgress} />
 
       {/* ── FLOATING GLASS NAVBAR ────────────────────────────── */}
@@ -83,45 +83,47 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── CONTINUOUS SCROLL SECTIONS ────────────────────────── */}
+      {/* ── CONTINUOUS SCROLL SECTIONS (LEFT COLUMN CONTENT) ──── */}
       <div className="medisafe-scroll-wrapper">
-        {/* ── SECTION 1: HERO (HEART) ────────────────────────── */}
+        {/* ── SECTION 1: HERO (HEART ON RIGHT SIDE) ──────────── */}
         <section id="sec-hero" className="medisafe-section">
-          <div className="hero-badge-pill">
-            <span>✨ AI-Powered Clinical Safety Engine</span>
-          </div>
+          <div className="hero-content-col">
+            <div className="hero-badge-pill">
+              <span>✨ AI-Powered Clinical Safety Engine</span>
+            </div>
 
-          <h1 className="hero-main-heading">
-            MEDISAFE
-          </h1>
+            <h1 className="hero-main-heading">
+              MEDISAFE
+            </h1>
 
-          <p className="hero-tagline">
-            &ldquo;Because no patient should get hurt by the medicine that was supposed to help them.&rdquo;
-          </p>
+            <p className="hero-tagline">
+              &ldquo;Because no patient should get hurt by the medicine that was supposed to help them.&rdquo;
+            </p>
 
-          <span className="hero-support-text">
-            Smart Medicine Safety &amp; Drug Interaction Assistant
-          </span>
+            <span className="hero-support-text">
+              Smart Medicine Safety &amp; Drug Interaction Assistant
+            </span>
 
-          <div className="hero-btn-row">
-            <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
-              <span>Explore MediSafe</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
+            <div className="hero-btn-row">
+              <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
+                <span>Explore MediSafe</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
 
-            <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
-              <span>Continue as Guest</span>
-            </button>
-          </div>
+              <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
+                <span>Continue as Guest</span>
+              </button>
+            </div>
 
-          <div className="scroll-explore-indicator">
-            SCROLL TO EXPLORE ↓
+            <div className="scroll-explore-indicator">
+              SCROLL TO EXPLORE ↓
+            </div>
           </div>
         </section>
 
-        {/* ── SECTION 2: HEART → LUNGS TRANSITION ───────────── */}
+        {/* ── SECTION 2: HEART → LUNGS TRANSITION (LEFT CARD) ─── */}
         <section id="sec-heart" className="medisafe-section">
           <div className="anatomical-quote-box">
             <h2 className="anatomical-heading">
@@ -133,7 +135,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 3: LUNGS → KIDNEYS TRANSITION ──────────── */}
+        {/* ── SECTION 3: LUNGS → KIDNEYS TRANSITION (LEFT CARD) ── */}
         <section id="sec-lungs" className="medisafe-section">
           <div className="anatomical-quote-box">
             <h2 className="anatomical-heading">
@@ -145,9 +147,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 4: KIDNEYS → FULL HUMAN HOLOGRAPHIC ANATOMY ── */}
+        {/* ── SECTION 4: KIDNEYS → FULL HUMAN ANATOMY (LEFT CARD) ── */}
         <section id="sec-human" className="medisafe-section">
-          <div className="anatomical-quote-box" style={{ maxWidth: '850px' }}>
+          <div className="anatomical-quote-box">
             <h2 className="anatomical-heading">
               Visualizing Safety Across Human Systems
             </h2>
@@ -178,14 +180,14 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES) ─────── */}
+        {/* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES CARDS) ─── */}
         <section id="sec-capabilities" className="medisafe-section">
           <div className="capabilities-header">
             <span className="hero-badge-pill">Capabilities</span>
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0.4rem 0 0.8rem 0' }}>
+            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0.4rem 0 0.8rem 0', lineHeight: 1.15 }}>
               One place for safer medication decisions.
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: '1.05rem', margin: 0 }}>
+            <p style={{ color: '#94a3b8', fontSize: '1.05rem', margin: 0, lineHeight: 1.55 }}>
               Comprehensive clinical tools built to prevent prescription errors and empower patient safety.
             </p>
           </div>
