@@ -104,6 +104,7 @@ export default function MedicationAlarm() {
 
   const [activeRingingAlarm, setActiveRingingAlarm] = useState(null)
   const [ringingTimer, setRingingTimer] = useState(60)
+  const [familyCareSyncEnabled, setFamilyCareSyncEnabled] = useState(true)
 
   // Phone-Style Alarm Time Picker Modal state
   const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
