@@ -5,6 +5,7 @@ import MedicineSearch from '../components/dashboard/MedicineSearch'
 import DrugInteractionChecker from '../components/dashboard/DrugInteractionChecker'
 import SymptomChecker from '../components/dashboard/SymptomChecker'
 import MedicalRecords from '../components/dashboard/MedicalRecords'
+import MyHealth from '../components/dashboard/MyHealth'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -130,6 +131,8 @@ export default function DashboardPage() {
           <SymptomChecker />
         ) : activeTab === 'records' ? (
           <MedicalRecords />
+        ) : activeTab === 'myhealth' ? (
+          <MyHealth />
         ) : (
           <>
             {/* Top Header Bar (Dashboard Tab Only) */}
