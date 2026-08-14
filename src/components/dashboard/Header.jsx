@@ -31,7 +31,7 @@ const getInitials = (name) => {
   return name.slice(0, 2).toUpperCase()
 }
 
-export default function Header({ showGreeting = true }) {
+export default function Header() {
   const { user } = useAuth()
   const greeting = getGreetingTime()
   const displayName = getUserDisplayName(user)
@@ -42,15 +42,14 @@ export default function Header({ showGreeting = true }) {
     <header className="dash-header" style={{
       display: 'flex',
       alignItems: 'center',
-      justify: showGreeting ? 'space-between' : 'flex-end',
+      justify: 'space-between',
       gap: '1.5rem',
       paddingBottom: '1.2rem',
       borderBottom: '1px solid #e2e8f0',
       marginBottom: '1rem',
       flexWrap: 'wrap'
     }}>
-      {showGreeting && (
-        <div className="dash-greeting">
+      <div className="dash-greeting">
           <h1 className="dash-title" style={{
             fontSize: '1.75rem',
             fontWeight: 800,
@@ -74,7 +73,6 @@ export default function Header({ showGreeting = true }) {
             Here is your PulseMed health & medication safety overview.
           </p>
         </div>
-      )}
 
       <div className="dash-header-actions" style={{
         display: 'flex',

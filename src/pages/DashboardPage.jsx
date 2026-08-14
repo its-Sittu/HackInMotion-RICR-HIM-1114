@@ -121,9 +121,6 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className={`dash-main ${isSidebarCollapsed ? 'sidebar-is-collapsed' : ''}`}>
-        {/* Top Header Bar */}
-        <Header showGreeting={activeTab === 'dashboard'} />
-
         {/* Conditional Tab Views */}
         {activeTab === 'medicines' ? (
           <MedicineSearch />
@@ -135,6 +132,9 @@ export default function DashboardPage() {
           <MedicalRecords />
         ) : (
           <>
+            {/* Top Header Bar (Dashboard Tab Only) */}
+            <Header />
+
             {/* Health Overview / Vitals Grid */}
             <section className="dash-vitals-grid">
               {vitals.map((item) => (
