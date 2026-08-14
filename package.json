@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "spellcheck": "cspell \"src/**/*.{js,jsx}\" \"backend/src/**/*.{js,jsx}\" \"README.md\" --config ./cspell.json",
+    "spellcheck": "npx -y cspell \"src/**/*.{js,jsx}\" \"backend/src/**/*.{js,jsx}\" \"README.md\" --config ./cspell.json",
     "preview": "vite preview"
   },
   "dependencies": {
