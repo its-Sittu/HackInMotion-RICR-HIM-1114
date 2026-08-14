@@ -115,7 +115,7 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     }
 
     const isMobile = width < 768
-    const rightOffsetX = isMobile ? 0 : 2.85 // Placed on RIGHT side
+    const rightOffsetX = isMobile ? 0 : 3.4 // Positioned further to the RIGHT side
 
     // Volumetric 3D Heart on the RIGHT Side
     const {
@@ -273,18 +273,17 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
       rightRedParticles.rotation.y = elapsedTime * 0.08
       leftCyanParticles.rotation.y = -elapsedTime * 0.05
 
-      // Continuous Slow 3D Volumetric Organ Rotation on Y-Axis
-      const heartSlowRotate = elapsedTime * 0.4
+      // Heart breathing pulse animation (Stopped rotation on its axis!)
       const heartBeat = 1 + Math.sin(elapsedTime * 3.8) * 0.065
 
-      // STAGE 1: HERO - VOLUMETRIC 3D HEART ON RIGHT SIDE (0.0 to 0.22)
+      // STAGE 1: HERO - VOLUMETRIC 3D HEART FIXED ON RIGHT SIDE (0.0 to 0.22)
       if (p <= 0.22) {
         const stageP = p / 0.22
 
         heartGroup.position.x = lerp(rightOffsetX, rightOffsetX - 0.3, stageP)
         heartGroup.position.y = lerp(0, 0.4, stageP)
         heartGroup.position.z = lerp(0, -1.2, stageP)
-        heartGroup.rotation.y = heartSlowRotate
+        heartGroup.rotation.y = 0 // Heart rotation stopped on axis!
         heartGroup.scale.set(heartBeat, heartBeat, heartBeat)
         setOrganOpacity(heartFrontMat, heartBackMat, heartCoreMat, heartAuraMat, lerp(1, 0.5, stageP))
 
