@@ -172,7 +172,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_yellow_tablets.png',
     purpose: 'Fever reduction, mild to moderate pain relief (headache, body ache, toothache).',
     whenToTake: '1 tablet after meals, every 4–6 hours as needed. Maximum 4 tablets per day.',
-    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meals (Take After Food)',
     precautions: 'Do not exceed daily limit. Avoid alcohol while taking. Consult doctor if liver disease exists.',
     activeIngredients: 'Paracetamol (650mg)',
     manufacturer: 'Micro Labs Ltd'
@@ -185,7 +185,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_red_white_pills.png',
     purpose: 'Fast relief from fever, headache, body pain, and joint aches.',
     whenToTake: '1 to 2 tablets every 4 to 6 hours after food. Max 4000mg in 24 hours.',
-    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meals (Take After Food)',
     precautions: 'Do not take with other paracetamol-containing medicines.',
     activeIngredients: 'Paracetamol (500mg)',
     manufacturer: 'GSK Consumer Healthcare'
@@ -198,7 +198,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_cream_ovals.png',
     purpose: 'Relief from severe pain, swelling, toothache, muscle cramps, and fever.',
     whenToTake: '1 tablet 2-3 times daily AFTER meals with plenty of water.',
-    dosageSchedule: 'Strictly Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Strictly Post-Meals (Take After Food)',
     precautions: 'Never take on an empty stomach. Avoid if history of stomach ulcers exists.',
     activeIngredients: 'Ibuprofen (400mg), Paracetamol (325mg)',
     manufacturer: 'Sanofi India'
@@ -211,7 +211,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_blue_blister.jpg',
     purpose: 'Acidity, heartburn, GERD, gas, and stomach ulcer prevention.',
     whenToTake: '1 tablet DAILY IN THE MORNING 30 minutes BEFORE breakfast (Empty Stomach).',
-    dosageSchedule: 'Pre-Breakfast (Khali pet)',
+    dosageSchedule: 'Pre-Breakfast (Empty Stomach)',
     precautions: 'Swallow whole with water. Do not crush or chew the tablet.',
     activeIngredients: 'Pantoprazole Sodium (40mg)',
     manufacturer: 'Sun Pharma'
@@ -249,8 +249,8 @@ const DEFAULT_FALLBACK_MEDICINES = [
     category: 'Anti-Allergic',
     imageUrl: '/images/medicines/med_yellow_tablets.png',
     purpose: 'Relief from allergic runny nose, sneezing, watery eyes, and skin hives/itching.',
-    whenToTake: '1 tablet ONCE DAILY at bedtime (Raat ko sone se pehle).',
-    dosageSchedule: 'Night Bedtime (Raat ko)',
+    whenToTake: '1 tablet ONCE DAILY at bedtime before sleep.',
+    dosageSchedule: 'Night Bedtime (Before Sleep)',
     precautions: 'May cause mild drowsiness. Avoid driving or operating machinery after taking.',
     activeIngredients: 'Cetirizine Hydrochloride (10mg)',
     manufacturer: 'Dr. Reddy Labs'
@@ -263,7 +263,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_cream_ovals.png',
     purpose: 'Type-2 Diabetes management to control blood sugar levels.',
     whenToTake: '1 tablet twice daily WITH or IMMEDIATELY AFTER meals (Breakfast & Dinner).',
-    dosageSchedule: 'With Meals (Khana khate waqt)',
+    dosageSchedule: 'With Meals (During Food)',
     precautions: 'Regular blood glucose monitoring is required. Avoid excessive alcohol.',
     activeIngredients: 'Metformin Hydrochloride (500mg)',
     manufacturer: 'USV Ltd'
@@ -276,7 +276,7 @@ const DEFAULT_FALLBACK_MEDICINES = [
     imageUrl: '/images/medicines/med_red_white_pills.png',
     purpose: 'Prevention of heart attacks, stroke, and blood clot formation.',
     whenToTake: '1 tablet once daily after main meal (Lunch or Dinner) at the same time.',
-    dosageSchedule: 'Post-Meal (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meal (Take After Food)',
     precautions: 'Must be taken under medical supervision. Avoid if bleeding disorders exist.',
     activeIngredients: 'Aspirin (75mg)',
     manufacturer: 'USV Private Limited'
@@ -935,12 +935,11 @@ export default function MedicineSearch() {
 
                 return (
                   <div key={med.id} style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.88)',
-                    backdropFilter: 'blur(16px)',
+                    backgroundColor: '#ffffff',
                     borderRadius: '22px',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    border: '1px solid #e2e8f0',
                     padding: '1.4rem',
-                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.45)',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.06)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -960,7 +959,7 @@ export default function MedicineSearch() {
                       background: med.category.includes('Pain') ? 'linear-gradient(90deg, #ef4444, #f97316)' :
                                  med.category.includes('Antibiotic') ? 'linear-gradient(90deg, #10b981, #06b6d4)' :
                                  med.category.includes('Antacid') ? 'linear-gradient(90deg, #f59e0b, #eab308)' :
-                                 'linear-gradient(90deg, #38bdf8, #818cf8)'
+                                 'linear-gradient(90deg, #2563eb, #6366f1)'
                     }} />
 
                     <div>
@@ -972,8 +971,8 @@ export default function MedicineSearch() {
                         overflow: 'hidden',
                         marginBottom: '1.2rem',
                         marginTop: '0.2rem',
-                        background: 'radial-gradient(circle at center, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
-                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -993,7 +992,7 @@ export default function MedicineSearch() {
                             objectFit: 'contain',
                             objectPosition: 'center',
                             transform: 'scale(1.06)',
-                            filter: 'drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5))'
+                            filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12))'
                           }}
                         />
                       </div>
@@ -1004,7 +1003,7 @@ export default function MedicineSearch() {
                           <h3 style={{
                             fontSize: '1.18rem',
                             fontWeight: 800,
-                            color: '#ffffff',
+                            color: '#0f172a',
                             margin: '0 0 0.25rem 0',
                             letterSpacing: '-0.3px',
                             lineHeight: 1.3,
@@ -1014,7 +1013,7 @@ export default function MedicineSearch() {
                           </h3>
                           <span style={{
                             fontSize: '0.82rem',
-                            color: '#94a3b8',
+                            color: '#64748b',
                             fontWeight: 600,
                             display: 'block',
                             whiteSpace: 'nowrap',
@@ -1026,34 +1025,34 @@ export default function MedicineSearch() {
                         </div>
 
                         <span style={{
-                          backgroundColor: med.category.includes('Pain') ? 'rgba(239, 68, 68, 0.15)' :
-                                           med.category.includes('Antibiotic') ? 'rgba(16, 185, 129, 0.15)' :
-                                           med.category.includes('Antacid') ? 'rgba(245, 158, 11, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-                          color: med.category.includes('Pain') ? '#fca5a5' :
-                                 med.category.includes('Antibiotic') ? '#6ee7b7' :
-                                 med.category.includes('Antacid') ? '#fcd34d' : '#7dd3fc',
+                          backgroundColor: med.category.includes('Pain') ? '#fef2f2' :
+                                           med.category.includes('Antibiotic') ? '#ecfdf5' :
+                                           med.category.includes('Antacid') ? '#fffbeb' : '#eff6ff',
+                          color: med.category.includes('Pain') ? '#dc2626' :
+                                 med.category.includes('Antibiotic') ? '#059669' :
+                                 med.category.includes('Antacid') ? '#d97706' : '#2563eb',
                           fontSize: '0.74rem',
                           fontWeight: 700,
                           padding: '0.28rem 0.7rem',
                           borderRadius: '12px',
                           whiteSpace: 'nowrap',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          border: '1px solid rgba(0,0,0,0.06)',
                           flexShrink: 0
                         }}>
                           {med.category}
                         </span>
                       </div>
 
-                      {/* ── SECTION 1: KAB AUR KAISE LEIN ────── */}
+                      {/* ── SECTION 1: DOSAGE & ADMINISTRATION ────── */}
                       <div style={{
-                        background: 'rgba(56, 189, 248, 0.08)',
-                        borderLeft: '4px solid #38bdf8',
+                        background: '#eff6ff',
+                        borderLeft: '4px solid #2563eb',
                         borderRadius: '14px',
-                        border: '1px solid rgba(56, 189, 248, 0.2)',
+                        border: '1px solid #dbeafe',
                         padding: '0.9rem 1rem',
                         marginBottom: '1rem',
                         minHeight: isExpanded ? 'auto' : '5.4rem',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                        boxShadow: '0 2px 6px rgba(37, 99, 235, 0.04)',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between'
@@ -1061,13 +1060,13 @@ export default function MedicineSearch() {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
                             <span style={{ fontSize: '1rem' }}>🕒</span>
-                            <strong style={{ fontSize: '0.8rem', color: '#7dd3fc', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                              Kab aur Kaise Lein (Dosage):
+                            <strong style={{ fontSize: '0.8rem', color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 800 }}>
+                              DOSAGE & ADMINISTRATION:
                             </strong>
                           </div>
                           <p style={{
                             fontSize: '0.88rem',
-                            color: '#f8fafc',
+                            color: '#1e3a8a',
                             fontWeight: 700,
                             margin: 0,
                             lineHeight: 1.45,
@@ -1083,11 +1082,11 @@ export default function MedicineSearch() {
                               display: 'inline-block',
                               fontSize: '0.75rem',
                               fontWeight: 700,
-                              color: '#38bdf8',
-                              backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                              color: '#1d4ed8',
+                              backgroundColor: '#ffffff',
                               padding: '0.18rem 0.6rem',
                               borderRadius: '8px',
-                              border: '1px solid rgba(56, 189, 248, 0.3)'
+                              border: '1px solid #bfdbfe'
                             }}>
                               📌 {med.dosageSchedule}
                             </span>
@@ -1095,49 +1094,50 @@ export default function MedicineSearch() {
                         )}
                       </div>
 
-                      {/* ── SECTION 2: KIS KAAM AATI HAI ──────── */}
+                      {/* ── SECTION 2: CLINICAL INDICATIONS & USES ──────── */}
                       <div style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                        backgroundColor: '#f8fafc',
                         borderRadius: '12px',
                         padding: '0.8rem 0.95rem',
                         marginBottom: '0.9rem',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        border: '1px solid #f1f5f9',
                         minHeight: isExpanded ? 'auto' : '4.2rem'
                       }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem' }}>
-                          <span>💡</span> Kis Kaam Aati Hai (Uses):
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#334155', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                          <span>💡</span> CLINICAL INDICATIONS & USES:
                         </span>
                         <p style={{
                           fontSize: '0.86rem',
-                          color: '#cbd5e1',
+                          color: '#475569',
                           margin: 0,
                           lineHeight: 1.4,
-                          fontWeight: 500,
+                          fontWeight: 600,
                           ...(isExpanded ? {} : lineClampStyle(2))
                         }}>
                           {med.purpose}
                         </p>
                       </div>
 
-                      {/* ── SECTION 3: SAFETY PRECAUTIONS ──────────── */}
+                      {/* ── SECTION 3: SAFETY WARNINGS & PRECAUTIONS ──────────── */}
                       {med.precautions && (
                         <div style={{
-                          backgroundColor: 'rgba(244, 63, 94, 0.1)',
-                          borderLeft: '4px solid #f43f5e',
+                          backgroundColor: '#fef2f2',
+                          borderLeft: '4px solid #ef4444',
                           borderRadius: '12px',
-                          border: '1px solid rgba(244, 63, 94, 0.2)',
+                          border: '1px solid #fee2e2',
                           padding: '0.75rem 0.95rem',
                           marginBottom: '0.8rem',
                           minHeight: isExpanded ? 'auto' : '3.8rem'
                         }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.2rem' }}>
-                            <span>⚠️</span> Safety Warnings:
+                          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#991b1b', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            <span>⚠️</span> WARNINGS & PRECAUTIONS:
                           </span>
                           <p style={{
                             fontSize: '0.82rem',
-                            color: '#fecdd3',
+                            color: '#7f1d1d',
                             margin: 0,
                             lineHeight: 1.38,
+                            fontWeight: 600,
                             ...(isExpanded ? {} : lineClampStyle(2))
                           }}>
                             {med.precautions}
@@ -1152,7 +1152,7 @@ export default function MedicineSearch() {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#38bdf8',
+                          color: '#2563eb',
                           fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',

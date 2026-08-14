@@ -95,7 +95,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_yellow_tablets.png',
     purpose: 'Fever reduction, mild to moderate pain relief (headache, body ache, toothache).',
     whenToTake: '1 tablet after meals, every 4–6 hours as needed. Maximum 4 tablets per day.',
-    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meals (Take After Food)',
     precautions: 'Do not exceed daily limit. Avoid alcohol while taking. Consult doctor if liver disease exists.',
     activeIngredients: 'Paracetamol (650mg)',
     manufacturer: 'Micro Labs Ltd'
@@ -108,7 +108,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_red_white_pills.png',
     purpose: 'Fast relief from fever, headache, body pain, and joint aches.',
     whenToTake: '1 to 2 tablets every 4 to 6 hours after food. Max 4000mg in 24 hours.',
-    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meals (Take After Food)',
     precautions: 'Do not take with other paracetamol-containing medicines.',
     activeIngredients: 'Paracetamol (500mg)',
     manufacturer: 'GSK Consumer Healthcare'
@@ -121,7 +121,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_cream_ovals.png',
     purpose: 'Relief from severe pain, swelling, toothache, muscle cramps, and fever.',
     whenToTake: '1 tablet 2-3 times daily AFTER meals with plenty of water.',
-    dosageSchedule: 'Strictly Post-Meals (Khana khane ke baad)',
+    dosageSchedule: 'Strictly Post-Meals (Take After Food)',
     precautions: 'Never take on an empty stomach. Avoid if history of stomach ulcers exists.',
     activeIngredients: 'Ibuprofen (400mg), Paracetamol (325mg)',
     manufacturer: 'Sanofi India'
@@ -134,7 +134,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_blue_blister.jpg',
     purpose: 'Acidity, heartburn, GERD, gas, and stomach ulcer prevention.',
     whenToTake: '1 tablet DAILY IN THE MORNING 30 minutes BEFORE breakfast (Empty Stomach).',
-    dosageSchedule: 'Pre-Breakfast (Khali pet)',
+    dosageSchedule: 'Pre-Breakfast (Empty Stomach)',
     precautions: 'Swallow whole with water. Do not crush or chew the tablet.',
     activeIngredients: 'Pantoprazole Sodium (40mg)',
     manufacturer: 'Sun Pharma'
@@ -172,8 +172,8 @@ const LOCAL_MEDICINE_DATABASE = [
     category: 'Anti-Allergic',
     imageUrl: '/images/medicines/med_yellow_tablets.png',
     purpose: 'Relief from allergic runny nose, sneezing, watery eyes, and skin hives/itching.',
-    whenToTake: '1 tablet ONCE DAILY at bedtime (Raat ko sone se pehle).',
-    dosageSchedule: 'Night Bedtime (Raat ko)',
+    whenToTake: '1 tablet ONCE DAILY at bedtime before sleep.',
+    dosageSchedule: 'Night Bedtime (Before Sleep)',
     precautions: 'May cause mild drowsiness. Avoid driving or operating machinery after taking.',
     activeIngredients: 'Cetirizine Hydrochloride (10mg)',
     manufacturer: 'Dr. Reddy Labs'
@@ -186,7 +186,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_cream_ovals.png',
     purpose: 'Type-2 Diabetes management to control blood sugar levels.',
     whenToTake: '1 tablet twice daily WITH or IMMEDIATELY AFTER meals (Breakfast & Dinner).',
-    dosageSchedule: 'With Meals (Khana khate waqt)',
+    dosageSchedule: 'With Meals (During Food)',
     precautions: 'Regular blood glucose monitoring is required. Avoid excessive alcohol.',
     activeIngredients: 'Metformin Hydrochloride (500mg)',
     manufacturer: 'USV Ltd'
@@ -199,7 +199,7 @@ const LOCAL_MEDICINE_DATABASE = [
     imageUrl: '/images/medicines/med_red_white_pills.png',
     purpose: 'Prevention of heart attacks, stroke, and blood clot formation.',
     whenToTake: '1 tablet once daily after main meal (Lunch or Dinner) at the same time.',
-    dosageSchedule: 'Post-Meal (Khana khane ke baad)',
+    dosageSchedule: 'Post-Meal (Take After Food)',
     precautions: 'Must be taken under medical supervision. Avoid if bleeding disorders exist.',
     activeIngredients: 'Aspirin (75mg)',
     manufacturer: 'USV Private Limited'
@@ -263,7 +263,7 @@ export const searchMedicinesHandler = async (req, res, next) => {
               imageUrl,
               purpose,
               whenToTake,
-              dosageSchedule: whenToTake.toLowerCase().includes('empty stomach') ? 'Pre-Meals (Khali pet)' : 'As directed by physician',
+              dosageSchedule: whenToTake.toLowerCase().includes('empty stomach') ? 'Pre-Meals (Empty Stomach)' : 'As directed by physician',
               precautions,
               activeIngredients,
               manufacturer: manufacturer.length > 25 ? `${manufacturer.slice(0, 25)}...` : manufacturer
