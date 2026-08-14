@@ -96,12 +96,6 @@ export default function LandingPage() {
         {/* ── SECTION 1: HERO (REFERENCE IMAGE STYLE PILL BADGE & BUTTONS) ── */}
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
-            {/* Reference Image Pill Badge */}
-            <div className="hero-rating-badge">
-              <div className="hero-star-icon">★</div>
-              <span>4.9 Clinical Rating • 10K+ Patients Protected</span>
-            </div>
-
             <h1 className="hero-main-heading">
               MEDISAFE
             </h1>
