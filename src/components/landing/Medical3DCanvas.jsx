@@ -173,8 +173,8 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
 
       ambientParticles.rotation.y = elapsedTime * 0.04
 
-      // Gentle heartbeat pulse
-      const heartBeat = 1 + Math.sin(elapsedTime * 3.5) * 0.06
+      // Gentle, very slow heartbeat pump animation
+      const heartBeat = 1 + Math.sin(elapsedTime * 1.4) * 0.03
 
       // STAGE 1: HERO - SIMPLE CLEAN 3D HEART ON RIGHT SIDE (0.0 to 0.22)
       if (p <= 0.22) {
