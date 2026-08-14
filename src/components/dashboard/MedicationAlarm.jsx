@@ -397,8 +397,9 @@ export default function MedicationAlarm() {
   }
 
   return (
-    <div style={{
-      backgroundColor: '#ffffff',
+    <>
+      <div style={{
+        backgroundColor: '#ffffff',
       borderRadius: '20px',
       border: '1px solid #e2e8f0',
       padding: '1.1rem 1.3rem',
@@ -427,48 +428,25 @@ export default function MedicationAlarm() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setShowContactsModal(true)}
-            style={{
-              backgroundColor: '#fff1f2',
-              color: '#e11d48',
-              border: '1px solid #fecdd3',
-              borderRadius: '8px',
-              padding: '0.35rem 0.65rem',
-              fontSize: '0.74rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-            title="Manage 3 Priority Family Emergency Contacts"
-          >
-            🚨 Contacts
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowAddModal(true)}
-            style={{
-              backgroundColor: '#EEF2FF',
-              color: '#4F46E5',
-              border: '1px solid #C7D2FE',
-              borderRadius: '8px',
-              padding: '0.35rem 0.7rem',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            ➕ Add
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowAddModal(true)}
+          style={{
+            backgroundColor: '#EEF2FF',
+            color: '#4F46E5',
+            border: '1px solid #C7D2FE',
+            borderRadius: '8px',
+            padding: '0.35rem 0.75rem',
+            fontSize: '0.76rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem'
+          }}
+        >
+          ➕ Add Alarm
+        </button>
       </div>
 
       {/* ── ACTIVE RINGING ALARM BANNER (TRIGGERED WHEN CLOCK MATCHES ALARM) ── */}
@@ -700,6 +678,107 @@ export default function MedicationAlarm() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+
+      {/* ── STANDALONE CARD BELOW ALARM: 3 PRIORITY EMERGENCY FAMILY CONTACTS ── */}
+      <div style={{
+        backgroundColor: '#ffffff',
+        borderRadius: '20px',
+        border: '1px solid #e2e8f0',
+        padding: '1.1rem 1.3rem',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
+        boxSizing: 'border-box',
+        marginTop: '1.4rem'
+      }}>
+        {/* Card Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.3rem' }}>🚨</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
+                3 Priority Emergency Family Contacts
+              </h3>
+              <span style={{ fontSize: '0.72rem', color: '#e11d48', fontWeight: 700 }}>
+                1-Min Unanswered Alarm Auto-SOS System
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowContactsModal(true)}
+            style={{
+              backgroundColor: '#fff1f2',
+              color: '#e11d48',
+              border: '1px solid #fecdd3',
+              borderRadius: '8px',
+              padding: '0.35rem 0.7rem',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem'
+            }}
+          >
+            ✏️ Edit Contacts
+          </button>
+        </div>
+
+        {/* 3 Contacts Mini Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          {emergencyContacts.map((contact, idx) => (
+            <div key={contact.id || idx} style={{
+              backgroundColor: idx === 0 ? '#fff1f2' : '#f8fafc',
+              border: idx === 0 ? '1.5px solid #fecdd3' : '1px solid #e2e8f0',
+              borderRadius: '12px',
+              padding: '0.65rem 0.85rem',
+              display: 'flex',
+              justify: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.5rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <span style={{
+                  backgroundColor: idx === 0 ? '#be123c' : idx === 1 ? '#4338ca' : '#0369a1',
+                  color: '#ffffff',
+                  fontSize: '0.7rem',
+                  fontWeight: 900,
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justify: 'center',
+                  flexShrink: 0
+                }}>
+                  P{idx + 1}
+                </span>
+                <div>
+                  <strong style={{ fontSize: '0.86rem', color: '#0f172a', fontWeight: 800, display: 'block' }}>
+                    {contact.name}
+                  </strong>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
+                    {contact.role} • 📞 {contact.phone}
+                  </span>
+                </div>
+              </div>
+
+              <span style={{
+                backgroundColor: '#d1fae5',
+                color: '#047857',
+                fontSize: '0.68rem',
+                fontWeight: 800,
+                padding: '0.15rem 0.45rem',
+                borderRadius: '6px'
+              }}>
+                ⚡ SOS Active
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── PHONE-STYLE ALARM TIME PICKER MODAL ─────────────────────────── */}
@@ -1169,6 +1248,6 @@ export default function MedicationAlarm() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

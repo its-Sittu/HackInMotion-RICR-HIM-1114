@@ -260,93 +260,129 @@ export default function MyHealth() {
         boxSizing: 'border-box'
       }}>
 
-        {/* ── LEFT: ULTRA-COMPACT DIGITAL HEALTH CALENDAR WIDGET ──────────── */}
+        {/* ── LEFT: ULTRA-ATTRACTIVE DIGITAL HEALTH CALENDAR WIDGET ──────────── */}
         <div style={{
           backgroundColor: '#ffffff',
-          borderRadius: '20px',
+          borderRadius: '24px',
           border: '1px solid #e2e8f0',
-          padding: '1.2rem',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
+          padding: '1.4rem',
+          boxShadow: '0 12px 35px rgba(0, 0, 0, 0.04)',
           animation: 'fadeInUp 0.3s ease-out',
           width: '100%',
           boxSizing: 'border-box',
           overflow: 'hidden'
         }}>
-          {/* Calendar Header: Month Switcher & Legend */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.9rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
-                {MONTH_NAMES[currentMonth]} {currentYear}
-              </h2>
-
-              <div style={{ display: 'flex', gap: '0.2rem' }}>
+          {/* Calendar Header: Sleek Dark Gradient Header Bar */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+            borderRadius: '16px',
+            padding: '0.9rem 1.1rem',
+            marginBottom: '1rem',
+            display: 'flex',
+            justify: 'space-between',
+            alignItems: 'center',
+            boxShadow: '0 6px 20px rgba(15, 23, 42, 0.25)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div style={{ display: 'flex', gap: '0.25rem' }}>
                 <button
                   type="button"
                   onClick={handlePrevMonth}
                   style={{
-                    backgroundColor: '#f1f5f9',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '7px',
-                    width: '24px',
-                    height: '24px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    color: '#475569'
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    color: '#ffffff',
+                    transition: 'all 0.15s ease'
                   }}
+                  title="Previous Month"
                 >
-                  ◀
+                  ‹
                 </button>
 
                 <button
                   type="button"
                   onClick={handleNextMonth}
                   style={{
-                    backgroundColor: '#f1f5f9',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '7px',
-                    width: '24px',
-                    height: '24px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'center',
                     cursor: 'pointer',
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    color: '#475569'
+                    fontSize: '0.85rem',
+                    fontWeight: 800,
+                    color: '#ffffff',
+                    transition: 'all 0.15s ease'
                   }}
+                  title="Next Month"
                 >
-                  ▶
+                  ›
                 </button>
               </div>
+
+              <h2 style={{
+                fontSize: '1.15rem',
+                fontWeight: 900,
+                margin: 0,
+                letterSpacing: '-0.3px',
+                background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
+                {MONTH_NAMES[currentMonth]} {currentYear}
+              </h2>
             </div>
 
-            {/* Status Color Legend Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.65rem', fontWeight: 800 }}>
-              <span style={{ color: '#059669', backgroundColor: '#d1fae5', padding: '0.15rem 0.4rem', borderRadius: '5px' }}>
-                💊 Dose
-              </span>
-              <span style={{ color: '#e11d48', backgroundColor: '#ffe4e6', padding: '0.15rem 0.4rem', borderRadius: '5px' }}>
-                ⚠️ Missed
-              </span>
-            </div>
+            {/* Today Badge */}
+            <span style={{
+              backgroundColor: 'rgba(129, 140, 248, 0.2)',
+              border: '1px solid rgba(129, 140, 248, 0.35)',
+              color: '#c7d2fe',
+              fontSize: '0.68rem',
+              fontWeight: 800,
+              padding: '0.2rem 0.55rem',
+              borderRadius: '20px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.3rem'
+            }}>
+              ✨ Live Calendar
+            </span>
           </div>
 
           {/* 7-Column Calendar Grid Header */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.3rem',
+            gap: '0.35rem',
             textAlign: 'center',
-            marginBottom: '0.35rem',
+            marginBottom: '0.5rem',
             width: '100%',
             boxSizing: 'border-box'
           }}>
             {DAYS_OF_WEEK.map(day => (
-              <div key={day} style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '0.15rem 0' }}>
+              <div key={day} style={{
+                fontSize: '0.68rem',
+                fontWeight: 900,
+                color: '#6366f1',
+                textTransform: 'uppercase',
+                letterSpacing: '0.6px',
+                padding: '0.2rem 0',
+                backgroundColor: '#f8fafc',
+                borderRadius: '6px'
+              }}>
                 {day}
               </div>
             ))}
@@ -356,13 +392,13 @@ export default function MyHealth() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.3rem',
+            gap: '0.35rem',
             width: '100%',
             boxSizing: 'border-box'
           }}>
             {/* Blank Leading Cells */}
             {Array.from({ length: firstDayIndex }).map((_, idx) => (
-              <div key={`blank-${idx}`} style={{ minHeight: '46px', backgroundColor: '#f8fafc', borderRadius: '8px', opacity: 0.2 }} />
+              <div key={`blank-${idx}`} style={{ minHeight: '48px', backgroundColor: '#f8fafc', borderRadius: '10px', opacity: 0.25 }} />
             ))}
 
             {/* Active Month Days */}
@@ -380,54 +416,80 @@ export default function MyHealth() {
                   key={dateKey}
                   onClick={() => openDayModal(dayNum)}
                   style={{
-                    minHeight: '48px',
+                    minHeight: '52px',
                     minWidth: 0,
-                    borderRadius: '10px',
-                    padding: '0.25rem 0.2rem',
+                    borderRadius: '12px',
+                    padding: '0.3rem 0.25rem',
                     border: isToday ? '2px solid #6366f1' : marking ? `1.5px solid ${marking.color}` : '1px solid #e2e8f0',
                     backgroundColor: marking ? marking.bg : isToday ? '#eef2ff' : '#ffffff',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     justify: 'space-between',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isToday ? '0 2px 8px rgba(99, 102, 241, 0.15)' : 'none',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: isToday ? '0 4px 14px rgba(99, 102, 241, 0.25)' : marking ? '0 2px 8px rgba(0,0,0,0.03)' : 'none',
                     boxSizing: 'border-box',
                     overflow: 'hidden'
                   }}
+                  title={marking ? `${dateKey}: ${marking.status} - ${marking.note || 'No note'}` : `Click to mark ${dateKey}`}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{
-                      fontSize: '0.76rem',
-                      fontWeight: isToday || marking ? 800 : 600,
-                      color: isToday ? '#4338ca' : marking ? marking.color : '#1e293b'
+                      fontSize: '0.78rem',
+                      fontWeight: isToday || marking ? 900 : 700,
+                      color: isToday ? '#4338ca' : marking ? marking.color : '#0f172a'
                     }}>
                       {dayNum}
                     </span>
 
                     {isToday && (
-                      <span style={{ fontSize: '0.45rem', backgroundColor: '#6366f1', color: '#ffffff', padding: '0.05rem 0.15rem', borderRadius: '3px', fontWeight: 800 }}>
+                      <span style={{ fontSize: '0.45rem', backgroundColor: '#6366f1', color: '#ffffff', padding: '0.08rem 0.2rem', borderRadius: '4px', fontWeight: 900 }}>
                         TODAY
                       </span>
                     )}
                   </div>
 
-                  {/* Ultra-Compact Marked Info Badge */}
+                  {/* Ultra-Attractive Marked Info Badge */}
                   {marking ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.1rem', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', overflow: 'hidden' }}>
                       <span style={{ fontSize: '0.7rem' }}>{marking.typeIcon}</span>
-                      <strong style={{ fontSize: '0.52rem', color: marking.color, textTransform: 'uppercase', letterSpacing: '0.1px', whiteSpace: 'nowrap' }}>
+                      <strong style={{ fontSize: '0.52rem', color: marking.color, textTransform: 'uppercase', letterSpacing: '0.1px', whiteSpace: 'nowrap', fontWeight: 900 }}>
                         {marking.status}
                       </strong>
                     </div>
                   ) : (
-                    <span style={{ fontSize: '0.52rem', color: '#94a3b8' }}>
+                    <span style={{ fontSize: '0.52rem', color: '#cbd5e1', fontWeight: 600 }}>
                       + Mark
                     </span>
                   )}
                 </div>
               )
             })}
+          </div>
+
+          {/* Calendar Bottom Legend Bar */}
+          <div style={{
+            marginTop: '1rem',
+            paddingTop: '0.7rem',
+            borderTop: '1px solid #f1f5f9',
+            display: 'flex',
+            justify: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.4rem'
+          }}>
+            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Legend:</span>
+            <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.68rem', fontWeight: 800 }}>
+              <span style={{ color: '#059669', backgroundColor: '#d1fae5', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
+                💊 Taken
+              </span>
+              <span style={{ color: '#be123c', backgroundColor: '#ffe4e6', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
+                ⚠️ Missed
+              </span>
+              <span style={{ color: '#0369a1', backgroundColor: '#e0f2fe', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
+                🩺 Checkup
+              </span>
+            </div>
           </div>
         </div>
 
