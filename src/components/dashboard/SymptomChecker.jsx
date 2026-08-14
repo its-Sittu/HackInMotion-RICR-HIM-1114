@@ -42,52 +42,49 @@ const playEcoTechPingSound = () => {
     const ctx = new AudioCtx()
     const now = ctx.currentTime
 
-    // 1. Crystal Tech Tone
+    // 1. Warm Eco Solfeggio Glass Ping (528Hz -> 1056Hz)
     const osc1 = ctx.createOscillator()
     const gain1 = ctx.createGain()
     osc1.type = 'sine'
-    osc1.frequency.setValueAtTime(987.77, now) // B5 note
-    osc1.frequency.exponentialRampToValueAtTime(1975.53, now + 0.06) // B6 shimmer
-    osc1.frequency.exponentialRampToValueAtTime(493.88, now + 0.4)
+    osc1.frequency.setValueAtTime(528, now)
+    osc1.frequency.exponentialRampToValueAtTime(1056, now + 0.05)
+    osc1.frequency.exponentialRampToValueAtTime(528, now + 0.3)
 
-    gain1.gain.setValueAtTime(0.22, now)
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4)
+    gain1.gain.setValueAtTime(0.15, now)
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3)
 
-    // 2. Sub Echo Resonance
+    // 2. Harmonic E5 Shimmer
     const osc2 = ctx.createOscillator()
     const gain2 = ctx.createGain()
-    osc2.type = 'triangle'
-    osc2.frequency.setValueAtTime(659.25, now) // E5 note
-    osc2.frequency.exponentialRampToValueAtTime(329.63, now + 0.45)
+    osc2.type = 'sine'
+    osc2.frequency.setValueAtTime(659.25, now)
+    osc2.frequency.exponentialRampToValueAtTime(1318.51, now + 0.07)
 
-    gain2.gain.setValueAtTime(0.14, now)
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45)
+    gain2.gain.setValueAtTime(0.08, now)
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35)
 
-    // 3. Multi-Tap Delay Echo Loop (Reverb Echo)
+    // 3. Smooth Low-pass Warm Eco Filter
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(2200, now)
+
+    // 4. Soft Spatial Echo Delay
     const delay = ctx.createDelay()
-    delay.delayTime.setValueAtTime(0.09, now) // 90ms echo delay tap
+    delay.delayTime.setValueAtTime(0.12, now) // 120ms gentle echo tap
 
     const feedback = ctx.createGain()
-    feedback.gain.setValueAtTime(0.48, now) // 48% echo feedback decay
+    feedback.gain.setValueAtTime(0.35, now) // 35% gentle decay
 
-    // 4. Spatial Resonance Filter
-    const filter = ctx.createBiquadFilter()
-    filter.type = 'bandpass'
-    filter.frequency.setValueAtTime(1500, now)
-    filter.Q.setValueAtTime(10, now)
-
-    // Connect Primary Signal to Output and Delay
+    // Connections
     osc1.connect(gain1)
     osc2.connect(gain2)
 
     gain1.connect(filter)
     gain2.connect(filter)
 
-    // Delay Echo Loop
     filter.connect(delay)
     delay.connect(feedback)
     feedback.connect(delay)
-    feedback.connect(filter)
 
     filter.connect(ctx.destination)
     delay.connect(ctx.destination)
@@ -95,8 +92,8 @@ const playEcoTechPingSound = () => {
     osc1.start(now)
     osc2.start(now)
 
-    osc1.stop(now + 0.5)
-    osc2.stop(now + 0.5)
+    osc1.stop(now + 0.4)
+    osc2.stop(now + 0.45)
   } catch {
     // Gracefully handle browser audio autoplay policies
   }
