@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/dashboard/Sidebar'
+import Header from '../components/dashboard/Header'
+import MedicineSearch from '../components/dashboard/MedicineSearch'
+import DrugInteractionChecker from '../components/dashboard/DrugInteractionChecker'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -100,224 +103,211 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className="dash-main">
-        {/* Top Header / Greeting Bar */}
-        <header className="dash-header">
-          <div className="dash-greeting">
-            <h1 className="dash-title">Good Morning, Alex 👋</h1>
-            <p className="dash-subtitle">Here is your daily health summary and medical vital report.</p>
-          </div>
+        {/* Top Header Bar */}
+        <Header />
 
-          <div className="dash-header-actions">
-            <div className="dash-search-box">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input type="text" placeholder="Search records, vitals, doctors..." />
-            </div>
-
-            <button className="dash-icon-btn" aria-label="Notifications">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-              <span className="dash-notification-dot" />
-            </button>
-          </div>
-        </header>
-
-        {/* Health Overview / Vitals Grid */}
-        <section className="dash-vitals-grid">
-          {vitals.map((item) => (
-            <div key={item.id} className="dash-vital-card" style={{ background: item.bgGradient }}>
-              <div className="dash-vital-top">
-                <div className="dash-vital-icon" style={{ backgroundColor: `${item.color}15`, borderColor: `${item.color}30` }}>
-                  {item.icon}
-                </div>
-                <span className="dash-vital-badge" style={{ color: item.color, backgroundColor: `${item.color}15` }}>
-                  {item.status}
-                </span>
-              </div>
-              <div className="dash-vital-info">
-                <span className="dash-vital-label">{item.title}</span>
-                <div className="dash-vital-val-row">
-                  <span className="dash-vital-value">{item.value}</span>
-                  <span className="dash-vital-unit">{item.unit}</span>
-                </div>
-                <span className="dash-vital-trend">{item.trend}</span>
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* Center Grid: Analytics & Appointment */}
-        <div className="dash-grid-2col">
-          {/* Health Analytics Chart */}
-          <section className="dash-card dash-chart-card">
-            <div className="dash-card-header">
-              <div>
-                <h3 className="dash-card-title">Health Analytics & Activity</h3>
-                <p className="dash-card-desc">7-day continuous bio-rhythm tracking</p>
-              </div>
-              <div className="dash-chart-pills">
-                <span className="dash-pill active">Weekly</span>
-                <span className="dash-pill">Monthly</span>
-              </div>
-            </div>
-
-            <div className="dash-chart-container">
-              {/* Premium custom SVG Chart */}
-              <svg viewBox="0 0 600 180" className="dash-svg-chart">
-                <defs>
-                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
-                  </linearGradient>
-                  <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#6366f1" />
-                    <stop offset="50%" stopColor="#a855f7" />
-                    <stop offset="100%" stopColor="#22d3ee" />
-                  </linearGradient>
-                </defs>
-                
-                {/* Horizontal Grid lines */}
-                <line x1="40" y1="30" x2="570" y2="30" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="40" y1="80" x2="570" y2="80" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="40" y1="130" x2="570" y2="130" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-
-                {/* Area Fill */}
-                <path
-                  d="M 50,130 C 120,110 170,40 240,65 C 310,90 360,35 430,50 C 500,65 530,25 570,30 L 570,160 L 50,160 Z"
-                  fill="url(#chartGrad)"
-                />
-
-                {/* Smooth Curve */}
-                <path
-                  d="M 50,130 C 120,110 170,40 240,65 C 310,90 360,35 430,50 C 500,65 530,25 570,30"
-                  fill="none"
-                  stroke="url(#lineGrad)"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                />
-
-                {/* Interactive Points */}
-                <circle cx="50" cy="130" r="5" fill="#6366f1" stroke="#fff" strokeWidth="2.5" />
-                <circle cx="240" cy="65" r="5" fill="#818cf8" stroke="#fff" strokeWidth="2.5" />
-                <circle cx="430" cy="50" r="5" fill="#a855f7" stroke="#fff" strokeWidth="2.5" />
-                <circle cx="570" cy="30" r="6" fill="#22d3ee" stroke="#fff" strokeWidth="2.5" />
-              </svg>
-
-              <div className="dash-chart-labels">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Upcoming Appointment */}
-          <section className="dash-card dash-appointment-card">
-            <div className="dash-card-header">
-              <h3 className="dash-card-title">Next Appointment</h3>
-              <span className="dash-badge-pulse">Confirmed</span>
-            </div>
-
-            <div className="dash-appointment-body">
-              <div className="dash-doc-avatar-large">
-                {upcomingAppointment.avatar}
-              </div>
-              <div className="dash-appointment-details">
-                <h4>{upcomingAppointment.doctor}</h4>
-                <p className="dash-doc-spec">{upcomingAppointment.specialty}</p>
-
-                <div className="dash-appt-meta-grid">
-                  <div className="dash-appt-meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                      <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                    </svg>
-                    <span>{upcomingAppointment.date}</span>
+        {/* Conditional Tab Views */}
+        {activeTab === 'medicines' ? (
+          <MedicineSearch />
+        ) : activeTab === 'drug-interactions' ? (
+          <DrugInteractionChecker />
+        ) : (
+          <>
+            {/* Health Overview / Vitals Grid */}
+            <section className="dash-vitals-grid">
+              {vitals.map((item) => (
+                <div key={item.id} className="dash-vital-card" style={{ background: item.bgGradient }}>
+                  <div className="dash-vital-top">
+                    <div className="dash-vital-icon" style={{ backgroundColor: `${item.color}15`, borderColor: `${item.color}30` }}>
+                      {item.icon}
+                    </div>
+                    <span className="dash-vital-badge" style={{ color: item.color, backgroundColor: `${item.color}15` }}>
+                      {item.status}
+                    </span>
                   </div>
-                  <div className="dash-appt-meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    <span>{upcomingAppointment.time}</span>
+                  <div className="dash-vital-info">
+                    <span className="dash-vital-label">{item.title}</span>
+                    <div className="dash-vital-val-row">
+                      <span className="dash-vital-value">{item.value}</span>
+                      <span className="dash-vital-unit">{item.unit}</span>
+                    </div>
+                    <span className="dash-vital-trend">{item.trend}</span>
                   </div>
-                </div>
-
-                <p className="dash-appt-loc">📍 {upcomingAppointment.location}</p>
-              </div>
-            </div>
-
-            <div className="dash-appointment-actions">
-              <button className="dash-btn-primary">Join Telehealth Room</button>
-              <button className="dash-btn-secondary">Reschedule</button>
-            </div>
-          </section>
-        </div>
-
-        {/* Bottom Grid: Medical Records & Recommended Doctors */}
-        <div className="dash-grid-2col">
-          {/* Recent Medical Records */}
-          <section className="dash-card">
-            <div className="dash-card-header">
-              <h3 className="dash-card-title">Recent Medical Records</h3>
-              <button className="dash-link-btn">View All</button>
-            </div>
-
-            <div className="dash-records-list">
-              {recentRecords.map((rec) => (
-                <div key={rec.id} className="dash-record-item">
-                  <div className="dash-record-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                    </svg>
-                  </div>
-                  <div className="dash-record-info">
-                    <h4>{rec.title}</h4>
-                    <p>{rec.doctor} • {rec.date}</p>
-                  </div>
-                  <span className="dash-tag">{rec.tag}</span>
                 </div>
               ))}
-            </div>
-          </section>
+            </section>
 
-          {/* Recommended Doctors */}
-          <section className="dash-card">
-            <div className="dash-card-header">
-              <h3 className="dash-card-title">Recommended Specialists</h3>
-              <button className="dash-link-btn">Browse All</button>
-            </div>
-
-            <div className="dash-doctors-list">
-              {doctors.map((doc) => (
-                <div key={doc.id} className="dash-doc-item">
-                  <div className="dash-doc-avatar">{doc.avatar}</div>
-                  <div className="dash-doc-info">
-                    <h4>{doc.name}</h4>
-                    <p>{doc.spec} • ⭐ {doc.rating} ({doc.reviews})</p>
+            {/* Center Grid: Analytics & Appointment */}
+            <div className="dash-grid-2col">
+              {/* Health Analytics Chart */}
+              <section className="dash-card dash-chart-card">
+                <div className="dash-card-header">
+                  <div>
+                    <h3 className="dash-card-title">Health Analytics & Activity</h3>
+                    <p className="dash-card-desc">7-day continuous bio-rhythm tracking</p>
                   </div>
-                  <button className="dash-btn-book">Book</button>
+                  <div className="dash-chart-pills">
+                    <span className="dash-pill active">Weekly</span>
+                    <span className="dash-pill">Monthly</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </section>
-        </div>
 
-        {/* Quick Actions Bar */}
-        <section className="dash-quick-actions">
-          <span className="dash-quick-title">Quick Actions:</span>
-          <button className="dash-quick-btn">➕ Add New Medication</button>
-          <button className="dash-quick-btn">🩺 Log Vital Measurement</button>
-          <button className="dash-quick-btn">📄 Upload Lab Report</button>
-          <button className="dash-quick-btn">🚨 Emergency Contact</button>
-        </section>
+                <div className="dash-chart-container">
+                  {/* Premium custom SVG Chart */}
+                  <svg viewBox="0 0 600 180" className="dash-svg-chart">
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+                      </linearGradient>
+                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#6366f1" />
+                        <stop offset="50%" stopColor="#a855f7" />
+                        <stop offset="100%" stopColor="#22d3ee" />
+                      </linearGradient>
+                    </defs>
+                    
+                    {/* Horizontal Grid lines */}
+                    <line x1="40" y1="30" x2="570" y2="30" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+                    <line x1="40" y1="80" x2="570" y2="80" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+                    <line x1="40" y1="130" x2="570" y2="130" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+
+                    {/* Area Fill */}
+                    <path
+                      d="M 50,130 C 120,110 170,40 240,65 C 310,90 360,35 430,50 C 500,65 530,25 570,30 L 570,160 L 50,160 Z"
+                      fill="url(#chartGrad)"
+                    />
+
+                    {/* Smooth Curve */}
+                    <path
+                      d="M 50,130 C 120,110 170,40 240,65 C 310,90 360,35 430,50 C 500,65 530,25 570,30"
+                      fill="none"
+                      stroke="url(#lineGrad)"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                    />
+
+                    {/* Interactive Points */}
+                    <circle cx="50" cy="130" r="5" fill="#6366f1" stroke="#fff" strokeWidth="2.5" />
+                    <circle cx="240" cy="65" r="5" fill="#818cf8" stroke="#fff" strokeWidth="2.5" />
+                    <circle cx="430" cy="50" r="5" fill="#a855f7" stroke="#fff" strokeWidth="2.5" />
+                    <circle cx="570" cy="30" r="6" fill="#22d3ee" stroke="#fff" strokeWidth="2.5" />
+                  </svg>
+
+                  <div className="dash-chart-labels">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Upcoming Appointment */}
+              <section className="dash-card dash-appointment-card">
+                <div className="dash-card-header">
+                  <h3 className="dash-card-title">Next Appointment</h3>
+                  <span className="dash-badge-pulse">Confirmed</span>
+                </div>
+
+                <div className="dash-appointment-body">
+                  <div className="dash-doc-avatar-large">
+                    {upcomingAppointment.avatar}
+                  </div>
+                  <div className="dash-appointment-details">
+                    <h4>{upcomingAppointment.doctor}</h4>
+                    <p className="dash-doc-spec">{upcomingAppointment.specialty}</p>
+
+                    <div className="dash-appt-meta-grid">
+                      <div className="dash-appt-meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <span>{upcomingAppointment.date}</span>
+                      </div>
+                      <div className="dash-appt-meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span>{upcomingAppointment.time}</span>
+                      </div>
+                    </div>
+
+                    <p className="dash-appt-loc">📍 {upcomingAppointment.location}</p>
+                  </div>
+                </div>
+
+                <div className="dash-appointment-actions">
+                  <button className="dash-btn-primary">Join Telehealth Room</button>
+                  <button className="dash-btn-secondary">Reschedule</button>
+                </div>
+              </section>
+            </div>
+
+            {/* Bottom Grid: Medical Records & Recommended Doctors */}
+            <div className="dash-grid-2col">
+              {/* Recent Medical Records */}
+              <section className="dash-card">
+                <div className="dash-card-header">
+                  <h3 className="dash-card-title">Recent Medical Records</h3>
+                  <button className="dash-link-btn">View All</button>
+                </div>
+
+                <div className="dash-records-list">
+                  {recentRecords.map((rec) => (
+                    <div key={rec.id} className="dash-record-item">
+                      <div className="dash-record-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                      </div>
+                      <div className="dash-record-info">
+                        <h4>{rec.title}</h4>
+                        <p>{rec.doctor} • {rec.date}</p>
+                      </div>
+                      <span className="dash-tag">{rec.tag}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Recommended Doctors */}
+              <section className="dash-card">
+                <div className="dash-card-header">
+                  <h3 className="dash-card-title">Recommended Specialists</h3>
+                  <button className="dash-link-btn">Browse All</button>
+                </div>
+
+                <div className="dash-doctors-list">
+                  {doctors.map((doc) => (
+                    <div key={doc.id} className="dash-doc-item">
+                      <div className="dash-doc-avatar">{doc.avatar}</div>
+                      <div className="dash-doc-info">
+                        <h4>{doc.name}</h4>
+                        <p>{doc.spec} • ⭐ {doc.rating} ({doc.reviews})</p>
+                      </div>
+                      <button className="dash-btn-book">Book</button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* Quick Actions Bar */}
+            <section className="dash-quick-actions">
+              <span className="dash-quick-title">Quick Actions:</span>
+              <button className="dash-quick-btn" onClick={() => setActiveTab('medicines')}>💊 Search Medicine</button>
+              <button className="dash-quick-btn" onClick={() => setActiveTab('drug-interactions')}>⚡ Drug Interactions</button>
+              <button className="dash-quick-btn">🩺 Log Vital Measurement</button>
+              <button className="dash-quick-btn">📄 Upload Lab Report</button>
+            </section>
+          </>
+        )}
       </main>
     </div>
   )
