@@ -17,9 +17,9 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     const width = container.clientWidth
     const height = container.clientHeight
 
-    // 1. Scene setup
+    // 1. Scene setup with dynamic fog color
     const scene = new THREE.Scene()
-    scene.fog = new THREE.FogExp2(0x030712, 0.035)
+    scene.fog = new THREE.FogExp2(0x0b0711, 0.035)
 
     // 2. Camera setup
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100)
@@ -30,67 +30,66 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.3
+    renderer.toneMappingExposure = 1.35
     container.appendChild(renderer.domElement)
 
-    // 4. Lighting setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4)
+    // 4. Dynamic Color Lighting System
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
     scene.add(ambientLight)
 
-    const heartLight = new THREE.PointLight(0xf43f5e, 4.5, 18)
+    const heartLight = new THREE.PointLight(0xf43f5e, 5.0, 20)
     heartLight.position.set(3, 1, 4)
     scene.add(heartLight)
 
-    const lungsLight = new THREE.PointLight(0x06b6d4, 4.5, 18)
+    const lungsLight = new THREE.PointLight(0x06b6d4, 5.0, 20)
     lungsLight.position.set(3, 2, 2)
     scene.add(lungsLight)
 
-    const kidneyLight = new THREE.PointLight(0xf59e0b, 4.5, 18)
+    const kidneyLight = new THREE.PointLight(0xf59e0b, 5.0, 20)
     kidneyLight.position.set(3, -2, 2)
     scene.add(kidneyLight)
 
-    // 5. Texture Loader for Organ Sprites
+    // 5. Texture Loader for Ultra-Realistic 3D Organ Planes
     const textureLoader = new THREE.TextureLoader()
 
-    // Helper to create 3D organ plane mesh
-    const createOrganMesh = (textureUrl, size = 5.0) => {
+    const createOrganMesh = (textureUrl, size = 5.4) => {
       const geometry = new THREE.PlaneGeometry(size, size)
       const texture = textureLoader.load(textureUrl)
       texture.colorSpace = THREE.SRGBColorSpace
       const material = new THREE.MeshStandardMaterial({
         map: texture,
         transparent: true,
-        roughness: 0.25,
-        metalness: 0.15,
+        roughness: 0.15,
+        metalness: 0.35,
         depthWrite: false,
         side: THREE.DoubleSide
       })
       return new THREE.Mesh(geometry, material)
     }
 
-    // Larger 3D Organ Meshes positioned on the RIGHT side
     const isMobile = width < 768
-    const rightOffsetX = isMobile ? 0 : 2.5
+    const rightOffsetX = isMobile ? 0 : 2.6
 
-    const heartMesh = createOrganMesh('/images/heart.png', isMobile ? 3.8 : 5.4)
+    // Organ 1: Realistic 3D Heart
+    const heartMesh = createOrganMesh('/images/heart.png', isMobile ? 4.0 : 5.8)
     heartMesh.position.set(rightOffsetX, 0, 0)
     scene.add(heartMesh)
 
-    const lungsMesh = createOrganMesh('/images/lungs.png', isMobile ? 4.2 : 5.8)
+    // Organ 2: Realistic 3D Lungs
+    const lungsMesh = createOrganMesh('/images/lungs.png', isMobile ? 4.4 : 6.2)
     lungsMesh.position.set(rightOffsetX + 4, 0, -3)
     lungsMesh.material.opacity = 0
     scene.add(lungsMesh)
 
-    const kidneyMesh = createOrganMesh('/images/kidney.png', isMobile ? 3.5 : 4.8)
+    // Organ 3: Realistic 3D Kidneys
+    const kidneyMesh = createOrganMesh('/images/kidney.png', isMobile ? 3.8 : 5.2)
     kidneyMesh.position.set(rightOffsetX - 4, -4, -6)
     kidneyMesh.material.opacity = 0
     scene.add(kidneyMesh)
 
-    // 6. Holographic Human Body Geometry (Particle System + Wireframe Outline)
+    // 6. Holographic Human Body Geometry
     const humanGroup = new THREE.Group()
-
-    // Human Holographic Spine / Torso Wireframe
-    const spineGeo = new THREE.CylinderGeometry(0.8, 1.5, 7.0, 16, 24, true)
+    const spineGeo = new THREE.CylinderGeometry(0.85, 1.6, 7.5, 20, 28, true)
     const spineMat = new THREE.MeshBasicMaterial({
       color: 0x6366f1,
       wireframe: true,
@@ -100,31 +99,31 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     const spineMesh = new THREE.Mesh(spineGeo, spineMat)
     humanGroup.add(spineMesh)
 
-    // Holographic Anatomy Particles
-    const particleCount = 750
+    // Holographic Bio-Particles
+    const particleCount = 850
     const particleGeo = new THREE.BufferGeometry()
     const particlePos = new Float32Array(particleCount * 3)
     const particleColors = new Float32Array(particleCount * 3)
 
     for (let i = 0; i < particleCount; i++) {
-      const radius = 0.7 + Math.random() * 1.1
+      const radius = 0.7 + Math.random() * 1.2
       const theta = Math.random() * Math.PI * 2
-      const y = (Math.random() - 0.5) * 7.5
+      const y = (Math.random() - 0.5) * 8.0
 
       particlePos[i * 3] = Math.cos(theta) * radius
       particlePos[i * 3 + 1] = y
       particlePos[i * 3 + 2] = Math.sin(theta) * radius
 
-      particleColors[i * 3] = 0.38 + Math.random() * 0.2
-      particleColors[i * 3 + 1] = 0.4 + Math.random() * 0.4
-      particleColors[i * 3 + 2] = 0.95
+      particleColors[i * 3] = 0.35 + Math.random() * 0.25
+      particleColors[i * 3 + 1] = 0.45 + Math.random() * 0.45
+      particleColors[i * 3 + 2] = 0.98
     }
 
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3))
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3))
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.09,
+      size: 0.095,
       vertexColors: true,
       transparent: true,
       opacity: 0,
@@ -136,8 +135,8 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
     humanGroup.position.set(rightOffsetX, 0, -10)
     scene.add(humanGroup)
 
-    // 7. Ambient Floating Blood Flow / Bio-Particles
-    const ambientParticleCount = 400
+    // 7. Ambient Blood Flow & Cellular Circulation
+    const ambientParticleCount = 450
     const ambientGeo = new THREE.BufferGeometry()
     const ambientPos = new Float32Array(ambientParticleCount * 3)
 
@@ -149,16 +148,16 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
 
     ambientGeo.setAttribute('position', new THREE.BufferAttribute(ambientPos, 3))
     const ambientMat = new THREE.PointsMaterial({
-      size: 0.07,
-      color: 0x818cf8,
+      size: 0.075,
+      color: 0xf43f5e,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.55,
       blending: THREE.AdditiveBlending
     })
     const ambientParticles = new THREE.Points(ambientGeo, ambientMat)
     scene.add(ambientParticles)
 
-    // 8. Animation Frame Loop with Lerp & Scroll Interpolation
+    // 8. Animation Frame Loop with Smooth Color Theme Interpolation
     let animationFrameId
     let clock = new THREE.Clock()
 
@@ -170,21 +169,26 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
       const elapsedTime = clock.getElapsedTime()
       const p = Math.max(0, Math.min(1, progressRef.current))
 
-      ambientParticles.rotation.y = elapsedTime * 0.04
+      ambientParticles.rotation.y = elapsedTime * 0.05
 
-      // Dynamic heartbeat scale
-      const heartBeat = 1 + Math.sin(elapsedTime * 5.5) * 0.07
+      // Continuous Slow 3D Organ Rotations
+      const heartSlowRotate = elapsedTime * 0.35
+      const lungsSlowRotate = elapsedTime * 0.28
+      const kidneySlowRotate = elapsedTime * 0.32
 
-      // STAGE 1: HERO - HEART ON THE RIGHT SIDE (0.0 to 0.22)
+      // Dynamic heartbeat pulse
+      const heartBeat = 1 + Math.sin(elapsedTime * 3.5) * 0.065
+
+      // STAGE 1: HERO - HEART (0.0 to 0.22) -> CRIMSON RED THEME
       if (p <= 0.22) {
         const stageP = p / 0.22
 
-        heartMesh.position.x = lerp(rightOffsetX, rightOffsetX - 0.5, stageP)
+        heartMesh.position.x = lerp(rightOffsetX, rightOffsetX - 0.4, stageP)
         heartMesh.position.y = lerp(0, 0.4, stageP)
         heartMesh.position.z = lerp(0, -1.2, stageP)
+        heartMesh.rotation.y = heartSlowRotate
         heartMesh.scale.set(heartBeat, heartBeat, 1)
         heartMesh.material.opacity = lerp(1, 0.5, stageP)
-        heartMesh.rotation.y = Math.sin(elapsedTime * 0.8) * 0.18
 
         lungsMesh.position.x = lerp(rightOffsetX + 4, rightOffsetX, stageP)
         lungsMesh.position.y = lerp(-1, 0, stageP)
@@ -194,12 +198,16 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         kidneyMesh.material.opacity = 0
         spineMat.opacity = 0
         particleMat.opacity = 0
+        ambientMat.color.setHex(0xf43f5e)
+        scene.fog.color.setHex(0x0b0711)
       }
-      // STAGE 2: HEART → LUNGS (0.22 to 0.48)
+      // STAGE 2: HEART → LUNGS (0.22 to 0.48) -> CYAN TEAL THEME
       else if (p > 0.22 && p <= 0.48) {
         const stageP = (p - 0.22) / 0.26
-        const lungsBreath = 1 + Math.sin(elapsedTime * 2.8) * 0.05
+        const lungsBreath = 1 + Math.sin(elapsedTime * 2.5) * 0.05
+
         lungsMesh.scale.set(lungsBreath, lungsBreath, 1)
+        lungsMesh.rotation.y = lungsSlowRotate
         lungsMesh.position.x = lerp(rightOffsetX, rightOffsetX + 0.8, stageP)
         lungsMesh.position.y = lerp(0, 0.6, stageP)
         lungsMesh.position.z = lerp(0, -1.8, stageP)
@@ -214,12 +222,16 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
 
         spineMat.opacity = 0
         particleMat.opacity = 0
+        ambientMat.color.setHex(0x06b6d4)
+        scene.fog.color.setHex(0x030e16)
       }
-      // STAGE 3: LUNGS → KIDNEYS (0.48 to 0.72)
+      // STAGE 3: LUNGS → KIDNEYS (0.48 to 0.72) -> GOLDEN AMBER THEME
       else if (p > 0.48 && p <= 0.72) {
         const stageP = (p - 0.48) / 0.24
-        const kidneyPulse = 1 + Math.sin(elapsedTime * 3.5) * 0.06
+        const kidneyPulse = 1 + Math.sin(elapsedTime * 3.2) * 0.06
+
         kidneyMesh.scale.set(kidneyPulse, kidneyPulse, 1)
+        kidneyMesh.rotation.y = kidneySlowRotate
         kidneyMesh.position.x = lerp(rightOffsetX, rightOffsetX - 0.4, stageP)
         kidneyMesh.position.y = lerp(0, -0.8, stageP)
         kidneyMesh.position.z = lerp(0, -3.5, stageP)
@@ -233,27 +245,36 @@ export default function Medical3DCanvas({ scrollProgress = 0 }) {
         humanGroup.rotation.y = elapsedTime * 0.4
         spineMat.opacity = lerp(0, 0.8, stageP)
         particleMat.opacity = lerp(0, 0.9, stageP)
+        ambientMat.color.setHex(0xf59e0b)
+        scene.fog.color.setHex(0x120f04)
       }
-      // STAGE 4 & 5: FULL HUMAN BODY & MEDISAFE SOLUTION (0.72 to 1.0)
+      // STAGE 4 & 5: FULL HUMAN ANATOMY & MEDISAFE SOLUTION -> INDIGO THEME
       else {
         const stageP = (p - 0.72) / 0.28
+
         humanGroup.position.x = rightOffsetX
-        humanGroup.rotation.y = elapsedTime * 0.3
+        humanGroup.rotation.y = elapsedTime * 0.35
         humanGroup.position.z = lerp(0, 1.2, stageP)
         spineMat.opacity = lerp(0.8, 0.45, stageP)
         particleMat.opacity = lerp(0.9, 0.55, stageP)
 
         heartMesh.position.set(rightOffsetX - 0.3, 0.9, 0.4)
-        heartMesh.scale.set(0.8, 0.8, 1)
+        heartMesh.rotation.y = heartSlowRotate
+        heartMesh.scale.set(0.85, 0.85, 1)
         heartMesh.material.opacity = 0.7
 
         lungsMesh.position.set(rightOffsetX + 0.2, 0.9, 0.2)
-        lungsMesh.scale.set(0.9, 0.9, 1)
+        lungsMesh.rotation.y = lungsSlowRotate
+        lungsMesh.scale.set(0.95, 0.95, 1)
         lungsMesh.material.opacity = 0.7
 
         kidneyMesh.position.set(rightOffsetX - 0.1, -0.7, 0.2)
-        kidneyMesh.scale.set(0.7, 0.7, 1)
+        kidneyMesh.rotation.y = kidneySlowRotate
+        kidneyMesh.scale.set(0.75, 0.75, 1)
         kidneyMesh.material.opacity = 0.7
+
+        ambientMat.color.setHex(0x6366f1)
+        scene.fog.color.setHex(0x070617)
       }
 
       camera.position.z = lerp(8, 7.2, p)

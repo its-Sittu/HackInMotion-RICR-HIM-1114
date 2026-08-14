@@ -52,10 +52,10 @@ export default function LandingPage() {
 
   return (
     <div className="medisafe-landing">
-      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ON RIGHT SIDE) ─────── */}
+      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ORGAN ON RIGHT SIDE) ── */}
       <Medical3DCanvas scrollProgress={scrollProgress} />
 
-      {/* ── FLOATING GLASS NAVBAR ────────────────────────────── */}
+      {/* ── FLOATING GLASS NAVBAR (BORDERLESS) ───────────────── */}
       <header className={`medisafe-navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="medisafe-logo" onClick={() => scrollToSection('sec-hero')}>
           <div className="medisafe-logo-icon">
@@ -68,7 +68,7 @@ export default function LandingPage() {
 
         <nav className="medisafe-nav-menu">
           <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-hero')}>Home</span>
-          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-heart')}>How It Works</span>
+          <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-heart')}>Workflow</span>
           <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-lungs')}>Safety</span>
           <span className="medisafe-nav-item" onClick={() => scrollToSection('sec-capabilities')}>Features</span>
         </nav>
@@ -85,11 +85,11 @@ export default function LandingPage() {
 
       {/* ── CONTINUOUS SCROLL SECTIONS (LEFT COLUMN CONTENT) ──── */}
       <div className="medisafe-scroll-wrapper">
-        {/* ── SECTION 1: HERO (HEART ON RIGHT SIDE) ──────────── */}
+        {/* ── SECTION 1: HERO (BEATING 3D HEART ON RIGHT SIDE) ── */}
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
             <div className="hero-badge-pill">
-              <span>✨ AI-Powered Clinical Safety Engine</span>
+              <span>✨ AI-Powered Clinical Safety Platform</span>
             </div>
 
             <h1 className="hero-main-heading">
@@ -123,38 +123,54 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 2: HEART → LUNGS TRANSITION (LEFT CARD) ─── */}
+        {/* ── SECTION 2: HEART STAGE • WORKFLOW STEP 2 ───────── */}
         <section id="sec-heart" className="medisafe-section">
           <div className="anatomical-quote-box">
+            <span className="step-indicator-pill">Step 2 of 5 • Smart Audio Alarms &amp; Family Alerts</span>
             <h2 className="anatomical-heading">
               &ldquo;Every dose affects the body.&rdquo;
             </h2>
             <p className="anatomical-subtext">
-              Understanding what we take is the first step toward safer care.
+              Schedule morning/evening medication reminders with phone-style audio ringing. Unanswered alarms automatically alert your emergency contacts via Fast2SMS and EmailJS.
             </p>
           </div>
         </section>
 
-        {/* ── SECTION 3: LUNGS → KIDNEYS TRANSITION (LEFT CARD) ── */}
+        {/* ── SECTION 3: LUNGS STAGE • WORKFLOW STEP 3 ────────── */}
         <section id="sec-lungs" className="medisafe-section">
           <div className="anatomical-quote-box">
+            <span className="step-indicator-pill">Step 3 of 5 • Real Drug Interaction &amp; Overdose Engine</span>
             <h2 className="anatomical-heading">
               &ldquo;Every medicine has a journey.&rdquo;
             </h2>
             <p className="anatomical-subtext">
-              The body processes every dose. MediSafe helps you understand the risks before they interact.
+              Input multiple prescription or OTC medicines to detect active compound overlaps, dangerous contraindications, and overdose risks powered by FDA databases.
             </p>
           </div>
         </section>
 
-        {/* ── SECTION 4: KIDNEYS → FULL HUMAN ANATOMY (LEFT CARD) ── */}
-        <section id="sec-human" className="medisafe-section">
+        {/* ── SECTION 4: KIDNEYS STAGE • WORKFLOW STEP 4 ───────── */}
+        <section id="sec-kidney" className="medisafe-section">
           <div className="anatomical-quote-box">
+            <span className="step-indicator-pill">Step 4 of 5 • Body Symptom &amp; Burn Diagnostic Evaluator</span>
             <h2 className="anatomical-heading">
-              Visualizing Safety Across Human Systems
+              &ldquo;The body processes every dose.&rdquo;
             </h2>
             <p className="anatomical-subtext">
-              MediSafe protects the human body by scanning chemical compound overlaps, timing constraints, and daily bio-rhythms.
+              Evaluate ENT, throat, skin, or burn symptoms to receive instant clinical severity indices, red flag emergency warnings, and recommended care protocols.
+            </p>
+          </div>
+        </section>
+
+        {/* ── SECTION 5: FULL HUMAN STAGE • WORKFLOW STEP 5 ───── */}
+        <section id="sec-human" className="medisafe-section">
+          <div className="anatomical-quote-box">
+            <span className="step-indicator-pill">Step 5 of 5 • Healthy Diet Sync &amp; Adherence Analytics</span>
+            <h2 className="anatomical-heading">
+              Visualizing Safety Across All Human Systems
+            </h2>
+            <p className="anatomical-subtext">
+              Follow pre/post meal clinical diet schedules, mark food consumed, and track dynamic health compliance across all integrated modules.
             </p>
 
             <div className="orbiting-panels-container">
@@ -180,7 +196,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES CARDS) ─── */}
+        {/* ── SECTION 6: PRODUCT VALUE (4 CAPABILITIES CARDS) ─── */}
         <section id="sec-capabilities" className="medisafe-section">
           <div className="capabilities-header">
             <span className="hero-badge-pill">Capabilities</span>
@@ -231,7 +247,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SECTION 6: FINAL CALL TO ACTION ────────────────── */}
+        {/* ── SECTION 7: FINAL CALL TO ACTION ────────────────── */}
         <section id="sec-cta" className="medisafe-section">
           <div className="final-cta-box">
             <h2 className="final-cta-heading">
