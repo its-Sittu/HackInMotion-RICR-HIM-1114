@@ -1,4 +1,4 @@
-/* ─── MediSafe Senior Executive 50/50 Split-Screen 3D Scroll System ─── */
+/* ─── MediSafe Reference-Inspired Left Content / Right 3D System ─── */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 html, body {
@@ -20,32 +20,32 @@ html, body {
   transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Senior Executive Dual-Tone Gradients (50/50 Left Visual / Right Text) */
+/* Reference Dual-Tone Gradients (Cyan/Blue Left Text + Crimson/Magenta Right 3D Organ) */
 .medisafe-landing.theme-hero {
-  background: radial-gradient(circle at 18% 45%, rgba(244, 63, 94, 0.42) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(6, 182, 212, 0.35) 0%, transparent 55%),
-              linear-gradient(105deg, #380415 0%, #1e1b4b 42%, #030712 100%);
+  background: radial-gradient(circle at 82% 45%, rgba(244, 63, 94, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 18% 30%, rgba(6, 182, 212, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #0b1329 0%, #1e1b4b 55%, #380415 100%);
 }
 
 .medisafe-landing.theme-lungs {
-  background: radial-gradient(circle at 18% 45%, rgba(16, 185, 129, 0.42) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(2, 132, 199, 0.35) 0%, transparent 55%),
-              linear-gradient(105deg, #01221b 0%, #034e7b 42%, #030712 100%);
+  background: radial-gradient(circle at 82% 45%, rgba(16, 185, 129, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 18% 30%, rgba(2, 132, 199, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #034e7b 0%, #01221b 55%, #022c22 100%);
 }
 
 .medisafe-landing.theme-kidneys {
-  background: radial-gradient(circle at 18% 45%, rgba(245, 158, 11, 0.42) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
-              linear-gradient(105deg, #331302 0%, #311b92 42%, #030712 100%);
+  background: radial-gradient(circle at 82% 45%, rgba(245, 158, 11, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 18% 30%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
+              linear-gradient(105deg, #311b92 0%, #331302 55%, #451a03 100%);
 }
 
 .medisafe-landing.theme-human {
-  background: radial-gradient(circle at 18% 45%, rgba(217, 70, 239, 0.42) 0%, transparent 50%),
-              radial-gradient(circle at 82% 30%, rgba(99, 102, 241, 0.4) 0%, transparent 55%),
-              linear-gradient(105deg, #2a0547 0%, #1e1b4b 42%, #030712 100%);
+  background: radial-gradient(circle at 82% 45%, rgba(217, 70, 239, 0.42) 0%, transparent 50%),
+              radial-gradient(circle at 18% 30%, rgba(99, 102, 241, 0.4) 0%, transparent 55%),
+              linear-gradient(105deg, #1e1b4b 0%, #2a0547 55%, #3b0764 100%);
 }
 
-/* ─── Floating Glassmorphism Navbar (Borderless) ──────────────── */
+/* ─── Floating Glassmorphism Navbar ───────────────────────────── */
 .medisafe-navbar {
   position: fixed;
   top: 0;
@@ -80,12 +80,12 @@ html, body {
 .medisafe-logo-icon {
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.45);
 }
 
 .medisafe-brand-name {
@@ -139,7 +139,7 @@ html, body {
 }
 
 .btn-nav-start {
-  background: linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
   color: #ffffff;
   border: none;
   padding: 0.58rem 1.35rem;
@@ -147,16 +147,16 @@ html, body {
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 24px rgba(244, 63, 94, 0.45);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.45);
   transition: all 0.2s ease;
 }
 
 .btn-nav-start:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
 }
 
-/* ─── Scroll Overlay Sections (Executive 50/50 Split Layout) ───────── */
+/* ─── Scroll Overlay Sections (Text LEFT Column, 3D RIGHT Column) ─── */
 .medisafe-scroll-wrapper {
   position: relative;
   z-index: 2;
@@ -169,34 +169,46 @@ html, body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 100px 5vw 60px 48vw; /* Clean 50/50 Split Spacing */
+  padding: 100px 52vw 60px 5vw; /* Left Column Width ~48% */
   box-sizing: border-box;
   position: relative;
   text-align: left;
 }
 
-/* Right Content Column Constraints (Width: 48%) */
+/* Left Content Column Constraints */
 .hero-content-col {
   max-width: clamp(480px, 46vw, 640px);
   z-index: 5;
   width: 100%;
 }
 
-/* ── SECTION 1: HERO ─────────────────────────────────────────── */
-.hero-badge-pill {
+/* ── SECTION 1: HERO (REFERENCE IMAGE STYLE PILL BADGE & CTAS) ── */
+.hero-rating-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  border: none;
-  padding: 0.45rem 1.15rem;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
   border-radius: 30px;
-  font-size: 0.82rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.86rem;
   font-weight: 800;
-  color: #38bdf8;
-  margin-bottom: 1.6rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: #0f172a;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.hero-star-icon {
+  width: 22px;
+  height: 22px;
+  background: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
 }
 
 .hero-main-heading {
@@ -208,7 +220,6 @@ html, body {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
 }
 
 .hero-tagline {
@@ -223,7 +234,7 @@ html, body {
 .hero-support-text {
   font-size: 0.92rem;
   font-weight: 800;
-  color: #f43f5e;
+  color: #38bdf8;
   letter-spacing: 1px;
   text-transform: uppercase;
   display: block;
@@ -238,45 +249,72 @@ html, body {
   margin-bottom: 2.5rem;
 }
 
+/* Reference Image Pill Button (Gradient with Arrow Circle) */
 .btn-medisafe-primary {
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
   color: #ffffff;
   border: none;
-  padding: 1rem 2.4rem;
-  border-radius: 16px;
-  font-size: 1.05rem;
+  padding: 0.85rem 1.2rem 0.85rem 2rem;
+  border-radius: 40px;
+  font-size: 1.02rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 32px rgba(244, 63, 94, 0.55);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.45);
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   transition: all 0.25s ease;
 }
 
 .btn-medisafe-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 45px rgba(244, 63, 94, 0.75);
+  box-shadow: 0 14px 40px rgba(16, 185, 129, 0.65);
 }
 
+.btn-arrow-circle {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  font-weight: 900;
+}
+
+/* Reference Image White Secondary Pill Button */
 .btn-medisafe-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f1f5f9;
+  background: #ffffff;
+  color: #0f172a;
   border: none;
-  padding: 0.95rem 2rem;
-  border-radius: 16px;
+  padding: 0.85rem 1.2rem 0.85rem 2rem;
+  border-radius: 40px;
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  backdrop-filter: blur(14px);
+  gap: 0.8rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   transition: all 0.25s ease;
 }
 
 .btn-medisafe-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+  background: #f8fafc;
+}
+
+.btn-arrow-circle-sec {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 900;
 }
 
 .scroll-explore-indicator {
@@ -422,7 +460,7 @@ html, body {
 .capability-card:hover {
   transform: translateY(-4px);
   background: rgba(15, 23, 42, 0.85);
-  box-shadow: 0 18px 45px rgba(244, 63, 94, 0.3);
+  box-shadow: 0 18px 45px rgba(56, 189, 248, 0.3);
 }
 
 .capability-icon {
@@ -449,7 +487,7 @@ html, body {
 .final-cta-box {
   max-width: clamp(480px, 48vw, 680px);
   width: 100%;
-  background: radial-gradient(circle at 30% 50%, rgba(244, 63, 94, 0.28) 0%, rgba(15, 23, 42, 0.88) 75%);
+  background: radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.28) 0%, rgba(15, 23, 42, 0.88) 75%);
   border: none;
   border-radius: 32px;
   padding: 3.2rem 2.8rem;

@@ -10,7 +10,6 @@ export default function LandingPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
 
-  // Determine current theme class based on scroll progress
   const getThemeClass = (progress) => {
     if (progress <= 0.22) return 'theme-hero'
     if (progress <= 0.48) return 'theme-lungs'
@@ -20,7 +19,6 @@ export default function LandingPage() {
 
   const activeThemeClass = getThemeClass(scrollProgress)
 
-  // Track page scroll progress (0.0 to 1.0)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop
@@ -62,10 +60,10 @@ export default function LandingPage() {
 
   return (
     <div className={`medisafe-landing ${activeThemeClass}`}>
-      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ORGAN ROTATING SLOWLY ON RIGHT) ── */}
+      {/* ── 3D CONTINUOUS SCROLL CANVAS (VOLUMETRIC 3D ORGAN ON RIGHT SIDE) ── */}
       <Medical3DCanvas scrollProgress={scrollProgress} />
 
-      {/* ── FLOATING GLASS NAVBAR (BORDERLESS) ───────────────── */}
+      {/* ── FLOATING GLASS NAVBAR ────────────────────────────── */}
       <header className={`medisafe-navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="medisafe-logo" onClick={() => scrollToSection('sec-hero')}>
           <div className="medisafe-logo-icon">
@@ -93,13 +91,15 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── CONTINUOUS SCROLL SECTIONS (LEFT COLUMN CONTENT) ──── */}
+      {/* ── CONTINUOUS SCROLL SECTIONS (ALL CONTENT ALIGNED TO LEFT SIDE) ── */}
       <div className="medisafe-scroll-wrapper">
-        {/* ── SECTION 1: HERO (SLOW 3D HEART ROTATION ON RIGHT) ─ */}
+        {/* ── SECTION 1: HERO (REFERENCE IMAGE STYLE PILL BADGE & BUTTONS) ── */}
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
-            <div className="hero-badge-pill">
-              <span>✨ AI-Powered Clinical Safety Platform</span>
+            {/* Reference Image Pill Badge */}
+            <div className="hero-rating-badge">
+              <div className="hero-star-icon">★</div>
+              <span>4.9 Clinical Rating • 10K+ Patients Protected</span>
             </div>
 
             <h1 className="hero-main-heading">
@@ -114,16 +114,16 @@ export default function LandingPage() {
               Smart Medicine Safety &amp; Drug Interaction Assistant
             </span>
 
+            {/* Reference Image Style Pill Buttons */}
             <div className="hero-btn-row">
               <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
                 <span>Explore MediSafe</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                <div className="btn-arrow-circle">↗</div>
               </button>
 
               <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
                 <span>Continue as Guest</span>
+                <div className="btn-arrow-circle-sec">↗</div>
               </button>
             </div>
 
@@ -183,7 +183,6 @@ export default function LandingPage() {
               Follow pre/post meal clinical diet schedules, mark food consumed, and track dynamic health compliance across all integrated modules.
             </p>
 
-            {/* Reference Image 2 Style Floating Glass Feature Pills */}
             <div className="reference-feature-pills-row">
               <div className="reference-feature-pill-card">
                 <div className="reference-feature-icon-circle" style={{ backgroundColor: '#10b981' }}>
@@ -279,13 +278,12 @@ export default function LandingPage() {
             <div className="hero-btn-row">
               <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
                 <span>Get Started</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                <div className="btn-arrow-circle">↗</div>
               </button>
 
               <button type="button" className="btn-medisafe-secondary" onClick={handleGuestContinue}>
                 <span>Continue as Guest</span>
+                <div className="btn-arrow-circle-sec">↗</div>
               </button>
             </div>
 
