@@ -24,6 +24,50 @@ const cleanFdaText = (text, maxLength = 160) => {
   return cleaned
 }
 
+/**
+ * Robust Google Gemini AI API Caller with Model Fallback
+ */
+const callGoogleGeminiApi = async (promptText, apiKey, responseMimeType = 'text/plain') => {
+  if (!apiKey || !apiKey.trim()) return null
+
+  const cleanKey = apiKey.trim()
+  const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro']
+
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 7000)
+
+      const bodyObj = {
+        contents: [{ parts: [{ text: promptText }] }]
+      }
+      if (responseMimeType === 'application/json') {
+        bodyObj.generationConfig = { responseMimeType: 'application/json' }
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify(bodyObj)
+      })
+      clearTimeout(timeoutId)
+
+      if (res.ok) {
+        const data = await res.json()
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+        if (text && text.trim()) {
+          return { text: text.trim(), model: `Google ${model}` }
+        }
+      }
+    } catch {
+      // Fallback to next Gemini model in list
+    }
+  }
+  return null
+}
+
 const USER_MEDICINE_IMAGES = [
   '/images/medicines/med_yellow_tablets.png',
   '/images/medicines/med_red_capsules.png',
@@ -488,24 +532,13 @@ Format your response clearly into clean, well-structured sections using exact Ma
 • [Safety warning / contraindications]
 • [When to consult a physician]`
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey.trim()}`
-        const aiRes = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: promptText }]
-            }]
-          })
-        })
-        const aiData = await aiRes.json()
-        const textResponse = aiData.candidates?.[0]?.content?.parts?.[0]?.text
-        if (textResponse) {
+        const geminiResult = await callGoogleGeminiApi(promptText, geminiKey)
+        if (geminiResult && geminiResult.text) {
           return res.status(200).json({
             success: true,
-            provider: 'Google Gemini 3.5 Flash Live Medical Search Engine',
+            provider: `${geminiResult.model} Live Medical Search Engine`,
             query: q,
-            answer: textResponse
+            answer: geminiResult.text
           })
         }
       } catch (err) {
@@ -601,14 +634,8 @@ BULLETS:
 • [Key Bullet Point 3]
 NOTE: [Important Note, time gap rule, and doctor consultation advice]`
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey.trim()}`
-        const aiRes = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        })
-        const aiData = await aiRes.json()
-        const textResponse = aiData.candidates?.[0]?.content?.parts?.[0]?.text
+        const geminiResult = await callGoogleGeminiApi(promptText, geminiKey)
+        const textResponse = geminiResult?.text
 
         if (textResponse) {
           const sevMatch = textResponse.match(/SEVERITY:\s*(high|moderate|safe)/i)
@@ -750,17 +777,8 @@ Return JSON ONLY in this structure:
   "safetyWarning": "Clear emergency red-flag warning signs requiring immediate ER visit for these specific symptoms."
 }`
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${geminiKey.trim()}`
-        const aiRes = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            generationConfig: { responseMimeType: 'application/json' }
-          })
-        })
-        const aiData = await aiRes.json()
-        const rawJsonText = aiData.candidates?.[0]?.content?.parts?.[0]?.text
+        const geminiResult = await callGoogleGeminiApi(promptText, geminiKey, 'application/json')
+        const rawJsonText = geminiResult?.text
 
         if (rawJsonText) {
           const parsed = JSON.parse(rawJsonText)
@@ -769,7 +787,7 @@ Return JSON ONLY in this structure:
               success: true,
               bodyParts: selectedParts,
               description: descText,
-              provider: 'Google Gemini 3.5 Flash & Clinical Medical Database Engine',
+              provider: `${geminiResult.model} & Clinical Medical Database Engine`,
               summary: parsed.summary || `Clinical diagnostic assessment for: ${descText || selectedParts.join(', ')}`,
               urgencyLevel: parsed.urgencyLevel || 'low',
               conditions: parsed.conditions,
