@@ -8,6 +8,8 @@
  *   - Dev mode (logs OTP to console — default fallback)
  */
 
+export const isSmsGatewayActive = true
+
 /**
  * Dev-mode: prints OTP to server console.
  */
