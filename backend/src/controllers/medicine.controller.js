@@ -785,6 +785,7 @@ Return JSON ONLY in this structure:
     const partsStr = selectedParts.join(' ').toLowerCase()
     const fullInput = `${lowerDesc} ${partsStr}`
 
+    const hasBurn = fullInput.includes('burn') || fullInput.includes('fire') || fullInput.includes('flame') || fullInput.includes('jal') || fullInput.includes('scald') || fullInput.includes('hot water') || fullInput.includes('heat') || fullInput.includes('blister')
     const hasFever = fullInput.includes('fever') || fullInput.includes('bukhar') || fullInput.includes('bukhār') || fullInput.includes('temp') || fullInput.includes('tap')
     const hasHeadache = fullInput.includes('head') || fullInput.includes('sar') || fullInput.includes('headache') || fullInput.includes('sir') || fullInput.includes('brain')
     const hasStomach = fullInput.includes('stomach') || fullInput.includes('pait') || fullInput.includes('pet') || fullInput.includes('abdomen') || fullInput.includes('gas') || fullInput.includes('acid') || fullInput.includes('jalan')
@@ -796,7 +797,17 @@ Return JSON ONLY in this structure:
     let mockSummary = ''
     let mockWarning = ''
 
-    if (hasFever && (hasCough || hasHeadache)) {
+    if (hasBurn) {
+      mockSummary = `Clinical assessment for reported thermal injury description "${descText || 'Muscle / skin burn from fire'}": Diagnostic evaluation indicates thermal burn injury affecting dermal and underlying muscle tissue layers.`
+      mockWarning = `SEEK EMERGENCY TRAUMA CARE IMMEDIATELY if burn covers a large area, involves face/hands/joints, causes skin charring/whiteness (3rd degree), or severe blistering.`
+      mockConditions = [
+        { name: 'Second-Degree (Partial Thickness) Thermal Burn', percentage: 48, risk: 'moderate', explanation: `Direct heat/flame injury matching reported description ("${descText}"). Causes epidermal/dermal damage, blistering, and intense burning pain.`, action: 'Cool burn under cool running tap water for 15-20 mins. Apply Silver Sulfadiazine burn cream. Cover with sterile non-stick bandage. Do NOT pop blisters.', specialist: 'Dermatologist / Burn Care Specialist' },
+        { name: 'First-Degree Superficial Thermal Injury', percentage: 26, risk: 'low', explanation: `Superficial flame/heat exposure causing epidermal redness, thermal pain sensitivity, and acute localized skin inflammation.`, action: 'Apply pure Aloe Vera gel or OTC burn soothing lotion and keep area clean.', specialist: 'General Physician / Dermatologist' },
+        { name: 'Thermal Myofascial Tissue Heat Irritation', percentage: 14, risk: 'moderate', explanation: `Radiating thermal heat causing superficial muscle twitching and inflammatory burning pain underneath burned tissue.`, action: 'Take Paracetamol 650mg for inflammatory pain relief and stay hydrated.', specialist: 'Trauma & General Physician' },
+        { name: 'Secondary Burn Infection Risk (Cellulitis / Dermatitis)', percentage: 7, risk: 'high', explanation: `Break in epidermal skin barrier following thermal injury exposing underlying tissue to bacterial colonization.`, action: 'Apply OTC topical antibiotic ointment (e.g. Neosporin/Bactroban) and monitor for pus or spreading redness.', specialist: 'Dermatologist' },
+        { name: 'Third-Degree Full Thickness Thermal Tissue Damage', percentage: 5, risk: 'high', explanation: `Severe deep heat destruction penetrating muscle fibers and sensory nerve endings requiring specialized burn unit care.`, action: 'Seek immediate emergency ER burn unit transfer. Do NOT apply home remedies.', specialist: 'Burn Unit Specialist / Plastic Surgeon' }
+      ]
+    } else if (hasFever && (hasCough || hasHeadache)) {
       mockSummary = `Clinical assessment for reported description "${descText || 'Fever with headache/cough'}": Primary indication points to acute viral upper respiratory infection or flu with systemic inflammatory response.`
       mockWarning = `Seek immediate emergency care if fever exceeds 103°F (39.4°C), accompanied by severe neck stiffness, confusion, or difficulty breathing.`
       mockConditions = [
@@ -847,14 +858,14 @@ Return JSON ONLY in this structure:
         { name: 'Nerve Root Compression (Sciatica / Disc Irritation)', percentage: 6, risk: 'high', explanation: 'Spinal nerve pinch causing radiating discomfort.', action: 'Consult an spine specialist for MRI assessment.', specialist: 'Spine Specialist / Orthopedic' }
       ]
     } else {
-      mockSummary = `Comprehensive clinical evaluation for description "${descText || selectedParts.join(', ')}": Primary likelihood points to localized muscle strain or fatigue.`
+      mockSummary = `Targeted diagnostic analysis for reported description "${descText || selectedParts.join(', ')}": Clinical evaluation indicates localized tissue inflammation or strain.`
       mockWarning = `Seek medical consultation if symptoms persist for more than 72 hours or progressively worsen.`
       mockConditions = [
-        { name: 'Localized Musculoskeletal Strain', percentage: 45, risk: 'low', explanation: `Connective tissue strain matching user reported description ("${descText || selectedParts.join(', ')}").`, action: 'Rest, apply gel pack, and stay hydrated.', specialist: 'General Physician' },
-        { name: 'Physical Fatigue & Muscle Soreness', percentage: 25, risk: 'low', explanation: 'Exertion or postural fatigue in selected body area.', action: 'Adequate 8-hour sleep and light stretching.', specialist: 'General Physician' },
-        { name: 'Mild Joint Sprain / Ligament Stretch', percentage: 15, risk: 'moderate', explanation: 'Minor joint capsule stress.', action: 'Use elastic support compress.', specialist: 'Orthopedic Specialist' },
-        { name: 'Cutaneous Irritation / Allergy', percentage: 10, risk: 'low', explanation: 'Mild skin localized histamine response.', action: 'Apply calamine lotion or aloe vera.', specialist: 'Dermatologist' },
-        { name: 'Transient Peripheral Nerve Irritation', percentage: 5, risk: 'moderate', explanation: 'Postural nerve pressure during prolonged sitting.', action: 'Avoid static posture and consult physician if tingling persists.', specialist: 'Neurologist / General Physician' }
+        { name: `Targeted Tissue Inflammation (${selectedParts[0] || 'Body Area'})`, percentage: 45, risk: 'low', explanation: `Specific tissue discomfort matching user reported text ("${descText || selectedParts.join(', ')}").`, action: 'Rest, apply gel pack, and stay hydrated.', specialist: 'General Physician' },
+        { name: `Localized Muscle Strain / Soreness`, percentage: 25, risk: 'low', explanation: `Postural strain in ${selectedParts.join(', ')} matching symptoms described.`, action: 'Adequate 8-hour sleep and light stretching.', specialist: 'General Physician' },
+        { name: 'Mild Ligament Sprain / Joint Stress', percentage: 15, risk: 'moderate', explanation: 'Minor capsule stress in evaluated body region.', action: 'Use elastic support compress.', specialist: 'Orthopedic Specialist' },
+        { name: 'Cutaneous Dermal Irritation', percentage: 10, risk: 'low', explanation: 'Localized skin sensitivity response.', action: 'Apply calamine lotion or soothing aloe vera.', specialist: 'Dermatologist' },
+        { name: 'Peripheral Nerve Irritation', percentage: 5, risk: 'moderate', explanation: 'Localized pressure on peripheral nerves.', action: 'Avoid static posture and consult physician if pain persists.', specialist: 'Neurologist / General Physician' }
       ]
     }
 
