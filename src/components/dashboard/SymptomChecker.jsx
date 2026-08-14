@@ -118,18 +118,18 @@ export default function SymptomChecker() {
       {/* ── MAIN 2-COLUMN LAYOUT ────────────────────────────────────────── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(340px, 390px) 1fr',
-        gap: '1.6rem',
+        gridTemplateColumns: 'minmax(310px, 345px) 1fr',
+        gap: '1.5rem',
         marginBottom: '1.8rem',
         alignItems: 'start'
       }}>
 
-        {/* ── LEFT PANEL: COMPACT IDENTICAL SVG HUMAN BODY MANNEQUIN MAP ───────── */}
+        {/* ── LEFT PANEL: SLEEK COMPACT SVG HUMAN BODY MANNEQUIN MAP ───────── */}
         <div style={{
           backgroundColor: '#0b101d',
-          borderRadius: '24px',
+          borderRadius: '22px',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          padding: '1.3rem 1.4rem',
+          padding: '1.1rem 1.2rem',
           boxShadow: '0 16px 45px rgba(0,0,0,0.4)',
           display: 'flex',
           flexDirection: 'column',
@@ -139,12 +139,12 @@ export default function SymptomChecker() {
         }}>
           <div>
             {/* Header Row: Body Map Title & Badge on Left, View Switcher on Center/Right */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', paddingBottom: '0.65rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <div>
-                <h3 style={{ margin: '0 0 0.15rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#10b981', letterSpacing: '-0.3px' }}>
+                <h3 style={{ margin: '0 0 0.1rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#10b981', letterSpacing: '-0.3px' }}>
                   Body Map
                 </h3>
-                <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 500 }}>
                   Front/Back View • Select Area
                 </span>
               </div>
@@ -154,11 +154,11 @@ export default function SymptomChecker() {
                 backgroundColor: 'rgba(16, 185, 129, 0.12)',
                 border: '1px solid rgba(16, 185, 129, 0.35)',
                 borderRadius: '20px',
-                padding: '0.3rem 0.75rem',
+                padding: '0.25rem 0.68rem',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.35rem',
-                fontSize: '0.75rem',
+                gap: '0.3rem',
+                fontSize: '0.72rem',
                 color: '#34d399',
                 fontWeight: 700
               }}>
@@ -168,22 +168,22 @@ export default function SymptomChecker() {
             </div>
 
             {/* Front View / Back View Switcher Pills */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
               <div style={{
                 display: 'inline-flex',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                padding: '0.24rem',
-                borderRadius: '12px',
+                padding: '0.2rem',
+                borderRadius: '11px',
                 border: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
                 <button
                   type="button"
                   onClick={() => setViewMode('front')}
                   style={{
-                    padding: '0.4rem 1.1rem',
-                    borderRadius: '9px',
+                    padding: '0.35rem 0.95rem',
+                    borderRadius: '8px',
                     border: 'none',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     backgroundColor: viewMode === 'front' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
@@ -199,10 +199,10 @@ export default function SymptomChecker() {
                   type="button"
                   onClick={() => setViewMode('back')}
                   style={{
-                    padding: '0.4rem 1.1rem',
-                    borderRadius: '9px',
+                    padding: '0.35rem 0.95rem',
+                    borderRadius: '8px',
                     border: 'none',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     backgroundColor: viewMode === 'back' ? 'rgba(16, 185, 129, 0.25)' : 'transparent',
@@ -222,22 +222,22 @@ export default function SymptomChecker() {
               justify: 'center',
               alignItems: 'center',
               position: 'relative',
-              padding: '0.5rem 0 0.5rem 25px'
+              padding: '0.3rem 0 0.3rem 18px'
             }}>
               {/* Outer Cyan Glowing Body Aura */}
               <div style={{
                 position: 'absolute',
-                width: '170px',
-                height: '350px',
+                width: '150px',
+                height: '320px',
                 background: 'radial-gradient(ellipse at center, rgba(56, 189, 248, 0.14) 0%, transparent 70%)',
                 pointerEvents: 'none'
               }} />
 
               <svg
-                width="280"
-                height="410"
+                width="255"
+                height="370"
                 viewBox="0 0 300 460"
-                style={{ overflow: 'visible', transform: 'scale(0.96)' }}
+                style={{ overflow: 'visible', transform: 'scale(0.88)' }}
               >
                 {/* Outer Faint Anatomical Body Silhouette Outline */}
                 <g opacity="0.15" stroke="#38bdf8" strokeWidth="2" fill="none">
