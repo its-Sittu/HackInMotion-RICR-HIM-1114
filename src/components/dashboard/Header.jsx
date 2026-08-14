@@ -65,12 +65,12 @@ export default function Header() {
             <span style={{ fontSize: '1.6rem' }}>{greeting.icon}</span>
           </h1>
           <p className="dash-subtitle" style={{
-            color: '#64748b',
+            color: '#94a3b8',
             fontSize: '0.92rem',
             margin: 0,
             fontWeight: 500
           }}>
-            Here is your PulseMed health & medication safety overview.
+            Here is your MediSafe intelligent medicine safety &amp; interaction overview.
           </p>
         </div>
 

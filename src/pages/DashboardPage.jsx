@@ -33,65 +33,68 @@ export default function DashboardPage() {
     })
   }
 
-  // Mock vital statistics
+  // MediSafe Live Medicine Safety Statistics
   const vitals = [
     {
-      id: 'heart-rate',
-      title: 'Heart Rate',
-      value: '74',
-      unit: 'bpm',
-      status: 'Normal',
-      trend: '+2% from yesterday',
-      color: '#ef4444',
-      bgGradient: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.02) 100%)',
+      id: 'active-meds',
+      title: 'Active Medicines Today',
+      value: '4',
+      unit: 'scheduled',
+      status: 'Active Plan',
+      trend: 'Subah, Dopahar & Shaam doses',
+      color: '#38bdf8',
+      bgGradient: 'linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0.03) 100%)',
       icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10.5 3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5h-3z" />
+          <path d="M13.5 8H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h5.5" />
         </svg>
       )
     },
     {
-      id: 'blood-pressure',
-      title: 'Blood Pressure',
-      value: '120/80',
-      unit: 'mmHg',
-      status: 'Optimal',
-      trend: 'Stable',
-      color: '#6366f1',
-      bgGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-        </svg>
-      )
-    },
-    {
-      id: 'blood-oxygen',
-      title: 'Blood Oxygen',
-      value: '98.5',
-      unit: '%',
-      status: 'Healthy',
-      trend: 'Normal range (95-100%)',
-      color: '#06b6d4',
-      bgGradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0.02) 100%)',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-        </svg>
-      )
-    },
-    {
-      id: 'steps-card',
-      title: 'Daily Steps',
-      value: '8,420',
-      unit: '/ 10,000',
-      status: '84% Goal',
-      trend: '+1,240 vs last week',
+      id: 'interaction-risk',
+      title: 'Drug Interaction Risk',
+      value: '0',
+      unit: 'warnings',
+      status: 'FDA Safe ✓',
+      trend: 'All 4 active compounds safe',
       color: '#10b981',
-      bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%)',
+      bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.03) 100%)',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <polyline points="9 12 11 14 15 10" />
+        </svg>
+      )
+    },
+    {
+      id: 'adherence-rate',
+      title: 'Dosage Adherence',
+      value: '96.5',
+      unit: '%',
+      status: 'High Score',
+      trend: 'On track with reminders',
+      color: '#6366f1',
+      bgGradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.03) 100%)',
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+      )
+    },
+    {
+      id: 'safety-scans',
+      title: 'Safety Scans Done',
+      value: '18',
+      unit: 'searches',
+      status: 'Verified',
+      trend: '+4 searches this week',
+      color: '#f43f5e',
+      bgGradient: 'linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.03) 100%)',
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       )
     }
