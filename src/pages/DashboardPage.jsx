@@ -4,6 +4,7 @@ import Header from '../components/dashboard/Header'
 import MedicineSearch from '../components/dashboard/MedicineSearch'
 import DrugInteractionChecker from '../components/dashboard/DrugInteractionChecker'
 import SymptomChecker from '../components/dashboard/SymptomChecker'
+import MedicalRecords from '../components/dashboard/MedicalRecords'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -114,6 +115,8 @@ export default function DashboardPage() {
           <DrugInteractionChecker />
         ) : activeTab === 'symptom-checker' ? (
           <SymptomChecker />
+        ) : activeTab === 'records' ? (
+          <MedicalRecords />
         ) : (
           <>
             {/* Health Overview / Vitals Grid */}
