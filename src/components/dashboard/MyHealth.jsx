@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MedicationAlarm from './MedicationAlarm'
+import HealthAnalytics from './HealthAnalytics'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 
 const INITIAL_MARKED_DAYS = {
@@ -495,10 +496,13 @@ export default function MyHealth() {
 
         {/* ── RIGHT: MEDICATION ALARM SUITE ─────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
-          {/* Medication Audio Alarm & Reminders */}
+          {/* Medication Audio Alarm & Reminders & Diet Schedule */}
           <MedicationAlarm />
         </div>
       </div>
+
+      {/* ── PATIENT HEALTH ANALYTICS & INSIGHTS (PIE CHART & BAR GRAPH) ──── */}
+      <HealthAnalytics />
 
       {/* ── DAY MARK & REMOVE MODAL ───────────────────────────────────── */}
       {selectedDayKey && (
