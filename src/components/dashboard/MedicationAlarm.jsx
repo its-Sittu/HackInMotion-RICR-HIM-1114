@@ -41,11 +41,15 @@ export default function MedicationAlarm() {
   })
 
   const [activeRingingAlarm, setActiveRingingAlarm] = useState(null)
-  const [editingAlarmId, setEditingAlarmId] = useState(null)
-  const [editTimeValue, setEditTimeValue] = useState('')
-  const [showAddModal, setShowAddModal] = useState(false)
 
-  // New alarm form state
+  // Phone-Style Alarm Time Picker Modal state
+  const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
+  const [pickerHour, setPickerHour] = useState('08')
+  const [pickerMinute, setPickerMinute] = useState('00')
+  const [pickerAmpm, setPickerAmpm] = useState('AM')
+
+  // Add new alarm modal state
+  const [showAddModal, setShowAddModal] = useState(false)
   const [newMedName, setNewMedName] = useState('')
   const [newMedTime, setNewMedTime] = useState('08:00')
   const [newMedInstruction, setNewMedInstruction] = useState('After Food')
@@ -60,6 +64,73 @@ export default function MedicationAlarm() {
       // localStorage optional
     }
   }, [alarms])
+
+  // Open Phone-Style Alarm Time Picker Modal for an alarm
+  const openTimePickerModal = (alarm) => {
+    setModifyModalAlarm(alarm)
+
+    // Parse existing time string e.g. "08:00 AM"
+    try {
+      const parts = alarm.time.split(' ')
+      if (parts.length === 2) {
+        const [h, m] = parts[0].split(':')
+        setPickerHour(String(h).padStart(2, '0'))
+        setPickerMinute(String(m).padStart(2, '0'))
+        setPickerAmpm(parts[1].toUpperCase())
+      } else {
+        const now = new Date()
+        const hours = now.getHours()
+        setPickerHour(String(hours % 12 === 0 ? 12 : hours % 12).padStart(2, '0'))
+        setPickerMinute(String(now.getMinutes()).padStart(2, '0'))
+        setPickerAmpm(hours >= 12 ? 'PM' : 'AM')
+      }
+    } catch {
+      setPickerHour('08')
+      setPickerMinute('00')
+      setPickerAmpm('AM')
+    }
+  }
+
+  // Quick Preset: +1 Min or +5 Min ahead of current time
+  const applyQuickOffsetPreset = (minsToAdd) => {
+    const target = new Date(Date.now() + minsToAdd * 60 * 1000)
+    const hours = target.getHours()
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    const displayHour = hours % 12 === 0 ? 12 : hours % 12
+
+    setPickerHour(String(displayHour).padStart(2, '0'))
+    setPickerMinute(String(target.getMinutes()).padStart(2, '0'))
+    setPickerAmpm(ampm)
+  }
+
+  // Save selected phone alarm time
+  const handleSavePickerTime = () => {
+    if (!modifyModalAlarm) return
+
+    const formattedTimeStr = `${pickerHour}:${pickerMinute} ${pickerAmpm}`
+
+    // Calculate period
+    let h24 = parseInt(pickerHour, 10)
+    if (pickerAmpm === 'PM' && h24 < 12) h24 += 12
+    if (pickerAmpm === 'AM' && h24 === 12) h24 = 0
+
+    const period = h24 < 12 ? 'Subah (Morning)' : h24 < 17 ? 'Dopahar (Afternoon)' : h24 < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
+
+    setAlarms(prev => prev.map(item => {
+      if (item.id === modifyModalAlarm.id) {
+        return {
+          ...item,
+          time: formattedTimeStr,
+          period,
+          status: 'ACTIVE', // Re-activate so sound triggers at exact new time!
+          takenTime: null
+        }
+      }
+      return item
+    }))
+
+    setModifyModalAlarm(null)
+  }
 
   // Play premium crystal glass melodic health chime arpeggio (E5 -> G#5 -> B5 -> E6)
   const playSoundBeep = () => {
@@ -170,37 +241,6 @@ export default function MedicationAlarm() {
     }
   }
 
-  // Modify alarm time (Re-activates alarm so sound will play at exact new time!)
-  const handleSaveModifiedTime = (alarmId) => {
-    if (!editTimeValue.trim()) return
-
-    // Convert HH:MM (24h) to 12h AM/PM
-    const [h, m] = editTimeValue.split(':')
-    if (!h || !m) return
-
-    let hour = parseInt(h, 10)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 === 0 ? 12 : hour % 12
-    const formatted12h = `${String(displayHour).padStart(2, '0')}:${m} ${ampm}`
-    const period = hour < 12 ? 'Subah (Morning)' : hour < 17 ? 'Dopahar (Afternoon)' : hour < 21 ? 'Shaam (Evening)' : 'Raat (Night)'
-
-    setAlarms(prev => prev.map(item => {
-      if (item.id === alarmId) {
-        return {
-          ...item,
-          time: formatted12h,
-          period,
-          status: 'ACTIVE', // Re-activate so sound triggers at exact new time!
-          takenTime: null
-        }
-      }
-      return item
-    }))
-
-    setEditingAlarmId(null)
-    setEditTimeValue('')
-  }
-
   // Add new medicine alarm
   const handleAddNewAlarm = () => {
     if (!newMedName.trim()) return
@@ -309,7 +349,7 @@ export default function MedicationAlarm() {
           gap: '1rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <span style={{ fontSize: '2rem', animation: 'bounce 0.8s infinite' }}>🔔</span>
+            <span style={{ fontSize: '2rem' }}>🔔</span>
             <div>
               <span style={{ fontSize: '0.7rem', color: '#be123c', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block' }}>
                 🔊 ALARM RINGING NOW! ({activeRingingAlarm.time})
@@ -395,7 +435,7 @@ export default function MedicationAlarm() {
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
-                  justify: 'center',
+                  justifyContent: 'center',
                   cursor: 'pointer',
                   fontSize: '1.1rem',
                   fontWeight: 800,
@@ -429,113 +469,330 @@ export default function MedicationAlarm() {
               </div>
             </div>
 
-            {/* Right Controls: Time Badge & Modify Time */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              {editingAlarmId === item.id ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <input
-                    type="time"
-                    value={editTimeValue}
-                    onChange={(e) => setEditTimeValue(e.target.value)}
-                    style={{
-                      border: '1px solid #6366f1',
-                      borderRadius: '8px',
-                      padding: '0.3rem 0.5rem',
-                      fontSize: '0.8rem',
-                      outline: 'none'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleSaveModifiedTime(item.id)}
-                    style={{ backgroundColor: '#6366f1', color: '#ffffff', border: 'none', borderRadius: '8px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-                  >
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  {/* Alarm Time Badge */}
-                  <span style={{
-                    fontSize: '0.88rem',
-                    fontWeight: 800,
-                    color: '#4f46e5',
-                    backgroundColor: '#eef2ff',
-                    border: '1px solid #c7d2fe',
-                    padding: '0.3rem 0.65rem',
-                    borderRadius: '10px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.3rem'
-                  }}>
-                    🔔 {item.time}
-                  </span>
+            {/* Right Controls: Alarm Time Badge & Modify Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              {/* Alarm Time Badge */}
+              <button
+                type="button"
+                onClick={() => openTimePickerModal(item)}
+                style={{
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  color: '#4f46e5',
+                  backgroundColor: '#eef2ff',
+                  border: '1px solid #c7d2fe',
+                  padding: '0.35rem 0.7rem',
+                  borderRadius: '10px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                title="Click to change alarm time"
+              >
+                🔔 {item.time}
+              </button>
 
-                  {/* Modify Time Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingAlarmId(item.id)
-                      const now = new Date()
-                      const h = String(now.getHours()).padStart(2, '0')
-                      const m = String(now.getMinutes()).padStart(2, '0')
-                      setEditTimeValue(`${h}:${m}`)
-                    }}
-                    style={{
-                      backgroundColor: '#f1f5f9',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '8px',
-                      padding: '0.3rem 0.55rem',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      color: '#475569',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ✏️ Modify Time
-                  </button>
+              {/* Modify Time Button */}
+              <button
+                type="button"
+                onClick={() => openTimePickerModal(item)}
+                style={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '10px',
+                  padding: '0.35rem 0.65rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  color: '#334155',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                }}
+              >
+                ✏️ Modify Time
+              </button>
 
-                  {/* Test Alarm Sound Trigger */}
-                  <button
-                    type="button"
-                    onClick={() => triggerTestAlarm(item)}
-                    style={{
-                      backgroundColor: '#fef3c7',
-                      border: '1px solid #fde68a',
-                      borderRadius: '8px',
-                      padding: '0.3rem 0.55rem',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      color: '#b45309',
-                      cursor: 'pointer'
-                    }}
-                    title="Test alarm sound"
-                  >
-                    🔊 Test
-                  </button>
+              {/* Test Alarm Sound Trigger */}
+              <button
+                type="button"
+                onClick={() => triggerTestAlarm(item)}
+                style={{
+                  backgroundColor: '#fef3c7',
+                  border: '1px solid #fde68a',
+                  borderRadius: '10px',
+                  padding: '0.35rem 0.65rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  color: '#b45309',
+                  cursor: 'pointer'
+                }}
+                title="Test alarm sound"
+              >
+                🔊 Test
+              </button>
 
-                  {/* Delete Icon */}
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteAlarm(item.id)}
-                    style={{
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      color: '#94a3b8',
-                      cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      padding: '0.2rem'
-                    }}
-                    title="Delete alarm"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              )}
+              {/* Delete Icon */}
+              <button
+                type="button"
+                onClick={() => handleDeleteAlarm(item.id)}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  padding: '0.2rem'
+                }}
+                title="Delete alarm"
+              >
+                🗑️
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* ── PHONE-STYLE ALARM TIME PICKER MODAL ─────────────────────────── */}
+      {modifyModalAlarm && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '26px',
+            maxWidth: '440px',
+            width: '100%',
+            padding: '1.8rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            {/* Modal Title */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                  ⏰ Set Alarm Time
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#6366f1', fontWeight: 700 }}>
+                  Medicine: {modifyModalAlarm.medicine}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setModifyModalAlarm(null)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Quick Presets Bar */}
+            <div style={{ marginBottom: '1.4rem' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.5rem' }}>
+                ⚡ Quick Presets (1-Click Test):
+              </label>
+
+              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => applyQuickOffsetPreset(1)}
+                  style={{ backgroundColor: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', borderRadius: '8px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  ⚡ +1 Min (Test Sound)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyQuickOffsetPreset(5)}
+                  style={{ backgroundColor: '#e0e7ff', color: '#3730a3', border: '1px solid #c7d2fe', borderRadius: '8px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  +5 Min
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setPickerHour('08'); setPickerMinute('00'); setPickerAmpm('AM') }}
+                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  🌅 08:00 AM
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setPickerHour('02'); setPickerMinute('00'); setPickerAmpm('PM') }}
+                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  ☀️ 02:00 PM
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setPickerHour('08'); setPickerMinute('00'); setPickerAmpm('PM') }}
+                  style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.35rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  🌆 08:00 PM
+                </button>
+              </div>
+            </div>
+
+            {/* Phone Clock Time Picker Wheel Box */}
+            <div style={{
+              backgroundColor: '#f8fafc',
+              border: '2px solid #e2e8f0',
+              borderRadius: '20px',
+              padding: '1.4rem 1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              marginBottom: '1.6rem'
+            }}>
+              {/* Hour Dropdown */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>Hour</span>
+                <select
+                  value={pickerHour}
+                  onChange={(e) => setPickerHour(e.target.value)}
+                  style={{
+                    fontSize: '1.8rem',
+                    fontWeight: 800,
+                    color: '#0f172a',
+                    backgroundColor: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: '14px',
+                    padding: '0.4rem 0.6rem',
+                    outline: 'none',
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {Array.from({ length: 12 }).map((_, i) => {
+                    const val = String(i + 1).padStart(2, '0')
+                    return <option key={val} value={val}>{val}</option>
+                  })}
+                </select>
+              </div>
+
+              <span style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1', marginTop: '1.2rem' }}>:</span>
+
+              {/* Minute Dropdown */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>Minute</span>
+                <select
+                  value={pickerMinute}
+                  onChange={(e) => setPickerMinute(e.target.value)}
+                  style={{
+                    fontSize: '1.8rem',
+                    fontWeight: 800,
+                    color: '#0f172a',
+                    backgroundColor: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: '14px',
+                    padding: '0.4rem 0.6rem',
+                    outline: 'none',
+                    textAlign: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {Array.from({ length: 60 }).map((_, i) => {
+                    const val = String(i).padStart(2, '0')
+                    return <option key={val} value={val}>{val}</option>
+                  })}
+                </select>
+              </div>
+
+              {/* AM / PM Toggle Pill */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>AM / PM</span>
+                <div style={{ display: 'flex', backgroundColor: '#e2e8f0', borderRadius: '12px', padding: '0.2rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setPickerAmpm('AM')}
+                    style={{
+                      border: 'none',
+                      borderRadius: '10px',
+                      backgroundColor: pickerAmpm === 'AM' ? '#6366f1' : 'transparent',
+                      color: pickerAmpm === 'AM' ? '#ffffff' : '#475569',
+                      fontWeight: 800,
+                      padding: '0.5rem 0.75rem',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    AM
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPickerAmpm('PM')}
+                    style={{
+                      border: 'none',
+                      borderRadius: '10px',
+                      backgroundColor: pickerAmpm === 'PM' ? '#6366f1' : 'transparent',
+                      color: pickerAmpm === 'PM' ? '#ffffff' : '#475569',
+                      fontWeight: 800,
+                      padding: '0.5rem 0.75rem',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    PM
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setModifyModalAlarm(null)}
+                style={{
+                  backgroundColor: '#f1f5f9',
+                  color: '#475569',
+                  border: 'none',
+                  borderRadius: '14px',
+                  padding: '0.75rem 1rem',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  flex: 1
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSavePickerTime}
+                style={{
+                  backgroundColor: '#6366f1',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '14px',
+                  padding: '0.75rem 1rem',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  flex: 2,
+                  boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
+                }}
+              >
+                ✓ Set Alarm Time
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── ADD NEW ALARM MODAL ─────────────────────────────────────────── */}
       {showAddModal && (
