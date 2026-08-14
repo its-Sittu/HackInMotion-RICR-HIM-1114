@@ -28,6 +28,61 @@ const INITIAL_ALARMS = [
   }
 ]
 
+const INITIAL_MEALS = [
+  {
+    id: 'meal-1',
+    mealType: 'Breakfast (Subah Ka Nashta)',
+    time: '08:30',
+    foodItems: 'Oatmeal with Almonds & Banana + Warm Lemon Water',
+    calories: '350 kcal',
+    tag: 'High Fiber',
+    tagBg: '#ecfdf5',
+    tagColor: '#047857',
+    medSync: 'Sync: Pre-Breakfast Pantocid 40mg',
+    status: 'SCHEDULED',
+    icon: '🥣'
+  },
+  {
+    id: 'meal-2',
+    mealType: 'Lunch (Dopahar Ka Khana)',
+    time: '13:30',
+    foodItems: 'Multigrain Roti (2), Arhar Dal, Spinach Sabzi, Fresh Curd & Green Salad',
+    calories: '550 kcal',
+    tag: 'Balanced Diet',
+    tagBg: '#eff6ff',
+    tagColor: '#1d4ed8',
+    medSync: 'Sync: Post-Lunch Dolo 650mg',
+    status: 'SCHEDULED',
+    icon: '🥗'
+  },
+  {
+    id: 'meal-3',
+    mealType: 'Evening Snack (Shaam Ka Nashta)',
+    time: '17:00',
+    foodItems: 'Green Tea / Herbal Infusion + Roasted Makhana & Soaked Walnuts (4)',
+    calories: '180 kcal',
+    tag: 'Antioxidant',
+    tagBg: '#fef3c7',
+    tagColor: '#b45309',
+    medSync: 'Light Snack Energy Booster',
+    status: 'SCHEDULED',
+    icon: '🍵'
+  },
+  {
+    id: 'meal-4',
+    mealType: 'Dinner (Raat Ka Khana)',
+    time: '20:30',
+    foodItems: 'Moong Dal Khichdi / Vegetable Soup + Steamed Broccoli',
+    calories: '400 kcal',
+    tag: 'Light Digestible',
+    tagBg: '#f3e8ff',
+    tagColor: '#6b21a8',
+    medSync: 'Sync: With Dinner Metformin 500mg',
+    status: 'SCHEDULED',
+    icon: '🍲'
+  }
+]
+
 export default function MedicationAlarm() {
   const [alarms, setAlarms] = useState(() => {
     try {
@@ -35,6 +90,15 @@ export default function MedicationAlarm() {
       return saved ? JSON.parse(saved) : INITIAL_ALARMS
     } catch {
       return INITIAL_ALARMS
+    }
+  })
+
+  const [meals, setMeals] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pulsemed_healthy_meals')
+      return saved ? JSON.parse(saved) : INITIAL_MEALS
+    } catch {
+      return INITIAL_MEALS
     }
   })
 
@@ -52,6 +116,14 @@ export default function MedicationAlarm() {
   const [newMedTime, setNewMedTime] = useState('08:00')
   const [newMedInstruction, setNewMedInstruction] = useState('After Food')
 
+  // Add new meal modal state
+  const [showAddMealModal, setShowAddMealModal] = useState(false)
+  const [newMealName, setNewMealName] = useState('')
+  const [newMealTime, setNewMealTime] = useState('12:00')
+  const [newMealItems, setNewMealItems] = useState('')
+  const [newMealCal, setNewMealCal] = useState('300 kcal')
+  const [newMealTag, setNewMealTag] = useState('Healthy Nutrients')
+
   const audioCtxRef = useRef(null)
   const soundIntervalRef = useRef(null)
 
@@ -62,6 +134,14 @@ export default function MedicationAlarm() {
       // localStorage optional
     }
   }, [alarms])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_healthy_meals', JSON.stringify(meals))
+    } catch {
+      // localStorage optional
+    }
+  }, [meals])
 
   // Open Phone-Style Alarm Time Picker Modal for an alarm
   const openTimePickerModal = (alarm) => {
@@ -346,6 +426,68 @@ export default function MedicationAlarm() {
     setActiveRingingAlarm(alarm)
   }
 
+  // Mark Meal as CONSUMED ✅
+  const handleMarkMealConsumed = (mealId) => {
+    const targetMeal = meals.find(m => m.id === mealId)
+    const consumedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+
+    setMeals(prev => prev.map(item => {
+      if (item.id === mealId) {
+        return { ...item, status: 'CONSUMED', consumedTime }
+      }
+      return item
+    }))
+
+    if (targetMeal) {
+      saveActivityToMedicalHistory({
+        title: `Healthy Meal Consumed: ${targetMeal.mealType}`,
+        category: 'Diet & Food',
+        typeIcon: targetMeal.icon || '🥗',
+        status: 'MEAL CONSUMED ✅',
+        statusBg: '#ecfdf5',
+        statusColor: '#047857',
+        summary: `Healthy meal consumed at ${consumedTime}. Items: ${targetMeal.foodItems} (${targetMeal.calories}).`,
+        doctorNote: `Dietary Log: ${targetMeal.tag} meal intake recorded. ${targetMeal.medSync || ''}`,
+        details: [
+          `Meal Type: ${targetMeal.mealType}`,
+          `Time Scheduled: ${targetMeal.time}`,
+          `Food Items: ${targetMeal.foodItems}`,
+          `Energy / Calories: ${targetMeal.calories}`,
+          `Status: Consumed & Logged ✅`
+        ]
+      })
+    }
+  }
+
+  // Delete Meal Plan
+  const handleDeleteMeal = (mealId) => {
+    setMeals(prev => prev.filter(item => item.id !== mealId))
+  }
+
+  // Add New Custom Meal Plan
+  const handleAddNewMeal = () => {
+    if (!newMealName.trim()) return
+
+    const newMeal = {
+      id: `meal-${Date.now()}`,
+      mealType: newMealName.trim(),
+      time: newMealTime,
+      foodItems: newMealItems.trim() || 'Custom Healthy Meal & Salad',
+      calories: newMealCal || '300 kcal',
+      tag: newMealTag || 'Healthy Nutrients',
+      tagBg: '#ecfdf5',
+      tagColor: '#047857',
+      medSync: 'Custom Diet Plan',
+      status: 'SCHEDULED',
+      icon: '🥗'
+    }
+
+    setMeals(prev => [...prev, newMeal])
+    setNewMealName('')
+    setNewMealItems('')
+    setShowAddMealModal(false)
+  }
+
   return (
     <>
       <div style={{
@@ -618,8 +760,7 @@ export default function MedicationAlarm() {
                   border: 'none',
                   color: '#94a3b8',
                   cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  padding: '0.2rem'
+                  fontSize: '0.9rem'
                 }}
                 title="Delete alarm"
               >
@@ -629,6 +770,175 @@ export default function MedicationAlarm() {
           </div>
         ))}
       </div>
+    </div>
+
+      {/* ── HEALTHY FOOD PLANNING & SCHEDULE BOARD (ALARM KE NICHE) ────────── */}
+      <div style={{
+        backgroundColor: '#ffffff',
+        borderRadius: '24px',
+        border: '1px solid #e2e8f0',
+        padding: '1.2rem 1.4rem',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+        boxSizing: 'border-box',
+        marginTop: '1.4rem'
+      }}>
+        {/* Card Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <span style={{ fontSize: '1.4rem', backgroundColor: '#ecfdf5', padding: '0.4rem', borderRadius: '12px' }}>🥗</span>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                Healthy Food Planning & Schedule Board
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#059669', color: '#ffffff', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '6px' }}>
+                  Clinical Diet Routine
+                </span>
+              </h3>
+              <span style={{ fontSize: '0.73rem', color: '#047857', fontWeight: 600 }}>
+                Synchronized with Medication Time & Dietary Guidelines • Daily Energy Target: 1,800 kcal
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAddMealModal(true)}
+            style={{
+              backgroundColor: '#ecfdf5',
+              color: '#047857',
+              border: '1px solid #a7f3d0',
+              borderRadius: '10px',
+              padding: '0.4rem 0.85rem',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              boxShadow: '0 2px 6px rgba(4, 120, 87, 0.15)'
+            }}
+          >
+            ➕ Add Meal Plan
+          </button>
+        </div>
+
+        {/* Schedule Board Meals Grid */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {meals.map((meal) => (
+            <div
+              key={meal.id}
+              style={{
+                backgroundColor: meal.status === 'CONSUMED' ? '#f0fdf4' : '#fafafa',
+                border: meal.status === 'CONSUMED' ? '1.5px solid #bbf7d0' : '1px solid #e2e8f0',
+                borderRadius: '16px',
+                padding: '0.9rem 1.1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {/* Left Info: Icon, Meal Type, Food Items, Med Sync */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: '280px' }}>
+                <span style={{ fontSize: '1.6rem', backgroundColor: '#ffffff', padding: '0.45rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+                  {meal.icon || '🥗'}
+                </span>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <strong style={{ fontSize: '0.92rem', color: '#0f172a', fontWeight: 800 }}>
+                      {meal.mealType}
+                    </strong>
+                    <span style={{
+                      backgroundColor: meal.tagBg || '#ecfdf5',
+                      color: meal.tagColor || '#047857',
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      padding: '0.15rem 0.5rem',
+                      borderRadius: '6px'
+                    }}>
+                      {meal.tag}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 700, padding: '0.12rem 0.45rem', borderRadius: '6px' }}>
+                      🔥 {meal.calories}
+                    </span>
+                  </div>
+
+                  <p style={{ margin: '0.25rem 0 0.2rem 0', fontSize: '0.8rem', color: '#334155', fontWeight: 600, lineHeight: '1.3' }}>
+                    {meal.foodItems}
+                  </p>
+
+                  <span style={{ fontSize: '0.72rem', color: '#6366f1', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    ⚡ {meal.medSync}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Controls: Time Badge, Status, Consume Button & Delete */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <span style={{
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  color: '#0f172a',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  padding: '0.35rem 0.65rem',
+                  borderRadius: '10px'
+                }}>
+                  🕒 {meal.time}
+                </span>
+
+                {meal.status === 'CONSUMED' ? (
+                  <span style={{
+                    backgroundColor: '#d1fae5',
+                    color: '#047857',
+                    fontSize: '0.76rem',
+                    fontWeight: 800,
+                    padding: '0.4rem 0.75rem',
+                    borderRadius: '10px',
+                    border: '1px solid #a7f3d0'
+                  }}>
+                    ✓ Consumed Today
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleMarkMealConsumed(meal.id)}
+                    style={{
+                      backgroundColor: '#059669',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '0.4rem 0.8rem',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: '0 3px 10px rgba(5, 150, 105, 0.3)'
+                    }}
+                  >
+                    ✓ Mark Consumed
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleDeleteMeal(meal.id)}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    padding: '0.2rem'
+                  }}
+                  title="Delete meal plan"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── PHONE-STYLE ALARM TIME PICKER MODAL ─────────────────────────── */}
@@ -907,6 +1217,117 @@ export default function MedicationAlarm() {
               </button>
               <button type="button" onClick={handleAddNewAlarm} style={{ backgroundColor: '#6366f1', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 2, boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)' }}>
                 ✓ Save Alarm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ADD NEW HEALTHY MEAL PLAN MODAL ──────────────────────────────── */}
+      {showAddMealModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '460px',
+            width: '100%',
+            padding: '1.6rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                🥗 Add Healthy Meal Plan
+              </h3>
+              <button type="button" onClick={() => setShowAddMealModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.4rem' }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.3rem' }}>
+                  Meal Name / Time Window:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Mid-Morning Fruit Snack, Post-Workout Protein..."
+                  value={newMealName}
+                  onChange={(e) => setNewMealName(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.55rem 0.8rem', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.3rem' }}>
+                    Scheduled Time:
+                  </label>
+                  <input
+                    type="time"
+                    value={newMealTime}
+                    onChange={(e) => setNewMealTime(e.target.value)}
+                    style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.55rem 0.8rem', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.3rem' }}>
+                    Est. Calories:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 350 kcal"
+                    value={newMealCal}
+                    onChange={(e) => setNewMealCal(e.target.value)}
+                    style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.55rem 0.8rem', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.3rem' }}>
+                  Food Items & Ingredients:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Apple slices with 1 tsp Peanut butter + Green Tea"
+                  value={newMealItems}
+                  onChange={(e) => setNewMealItems(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.55rem 0.8rem', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.3rem' }}>
+                  Diet Tag / Nutritional Highlight:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. High Fiber, Low Glycemic Index, Protein Rich"
+                  value={newMealTag}
+                  onChange={(e) => setNewMealTag(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.55rem 0.8rem', fontSize: '0.82rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button type="button" onClick={() => setShowAddMealModal(false)} style={{ backgroundColor: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 1 }}>
+                Cancel
+              </button>
+              <button type="button" onClick={handleAddNewMeal} style={{ backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 2, boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)' }}>
+                ✓ Save Meal Plan
               </button>
             </div>
           </div>
