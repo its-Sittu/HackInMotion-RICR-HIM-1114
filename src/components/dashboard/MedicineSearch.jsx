@@ -844,10 +844,10 @@ export default function MedicineSearch() {
                     fontSize: '0.85rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    border: isActive ? 'none' : '1px solid #cbd5e1',
-                    background: isActive ? 'linear-gradient(135deg, #6366f1, #4f46e5)' : '#ffffff',
-                    color: isActive ? '#ffffff' : '#334155',
-                    boxShadow: isActive ? '0 6px 16px rgba(99, 102, 241, 0.25)' : '0 2px 5px rgba(0,0,0,0.02)',
+                    border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.12)',
+                    background: isActive ? 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)' : 'rgba(255, 255, 255, 0.05)',
+                    color: isActive ? '#ffffff' : '#cbd5e1',
+                    boxShadow: isActive ? '0 6px 20px rgba(56, 189, 248, 0.3)' : 'none',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.35rem',
@@ -865,22 +865,23 @@ export default function MedicineSearch() {
             <div style={{
               textAlign: 'center',
               padding: '3rem 2rem',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'rgba(15, 23, 42, 0.85)',
               borderRadius: '20px',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
             }}>
               <div style={{
                 width: '42px',
                 height: '42px',
-                border: '3.5px solid #e0e7ff',
-                borderTop: '3.5px solid #6366f1',
+                border: '3.5px solid rgba(56, 189, 248, 0.2)',
+                borderTop: '3.5px solid #38bdf8',
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 1rem'
               }} />
-              <h4 style={{ color: '#1e293b', margin: '0 0 0.3rem 0' }}>Searching Medicine Database & openFDA</h4>
-              <p style={{ color: '#64748b', fontSize: '0.88rem', margin: 0 }}>Fetching exact dosage, timing instructions, and medical guidelines…</p>
+              <p style={{ color: '#cbd5e1', fontSize: '0.95rem', fontWeight: 600 }}>
+                Searching clinical medicine database & openFDA records...
+              </p>
             </div>
           )}
 
@@ -889,28 +890,28 @@ export default function MedicineSearch() {
             <div style={{
               textAlign: 'center',
               padding: '3.5rem 2rem',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'rgba(15, 23, 42, 0.85)',
               borderRadius: '24px',
-              border: '2px dashed #cbd5e1',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)'
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.35)'
             }}>
-              <span style={{ fontSize: '3rem', display: 'block', marginBottom: '0.6rem' }}>🩺</span>
-              <h3 style={{ color: '#0f172a', fontSize: '1.25rem', fontWeight: 700, margin: '0 0 0.4rem 0' }}>
-                No matching medicines found
+              <div style={{ fontSize: '3rem', marginBottom: '0.8rem' }}>🔍</div>
+              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', marginBottom: '0.4rem', fontWeight: 800 }}>
+                No medicines found for &quot;{query}&quot;
               </h3>
-              <p style={{ color: '#64748b', fontSize: '0.92rem', margin: '0 auto 1.2rem auto', maxWidth: '420px' }}>
+              <p style={{ color: '#94a3b8', fontSize: '0.92rem', margin: '0 auto 1.2rem auto', maxWidth: '420px' }}>
                 Try searching for generic terms like <strong>Paracetamol</strong>, <strong>Ibuprofen</strong>, <strong>Pantoprazole</strong>, or <strong>Amoxicillin</strong>.
               </p>
               <button
                 type="button"
                 onClick={() => { setQuery(''); setActiveCategory('All') }}
                 style={{
-                  backgroundColor: '#6366f1',
-                  color: '#ffffff',
+                  backgroundColor: '#38bdf8',
+                  color: '#0f172a',
                   border: 'none',
                   borderRadius: '12px',
                   padding: '0.6rem 1.4rem',
-                  fontWeight: 600,
+                  fontWeight: 800,
                   fontSize: '0.88rem',
                   cursor: 'pointer'
                 }}
@@ -934,14 +935,15 @@ export default function MedicineSearch() {
 
                 return (
                   <div key={med.id} style={{
-                    backgroundColor: '#ffffff',
+                    backgroundColor: 'rgba(15, 23, 42, 0.88)',
+                    backdropFilter: 'blur(16px)',
                     borderRadius: '22px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
                     padding: '1.4rem',
-                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.04)',
+                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.45)',
                     display: 'flex',
                     flexDirection: 'column',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     height: '100%',
                     position: 'relative',
                     overflow: 'hidden',
@@ -958,7 +960,7 @@ export default function MedicineSearch() {
                       background: med.category.includes('Pain') ? 'linear-gradient(90deg, #ef4444, #f97316)' :
                                  med.category.includes('Antibiotic') ? 'linear-gradient(90deg, #10b981, #06b6d4)' :
                                  med.category.includes('Antacid') ? 'linear-gradient(90deg, #f59e0b, #eab308)' :
-                                 'linear-gradient(90deg, #6366f1, #a855f7)'
+                                 'linear-gradient(90deg, #38bdf8, #818cf8)'
                     }} />
 
                     <div>
@@ -970,8 +972,8 @@ export default function MedicineSearch() {
                         overflow: 'hidden',
                         marginBottom: '1.2rem',
                         marginTop: '0.2rem',
-                        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                        border: '1px solid #cbd5e1',
+                        background: 'radial-gradient(circle at center, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -991,7 +993,7 @@ export default function MedicineSearch() {
                             objectFit: 'contain',
                             objectPosition: 'center',
                             transform: 'scale(1.06)',
-                            filter: 'drop-shadow(0 8px 18px rgba(0, 0, 0, 0.14))'
+                            filter: 'drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5))'
                           }}
                         />
                       </div>
@@ -1002,7 +1004,7 @@ export default function MedicineSearch() {
                           <h3 style={{
                             fontSize: '1.18rem',
                             fontWeight: 800,
-                            color: '#0f172a',
+                            color: '#ffffff',
                             margin: '0 0 0.25rem 0',
                             letterSpacing: '-0.3px',
                             lineHeight: 1.3,
@@ -1012,7 +1014,7 @@ export default function MedicineSearch() {
                           </h3>
                           <span style={{
                             fontSize: '0.82rem',
-                            color: '#64748b',
+                            color: '#94a3b8',
                             fontWeight: 600,
                             display: 'block',
                             whiteSpace: 'nowrap',
@@ -1024,18 +1026,18 @@ export default function MedicineSearch() {
                         </div>
 
                         <span style={{
-                          backgroundColor: med.category.includes('Pain') ? '#fef2f2' :
-                                           med.category.includes('Antibiotic') ? '#ecfdf5' :
-                                           med.category.includes('Antacid') ? '#fffbeb' : '#eef2ff',
-                          color: med.category.includes('Pain') ? '#dc2626' :
-                                 med.category.includes('Antibiotic') ? '#059669' :
-                                 med.category.includes('Antacid') ? '#d97706' : '#4f46e5',
+                          backgroundColor: med.category.includes('Pain') ? 'rgba(239, 68, 68, 0.15)' :
+                                           med.category.includes('Antibiotic') ? 'rgba(16, 185, 129, 0.15)' :
+                                           med.category.includes('Antacid') ? 'rgba(245, 158, 11, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                          color: med.category.includes('Pain') ? '#fca5a5' :
+                                 med.category.includes('Antibiotic') ? '#6ee7b7' :
+                                 med.category.includes('Antacid') ? '#fcd34d' : '#7dd3fc',
                           fontSize: '0.74rem',
                           fontWeight: 700,
                           padding: '0.28rem 0.7rem',
                           borderRadius: '12px',
                           whiteSpace: 'nowrap',
-                          border: '1px solid rgba(0,0,0,0.05)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
                           flexShrink: 0
                         }}>
                           {med.category}
@@ -1044,27 +1046,28 @@ export default function MedicineSearch() {
 
                       {/* ── SECTION 1: KAB AUR KAISE LEIN ────── */}
                       <div style={{
-                        background: 'linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(243, 232, 255, 0.95))',
-                        borderLeft: '4px solid #6366f1',
+                        background: 'rgba(56, 189, 248, 0.08)',
+                        borderLeft: '4px solid #38bdf8',
                         borderRadius: '14px',
+                        border: '1px solid rgba(56, 189, 248, 0.2)',
                         padding: '0.9rem 1rem',
                         marginBottom: '1rem',
                         minHeight: isExpanded ? 'auto' : '5.4rem',
-                        boxShadow: '0 2px 8px rgba(99, 102, 241, 0.04)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                         display: 'flex',
                         flexDirection: 'column',
-                        justify: 'space-between'
+                        justifyContent: 'space-between'
                       }}>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
                             <span style={{ fontSize: '1rem' }}>🕒</span>
-                            <strong style={{ fontSize: '0.8rem', color: '#312e81', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            <strong style={{ fontSize: '0.8rem', color: '#7dd3fc', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                               Kab aur Kaise Lein (Dosage):
                             </strong>
                           </div>
                           <p style={{
                             fontSize: '0.88rem',
-                            color: '#1e1b4b',
+                            color: '#f8fafc',
                             fontWeight: 700,
                             margin: 0,
                             lineHeight: 1.45,
@@ -1080,11 +1083,11 @@ export default function MedicineSearch() {
                               display: 'inline-block',
                               fontSize: '0.75rem',
                               fontWeight: 700,
-                              color: '#4338ca',
-                              backgroundColor: '#ffffff',
+                              color: '#38bdf8',
+                              backgroundColor: 'rgba(15, 23, 42, 0.8)',
                               padding: '0.18rem 0.6rem',
                               borderRadius: '8px',
-                              border: '1px solid #c7d2fe'
+                              border: '1px solid rgba(56, 189, 248, 0.3)'
                             }}>
                               📌 {med.dosageSchedule}
                             </span>
@@ -1094,19 +1097,19 @@ export default function MedicineSearch() {
 
                       {/* ── SECTION 2: KIS KAAM AATI HAI ──────── */}
                       <div style={{
-                        backgroundColor: '#f8fafc',
+                        backgroundColor: 'rgba(255, 255, 255, 0.04)',
                         borderRadius: '12px',
                         padding: '0.8rem 0.95rem',
                         marginBottom: '0.9rem',
-                        border: '1px solid #f1f5f9',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                         minHeight: isExpanded ? 'auto' : '4.2rem'
                       }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.25rem' }}>
                           <span>💡</span> Kis Kaam Aati Hai (Uses):
                         </span>
                         <p style={{
                           fontSize: '0.86rem',
-                          color: '#475569',
+                          color: '#cbd5e1',
                           margin: 0,
                           lineHeight: 1.4,
                           fontWeight: 500,
@@ -1119,19 +1122,20 @@ export default function MedicineSearch() {
                       {/* ── SECTION 3: SAFETY PRECAUTIONS ──────────── */}
                       {med.precautions && (
                         <div style={{
-                          backgroundColor: '#fff1f2',
+                          backgroundColor: 'rgba(244, 63, 94, 0.1)',
                           borderLeft: '4px solid #f43f5e',
                           borderRadius: '12px',
+                          border: '1px solid rgba(244, 63, 94, 0.2)',
                           padding: '0.75rem 0.95rem',
                           marginBottom: '0.8rem',
                           minHeight: isExpanded ? 'auto' : '3.8rem'
                         }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#be123c', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.2rem' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.2rem' }}>
                             <span>⚠️</span> Safety Warnings:
                           </span>
                           <p style={{
                             fontSize: '0.82rem',
-                            color: '#9f1239',
+                            color: '#fecdd3',
                             margin: 0,
                             lineHeight: 1.38,
                             ...(isExpanded ? {} : lineClampStyle(2))
@@ -1148,7 +1152,7 @@ export default function MedicineSearch() {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#6366f1',
+                          color: '#38bdf8',
                           fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -1165,9 +1169,9 @@ export default function MedicineSearch() {
                     <div style={{
                       marginTop: '0.6rem',
                       paddingTop: '0.85rem',
-                      borderTop: '1px solid #f1f5f9',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.1)',
                       display: 'flex',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
                       gap: '0.5rem'
                     }}>
