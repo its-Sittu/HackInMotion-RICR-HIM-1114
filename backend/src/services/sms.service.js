@@ -8,8 +8,6 @@
  *   - Dev mode (logs OTP to console — default fallback)
  */
 
-const isProduction = process.env.NODE_ENV === 'production'
-
 /**
  * Dev-mode: prints OTP to server console.
  */
@@ -97,7 +95,7 @@ const sendWithTwilio = async (phone, otp) => {
       process.env.TWILIO_AUTH_TOKEN
     )
     await client.messages.create({
-      body: `Your MediGuard verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`,
+      body: `Your PulseMed verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`,
       from: process.env.TWILIO_FROM_NUMBER,
       to: phone
     })
@@ -109,10 +107,85 @@ const sendWithTwilio = async (phone, otp) => {
 }
 
 /**
- * Send an OTP to a phone number.
- * Provider is selected automatically based on env vars.
+ * Send OTP via EmailJS API.
+ * Activates when EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, and EMAILJS_PUBLIC_KEY are set.
  */
-export const sendOtp = async (phone, otp) => {
+const sendWithEmailJS = async (phoneOrEmail, otp) => {
+  const serviceId = process.env.EMAILJS_SERVICE_ID
+  const templateId = process.env.EMAILJS_TEMPLATE_ID
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY
+  const privateKey = process.env.EMAILJS_PRIVATE_KEY
+  const recipientEmail = phoneOrEmail.includes('@')
+    ? phoneOrEmail.trim().toLowerCase()
+    : process.env.EMAILJS_TO_EMAIL
+
+  if (!recipientEmail) {
+    console.warn(`[EmailJS Note] Cannot send email to phone number ${phoneOrEmail} without EMAILJS_TO_EMAIL setting.`)
+    sendWithDevLogger(phoneOrEmail, otp)
+    return
+  }
+
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+
+    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Origin': process.env.FRONTEND_URL || 'http://localhost:5173'
+      },
+      body: JSON.stringify({
+        service_id: serviceId,
+        template_id: templateId,
+        user_id: publicKey,
+        ...(privateKey && { accessToken: privateKey }),
+        template_params: {
+          to_email: recipientEmail,
+          email: recipientEmail,
+          user_email: recipientEmail,
+          recipient: recipientEmail,
+          recipient_email: recipientEmail,
+          send_to: recipientEmail,
+          dest_email: recipientEmail,
+          to_name: recipientEmail.split('@')[0] || 'User',
+          phone: phoneOrEmail,
+          otp: otp,
+          otp_code: otp,
+          code: otp,
+          message: `Your PulseMed verification code is: ${otp}. Valid for 5 minutes.`
+        }
+      })
+    })
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.warn(`[EmailJS Error] ${errorText || response.statusText}`)
+      sendWithDevLogger(phoneOrEmail, otp)
+      return
+    }
+
+    console.log(`[EmailJS] OTP sent via EmailJS directly to ${recipientEmail}`)
+  } catch (err) {
+    console.warn(`[EmailJS Failed] ${err.message}`)
+    sendWithDevLogger(phoneOrEmail, otp)
+  }
+}
+
+/**
+ * Send an OTP to a phone number or email address.
+ * Provider is selected automatically based on input type and configured env vars.
+ */
+export const sendOtp = async (phoneOrEmail, otp) => {
+  const isEmail = phoneOrEmail && phoneOrEmail.includes('@')
+  const hasEmailJS = Boolean(
+    process.env.EMAILJS_SERVICE_ID &&
+    process.env.EMAILJS_TEMPLATE_ID &&
+    process.env.EMAILJS_PUBLIC_KEY
+  )
   const hasFast2SMS = Boolean(process.env.FAST2SMS_API_KEY)
   const hasMsg91 = Boolean(process.env.MSG91_AUTH_KEY && process.env.MSG91_TEMPLATE_ID)
   const hasTwilio = Boolean(
@@ -121,20 +194,35 @@ export const sendOtp = async (phone, otp) => {
     process.env.TWILIO_FROM_NUMBER
   )
 
-  if (hasFast2SMS) {
-    await sendWithFast2SMS(phone, otp)
+  // 1. If input is an Email, send via EmailJS
+  if (isEmail && hasEmailJS) {
+    await sendWithEmailJS(phoneOrEmail, otp)
     return
   }
 
-  if (hasMsg91) {
-    await sendWithMsg91(phone, otp)
+  // 2. If input is a Phone number, prioritize SMS gateways
+  if (!isEmail) {
+    if (hasFast2SMS) {
+      await sendWithFast2SMS(phoneOrEmail, otp)
+      return
+    }
+    if (hasMsg91) {
+      await sendWithMsg91(phoneOrEmail, otp)
+      return
+    }
+    if (hasTwilio) {
+      await sendWithTwilio(phoneOrEmail, otp)
+      return
+    }
+  }
+
+  // 3. Fallback to EmailJS (if configured and recipient email exists)
+  if (hasEmailJS) {
+    await sendWithEmailJS(phoneOrEmail, otp)
     return
   }
 
-  if (hasTwilio) {
-    await sendWithTwilio(phone, otp)
-    return
-  }
-
-  sendWithDevLogger(phone, otp)
+  // 4. Default Dev Mode Fallback
+  sendWithDevLogger(phoneOrEmail, otp)
 }
+
