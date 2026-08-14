@@ -746,72 +746,112 @@ export default function MedicationAlarm() {
               </button>
             </div>
 
-
-
             {/* Phone Clock Time Picker Wheel Box */}
             <div style={{
               backgroundColor: '#f8fafc',
               border: '2px solid #e2e8f0',
               borderRadius: '20px',
-              padding: '1.4rem 1rem',
+              padding: '1rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.75rem',
-              marginBottom: '1.6rem'
+              gap: '1.2rem',
+              marginBottom: '1.4rem'
             }}>
-              {/* Hour Dropdown */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>Hour</span>
-                <select
-                  value={pickerHour}
-                  onChange={(e) => setPickerHour(e.target.value)}
-                  style={{
-                    fontSize: '1.8rem',
-                    fontWeight: 800,
-                    color: '#0f172a',
-                    backgroundColor: '#ffffff',
-                    border: '1.5px solid #cbd5e1',
-                    borderRadius: '14px',
-                    padding: '0.4rem 0.6rem',
-                    outline: 'none',
-                    textAlign: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
+              {/* Hour Scroll Wheel */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <span style={{ fontSize: '0.72rem', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
+                  Hour (00 - 23)
+                </span>
+                <div style={{
+                  width: '100%',
+                  maxHeight: '140px',
+                  overflowY: 'auto',
+                  backgroundColor: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  borderRadius: '14px',
+                  padding: '0.4rem',
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                  scrollBehavior: 'smooth'
+                }}>
                   {Array.from({ length: 24 }).map((_, i) => {
                     const val = String(i).padStart(2, '0')
-                    return <option key={val} value={val}>{val}</option>
+                    const isSelected = pickerHour === val
+                    return (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setPickerHour(val)}
+                        style={{
+                          width: '100%',
+                          padding: '0.35rem 0',
+                          borderRadius: '10px',
+                          border: 'none',
+                          backgroundColor: isSelected ? '#6366f1' : 'transparent',
+                          color: isSelected ? '#ffffff' : '#0f172a',
+                          fontSize: '1.1rem',
+                          fontWeight: isSelected ? 900 : 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        {val}
+                      </button>
+                    )
                   })}
-                </select>
+                </div>
               </div>
 
-              <span style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1', marginTop: '1.2rem' }}>:</span>
+              <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#6366f1', marginTop: '1.2rem' }}>:</span>
 
-              {/* Minute Dropdown */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>Minute</span>
-                <select
-                  value={pickerMinute}
-                  onChange={(e) => setPickerMinute(e.target.value)}
-                  style={{
-                    fontSize: '1.8rem',
-                    fontWeight: 800,
-                    color: '#0f172a',
-                    backgroundColor: '#ffffff',
-                    border: '1.5px solid #cbd5e1',
-                    borderRadius: '14px',
-                    padding: '0.4rem 0.6rem',
-                    outline: 'none',
-                    textAlign: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
+              {/* Minute Scroll Wheel */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <span style={{ fontSize: '0.72rem', color: '#6366f1', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.5px' }}>
+                  Minute (00 - 59)
+                </span>
+                <div style={{
+                  width: '100%',
+                  maxHeight: '140px',
+                  overflowY: 'auto',
+                  backgroundColor: '#ffffff',
+                  border: '1.5px solid #cbd5e1',
+                  borderRadius: '14px',
+                  padding: '0.4rem',
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                  scrollBehavior: 'smooth'
+                }}>
                   {Array.from({ length: 60 }).map((_, i) => {
                     const val = String(i).padStart(2, '0')
-                    return <option key={val} value={val}>{val}</option>
+                    const isSelected = pickerMinute === val
+                    return (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setPickerMinute(val)}
+                        style={{
+                          width: '100%',
+                          padding: '0.35rem 0',
+                          borderRadius: '10px',
+                          border: 'none',
+                          backgroundColor: isSelected ? '#6366f1' : 'transparent',
+                          color: isSelected ? '#ffffff' : '#0f172a',
+                          fontSize: '1.1rem',
+                          fontWeight: isSelected ? 900 : 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        {val}
+                      </button>
+                    )
                   })}
-                </select>
+                </div>
               </div>
             </div>
 
