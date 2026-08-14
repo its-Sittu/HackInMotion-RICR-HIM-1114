@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const navItems = [
   {
@@ -30,12 +31,10 @@ const navItems = [
     )
   },
   {
-    id: 'doctors', label: 'Doctors',
+    id: 'drug-interactions', label: 'Real Drug Interactions',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
     )
   },
@@ -90,24 +89,53 @@ const navItems = [
   }
 ]
 
+const getUserDisplayName = (user) => {
+  if (!user) return 'Guest User'
+  if (user.name) return user.name
+  if (user.phone) {
+    if (user.phone.includes('@')) {
+      const emailPart = user.phone.split('@')[0]
+      return emailPart.charAt(0).toUpperCase() + emailPart.slice(1)
+    }
+    return user.phone
+  }
+  return 'PulseMed Member'
+}
+
+const getInitials = (name) => {
+  if (!name) return 'PM'
+  const parts = name.trim().split(/[\s._@]+/)
+  if (parts.length >= 2 && parts[1]) {
+    return (parts[0][0] + parts[1][0]).toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
+}
+
 export default function Sidebar({ activeId = 'dashboard', onNav }) {
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
-  const handleLogout = () => {
-    navigate('/')
+  const displayName = getUserDisplayName(user)
+  const initials = getInitials(displayName)
+
+  const handleLogout = async () => {
+    if (logout) {
+      await logout()
+    }
+    navigate('/auth')
   }
 
   return (
     <aside className="medisafe-sidebar">
       {/* Brand */}
-      <div className="sidebar-brand">
+      <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
         <div className="brand-icon-wrapper">
           <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             <path d="M12 8v8"/><path d="M8 12h8"/>
           </svg>
         </div>
-        <span className="brand-name">MediSafe</span>
+        <span className="brand-name">PulseMed</span>
       </div>
 
       {/* Navigation */}
@@ -133,10 +161,10 @@ export default function Sidebar({ activeId = 'dashboard', onNav }) {
       {/* Footer / Logout */}
       <div className="sidebar-footer">
         <div className="sidebar-user-card">
-          <div className="sidebar-user-avatar">AG</div>
+          <div className="sidebar-user-avatar">{initials}</div>
           <div className="sidebar-user-info">
-            <span className="sidebar-user-name">Alex Guest</span>
-            <span className="sidebar-user-role">Guest User</span>
+            <span className="sidebar-user-name">{displayName}</span>
+            <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' ? 'Verified Member' : 'Guest Account'}</span>
           </div>
         </div>
         <button type="button" className="logout-btn" onClick={handleLogout} id="logout-btn">
@@ -147,7 +175,7 @@ export default function Sidebar({ activeId = 'dashboard', onNav }) {
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </span>
-          <span className="nav-label">Back to Home</span>
+          <span className="nav-label">Sign Out</span>
         </button>
       </div>
     </aside>
