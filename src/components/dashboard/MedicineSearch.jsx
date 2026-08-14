@@ -163,11 +163,92 @@ function FormattedAiAnswer({ text }) {
   )
 }
 
+const DEFAULT_FALLBACK_MEDICINES = [
+  {
+    id: 'dolo-650',
+    brandName: 'Dolo 650 / Paracetamol',
+    genericName: 'Paracetamol (Acetaminophen) 650mg',
+    category: 'Pain Relief & Fever',
+    imageUrl: '/images/medicines/med_yellow_tablets.png',
+    purpose: 'Fever reduction, mild to moderate pain relief (headache, body ache, toothache).',
+    whenToTake: '1 tablet after meals, every 4–6 hours as needed. Maximum 4 tablets per day.',
+    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    precautions: 'Do not exceed daily limit. Avoid alcohol while taking. Consult doctor if liver disease exists.',
+    activeIngredients: 'Paracetamol (650mg)',
+    manufacturer: 'Micro Labs Ltd'
+  },
+  {
+    id: 'crocin-500',
+    brandName: 'Crocin Advance 500',
+    genericName: 'Paracetamol 500mg',
+    category: 'Pain Relief & Fever',
+    imageUrl: '/images/medicines/med_red_white_pills.png',
+    purpose: 'Fast relief from fever, headache, body pain, and joint aches.',
+    whenToTake: '1 to 2 tablets every 4 to 6 hours after food. Max 4000mg in 24 hours.',
+    dosageSchedule: 'Post-Meals (Khana khane ke baad)',
+    precautions: 'Do not take with other paracetamol-containing medicines.',
+    activeIngredients: 'Paracetamol (500mg)',
+    manufacturer: 'GSK Consumer Healthcare'
+  },
+  {
+    id: 'combiflam',
+    brandName: 'Combiflam',
+    genericName: 'Ibuprofen (400mg) + Paracetamol (325mg)',
+    category: 'Pain Relief & Anti-Inflammatory',
+    imageUrl: '/images/medicines/med_cream_ovals.png',
+    purpose: 'Relief from severe pain, swelling, toothache, muscle cramps, and fever.',
+    whenToTake: '1 tablet 2-3 times daily AFTER meals with plenty of water.',
+    dosageSchedule: 'Strictly Post-Meals (Khana khane ke baad)',
+    precautions: 'Never take on an empty stomach. Avoid if history of stomach ulcers exists.',
+    activeIngredients: 'Ibuprofen (400mg), Paracetamol (325mg)',
+    manufacturer: 'Sanofi India'
+  },
+  {
+    id: 'pantocid-40',
+    brandName: 'Pantocid 40 / Pan-D',
+    genericName: 'Pantoprazole 40mg',
+    category: 'Antacid & Gastric Care',
+    imageUrl: '/images/medicines/med_blue_blister.jpg',
+    purpose: 'Acidity, heartburn, GERD, gas, and stomach ulcer prevention.',
+    whenToTake: '1 tablet DAILY IN THE MORNING 30 minutes BEFORE breakfast (Empty Stomach).',
+    dosageSchedule: 'Pre-Breakfast (Khali pet)',
+    precautions: 'Swallow whole with water. Do not crush or chew the tablet.',
+    activeIngredients: 'Pantoprazole Sodium (40mg)',
+    manufacturer: 'Sun Pharma'
+  },
+  {
+    id: 'azithral-500',
+    brandName: 'Azithral 500 / Azithromycin',
+    genericName: 'Azithromycin 500mg',
+    category: 'Antibiotics',
+    imageUrl: '/images/medicines/med_red_capsules.png',
+    purpose: 'Bacterial infections of respiratory tract, throat, lungs, ears, and skin.',
+    whenToTake: '1 tablet once daily for 3 to 5 days, taken 1 hour before or 2 hours after meals.',
+    dosageSchedule: 'Once Daily (Fixed Time)',
+    precautions: 'Complete full course even if symptoms improve early. Do not take with antacids.',
+    activeIngredients: 'Azithromycin (500mg)',
+    manufacturer: 'Alembic Pharmaceuticals'
+  },
+  {
+    id: 'amoxil-500',
+    brandName: 'Amoxicillin 500',
+    genericName: 'Amoxicillin 500mg',
+    category: 'Antibiotics',
+    imageUrl: '/images/medicines/med_red_capsules.png',
+    purpose: 'Broad-spectrum antibiotic for chest, throat, dental, and urinary tract infections.',
+    whenToTake: '1 capsule every 8 hours (3 times a day) after meals with a glass of water.',
+    dosageSchedule: 'Every 8 Hours (Post-Meals)',
+    precautions: 'Inform doctor if allergic to penicillin. Finish prescribed course completely.',
+    activeIngredients: 'Amoxicillin Trihydrate (500mg)',
+    manufacturer: 'GlaxoSmithKline'
+  }
+]
+
 export default function MedicineSearch() {
   const [activeMode, setActiveMode] = useState('search') // 'search' | 'ai'
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
-  const [medicines, setMedicines] = useState([])
+  const [medicines, setMedicines] = useState(DEFAULT_FALLBACK_MEDICINES)
   const [loading, setLoading] = useState(false)
   const [addedIds, setAddedIds] = useState([])
   const [expandedId, setExpandedId] = useState(null)
@@ -182,11 +263,23 @@ export default function MedicineSearch() {
     try {
       const res = await fetch(`/api/medicines/search?q=${encodeURIComponent(q)}`)
       const data = await res.json()
-      if (data.success) {
-        setMedicines(data.medicines || [])
+      if (data.success && data.medicines && data.medicines.length > 0) {
+        setMedicines(data.medicines)
+      } else if (!q || !q.trim()) {
+        setMedicines(DEFAULT_FALLBACK_MEDICINES)
+      } else {
+        const filtered = DEFAULT_FALLBACK_MEDICINES.filter(m =>
+          m.brandName.toLowerCase().includes(q.toLowerCase()) ||
+          m.genericName.toLowerCase().includes(q.toLowerCase())
+        )
+        setMedicines(filtered.length > 0 ? filtered : DEFAULT_FALLBACK_MEDICINES)
       }
     } catch {
-      setMedicines([])
+      const filtered = DEFAULT_FALLBACK_MEDICINES.filter(m =>
+        m.brandName.toLowerCase().includes(q.toLowerCase()) ||
+        m.genericName.toLowerCase().includes(q.toLowerCase())
+      )
+      setMedicines(filtered.length > 0 ? filtered : DEFAULT_FALLBACK_MEDICINES)
     } finally {
       setLoading(false)
     }
@@ -842,13 +935,17 @@ export default function MedicineSearch() {
                         border: '1px solid #cbd5e1',
                         display: 'flex',
                         alignItems: 'center',
-                        justify: 'center',
+                        justifyContent: 'center',
                         padding: '0.4rem',
                         boxSizing: 'border-box'
                       }}>
                         <img
                           src={med.imageUrl || '/images/medicines/med_yellow_tablets.png'}
                           alt={med.brandName}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null
+                            e.currentTarget.src = '/images/medicines/med_yellow_tablets.png'
+                          }}
                           style={{
                             width: '100%',
                             height: '100%',
