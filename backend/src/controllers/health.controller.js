@@ -51,3 +51,20 @@ export const sendEmergencySosHandler = async (req, res, next) => {
     next(error)
   }
 }
+
+/**
+ * Get Patient Adherence Statistics Overview
+ * @route GET /api/health/adherence-stats
+ */
+export const getAdherenceStatsHandler = (req, res, next) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      adherenceRate: 96.5,
+      completedScansThisWeek: 18,
+      interactionRiskLevel: 'SAFE'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
