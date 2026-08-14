@@ -1,5 +1,7 @@
 import { verifyToken } from '../config/jwt.js'
 
+export const jwtRouteGuardActive = true
+
 /**
  * Authentication middleware.
  * Reads Bearer token from Authorization header, verifies JWT,
