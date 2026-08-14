@@ -1,0 +1,25 @@
+# HackInMotion 2026 — Presentation Slide Deck (RICR-HIM-1114)
+# Project: MediSafe — Smart Medicine Safety & Drug Interaction Assistant
+# Track: Healthcare & HealthTech
+
+[SLIDE 1: Title & Problem Statement]
+- Project Name: MediSafe
+- Team Code: RICR-HIM-1114
+- Mission: Prevent Adverse Drug Events (ADEs), Overdose Overlaps & Drug-Drug Interactions using FDA rules and real-time AI.
+
+[SLIDE 2: Core Architecture & Innovation]
+- Frontend: React 19 + Vite + Three.js 3D Interactive Organ Models
+- Backend: Node.js Express REST APIs + MongoDB Atlas
+- Security & Alerts: Fast2SMS OTP Gateway + EmailJS Caregiver Emergency Alerts
+- Geospatial Radar: Leaflet + OpenStreetMap Overpass API Live Hospital Finder
+
+[SLIDE 3: Key Features & Live Demonstration]
+- 1. Fuzzy Misspelling Medicine Search (e.g. Paracetal -> Paracetamol)
+- 2. FDA Active Compound Overdose & Interaction Scanner (High/Medium/Low Risk Classification)
+- 3. Interactive 3D Anatomical Organ Canvas (Heart, Lungs, Kidney, Brain, Stomach)
+- 4. Live Emergency Hospitals Radar (Browser GPS + Distance calculation)
+- 5. Live Day (Light) / Black (Dark) Glassmorphic Design System
+
+[SLIDE 4: Business Viability & Impact]
+- Target Audience: Patients on polypharmacy, elderly caregivers, clinics & pharmacies
+- Compliance: FDA Clinical Interaction Guidelines & Plain-Language Medical Disclaimers

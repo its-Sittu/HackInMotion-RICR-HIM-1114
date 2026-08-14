@@ -195,7 +195,22 @@
     "Ansari",
     "Nagar",
     "leaflet",
-    "Overpass"
+    "Overpass",
+    "pptx",
+    "OpenFDA",
+    "polypharmacy",
+    "Antipyretic",
+    "OTC",
+    "Hackathon",
+    "geospatial",
+    "Geospatial",
+    "paracetal",
+    "Glassmorphic",
+    "Kumar",
+    "Srishti",
+    "Kumari",
+    "Amit",
+    "OPENSTRMAP"
   ],
   "ignorePaths": [
     "**/node_modules/**",

@@ -103,6 +103,20 @@ export default function NearbyHospitalsMap() {
     })
   }, [hospitals, userLocation, selectedHospital, isLiveGps])
 
+  const loadFallbackHospitals = (lat, lng) => {
+    const fallbackData = [
+      { id: 101, name: 'Max Super Speciality Hospital', address: 'Press Enclave Road, Saket, New Delhi', phone: '+91 11 2651 5050', lat: 28.5276, lng: 77.2131, bedsFree: 14, icuFree: 5 },
+      { id: 102, name: 'Apollo Hospital & Emergency Institute', address: 'Sarita Vihar, Mathura Road, New Delhi', phone: '+91 11 2692 5858', lat: 28.5385, lng: 77.2842, bedsFree: 22, icuFree: 8 },
+      { id: 103, name: 'Fortis Escorts Heart & Trauma Care', address: 'Okhla Road, New Delhi', phone: '+91 11 4713 5000', lat: 28.5601, lng: 77.2721, bedsFree: 19, icuFree: 4 },
+      { id: 104, name: 'AIIMS Emergency & Trauma Center', address: 'Ansari Nagar, New Delhi', phone: '+91 11 2658 8500', lat: 28.5672, lng: 77.2100, bedsFree: 35, icuFree: 12 }
+    ].map(h => ({
+      ...h,
+      distance: parseFloat(getDistanceFromLatLonInKm(lat, lng, h.lat, h.lng))
+    })).sort((a, b) => a.distance - b.distance)
+
+    setHospitals(fallbackData)
+  }
+
   // Fetch REAL Hospitals from OpenStreetMap Overpass API around given latitude/longitude
   const fetchRealHospitals = React.useCallback(async (lat, lng) => {
     setLoading(true)
@@ -147,20 +161,6 @@ export default function NearbyHospitalsMap() {
       setLoading(false)
     }
   }, [])
-
-  const loadFallbackHospitals = (lat, lng) => {
-    const fallbackData = [
-      { id: 101, name: 'Max Super Speciality Hospital', address: 'Press Enclave Road, Saket, New Delhi', phone: '+91 11 2651 5050', lat: 28.5276, lng: 77.2131, bedsFree: 14, icuFree: 5 },
-      { id: 102, name: 'Apollo Hospital & Emergency Institute', address: 'Sarita Vihar, Mathura Road, New Delhi', phone: '+91 11 2692 5858', lat: 28.5385, lng: 77.2842, bedsFree: 22, icuFree: 8 },
-      { id: 103, name: 'Fortis Escorts Heart & Trauma Care', address: 'Okhla Road, New Delhi', phone: '+91 11 4713 5000', lat: 28.5601, lng: 77.2721, bedsFree: 19, icuFree: 4 },
-      { id: 104, name: 'AIIMS Emergency & Trauma Center', address: 'Ansari Nagar, New Delhi', phone: '+91 11 2658 8500', lat: 28.5672, lng: 77.2100, bedsFree: 35, icuFree: 12 }
-    ].map(h => ({
-      ...h,
-      distance: parseFloat(getDistanceFromLatLonInKm(lat, lng, h.lat, h.lng))
-    })).sort((a, b) => a.distance - b.distance)
-
-    setHospitals(fallbackData)
-  }
 
   // Handle User Clicking "🎯 Detect My Live GPS Location"
   const handleDetectGPS = () => {
