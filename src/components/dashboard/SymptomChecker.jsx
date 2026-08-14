@@ -37,6 +37,8 @@ const BODY_PARTS_CONFIG = {
 
 export default function SymptomChecker() {
   const [viewMode, setViewMode] = useState('front') // 'front' | 'back'
+  const [searchQuery, setSearchQuery] = useState('')
+  const [symptomTriageActive] = useState(true)
   const [selectedParts, setSelectedParts] = useState(['Left Arm', 'Left Hand'])
   const [description, setDescription] = useState('')
   const [reportFile, setReportFile] = useState(null)
