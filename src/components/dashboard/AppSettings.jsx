@@ -14,6 +14,7 @@ export default function AppSettings() {
   })
 
   const [savedSuccess, setSavedSuccess] = useState(false)
+  const [settingsSyncActive] = useState(true)
 
   // Apply Live Day/Black Theme change to document body
   useEffect(() => {
