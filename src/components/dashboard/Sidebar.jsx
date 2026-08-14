@@ -135,7 +135,20 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
 
   return (
     <aside className={`medisafe-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
-      {/* Brand & Collapse Toggle Header */}
+      {/* Floating Edge Collapse Toggle Button */}
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        className="sidebar-collapse-btn"
+        title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}>
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      {/* Brand Header */}
       <div className="sidebar-brand-row">
         <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="PulseMed Home">
           <div className="brand-icon-wrapper">
@@ -146,19 +159,6 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
           </div>
           {!isCollapsed && <span className="brand-name">PulseMed</span>}
         </div>
-
-        {/* Minimize Arrow Toggle Button */}
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          className="sidebar-collapse-btn"
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}>
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
       </div>
 
       {/* Navigation List */}

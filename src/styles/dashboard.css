@@ -21,32 +21,36 @@
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  padding: 1.4rem 1rem;
+  padding: 1.2rem 1rem;
   box-sizing: border-box;
   z-index: 100;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+}
+
+.medisafe-sidebar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
 }
 
 .medisafe-sidebar.is-collapsed {
   width: 80px;
   min-width: 80px;
-  padding: 1.4rem 0.5rem;
+  padding: 1.2rem 0.5rem;
 }
 
 .sidebar-brand-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 1rem;
+  padding-bottom: 0.85rem;
   border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.85rem;
 }
 
 .medisafe-sidebar.is-collapsed .sidebar-brand-row {
-  justify: center;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: center;
 }
 
 .sidebar-brand {
@@ -62,7 +66,7 @@
   background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   display: flex;
   align-items: center;
-  justify: center;
+  justify-content: center;
   color: white;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
   flex-shrink: 0;
@@ -79,25 +83,31 @@
   white-space: nowrap;
 }
 
+/* Modern Floating Edge Collapse Button */
 .sidebar-collapse-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  width: 28px;
-  height: 28px;
+  position: absolute;
+  top: 22px;
+  right: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: #6366f1;
   cursor: pointer;
+  z-index: 105;
   transition: all 0.2s ease;
-  flex-shrink: 0;
 }
 
 .sidebar-collapse-btn:hover {
-  background: #e0e7ff;
-  border-color: #c7d2fe;
-  color: #4f46e5;
+  background: #6366f1;
+  color: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
 }
 
 .sidebar-nav {
@@ -110,7 +120,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem; /* Increased vertical spacing between items as requested */
+  gap: 0.45rem;
 }
 
 .nav-item-wrapper {
