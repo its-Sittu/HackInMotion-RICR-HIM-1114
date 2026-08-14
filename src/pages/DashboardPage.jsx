@@ -7,6 +7,8 @@ import SymptomChecker from '../components/dashboard/SymptomChecker'
 import MedicalRecords from '../components/dashboard/MedicalRecords'
 import MyHealth from '../components/dashboard/MyHealth'
 import HealthAnalytics from '../components/dashboard/HealthAnalytics'
+import UserProfile from '../components/dashboard/UserProfile'
+import AppSettings from '../components/dashboard/AppSettings'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -133,6 +135,10 @@ export default function DashboardPage() {
           <MyHealth />
         ) : activeTab === 'analytics' ? (
           <HealthAnalytics />
+        ) : activeTab === 'profile' ? (
+          <UserProfile />
+        ) : activeTab === 'settings' ? (
+          <AppSettings />
         ) : (
           <>
             {/* Top Header Bar (Dashboard Tab Only) */}

@@ -181,7 +181,9 @@
     "Cervicogenic",
     "Myofascial",
     "glutes",
-    "Glutes"
+    "Glutes",
+    "Sittu",
+    "Rahul"
   ],
   "ignorePaths": [
     "**/node_modules/**",
