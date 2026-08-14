@@ -9,6 +9,7 @@ import MyHealth from '../components/dashboard/MyHealth'
 import HealthAnalytics from '../components/dashboard/HealthAnalytics'
 import UserProfile from '../components/dashboard/UserProfile'
 import AppSettings from '../components/dashboard/AppSettings'
+import NearbyHospitalsMap from '../components/dashboard/NearbyHospitalsMap'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
@@ -98,19 +99,6 @@ export default function DashboardPage() {
         </svg>
       )
     }
-  ]
-
-  // Mock medical records
-  const recentRecords = [
-    { id: 1, title: 'Blood Pressure & ECG Scan', date: 'Yesterday, 4:30 PM', doctor: 'Dr. Sarah Jenkins', status: 'Completed', tag: 'Cardiology' },
-    { id: 2, title: 'Complete Blood Count (CBC)', date: 'Aug 10, 2026', doctor: 'Dr. Robert Chen', status: 'Normal', tag: 'Hematology' },
-    { id: 3, title: 'Lipid Profile Report', date: 'Jul 28, 2026', doctor: 'Dr. Sarah Jenkins', status: 'Normal', tag: 'Lab Test' }
-  ]
-
-  // Mock doctors
-  const doctors = [
-    { id: 1, name: 'Dr. Sarah Jenkins', spec: 'Cardiologist', rating: '4.9', reviews: 128, avatar: '👩‍⚕️' },
-    { id: 2, name: 'Dr. Robert Chen', spec: 'Neurologist', rating: '4.8', reviews: 94, avatar: '👨‍⚕️' }
   ]
 
   return (
@@ -281,55 +269,8 @@ export default function DashboardPage() {
               </section>
             </div>
 
-            {/* Bottom Grid: Medical Records & Recommended Doctors */}
-            <div className="dash-grid-2col">
-              {/* Recent Medical Records */}
-              <section className="dash-card">
-                <div className="dash-card-header">
-                  <h3 className="dash-card-title">Recent Medical Records</h3>
-                  <button className="dash-link-btn">View All</button>
-                </div>
-
-                <div className="dash-records-list">
-                  {recentRecords.map((rec) => (
-                    <div key={rec.id} className="dash-record-item">
-                      <div className="dash-record-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                        </svg>
-                      </div>
-                      <div className="dash-record-info">
-                        <h4>{rec.title}</h4>
-                        <p>{rec.doctor} • {rec.date}</p>
-                      </div>
-                      <span className="dash-tag">{rec.tag}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Recommended Doctors */}
-              <section className="dash-card">
-                <div className="dash-card-header">
-                  <h3 className="dash-card-title">Recommended Specialists</h3>
-                  <button className="dash-link-btn">Browse All</button>
-                </div>
-
-                <div className="dash-doctors-list">
-                  {doctors.map((doc) => (
-                    <div key={doc.id} className="dash-doc-item">
-                      <div className="dash-doc-avatar">{doc.avatar}</div>
-                      <div className="dash-doc-info">
-                        <h4>{doc.name}</h4>
-                        <p>{doc.spec} • ⭐ {doc.rating} ({doc.reviews})</p>
-                      </div>
-                      <button className="dash-btn-book">Book</button>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
+            {/* Nearby Emergency Hospitals & Trauma Map Radar Section */}
+            <NearbyHospitalsMap />
 
             {/* Quick Actions Bar */}
             <section className="dash-quick-actions">

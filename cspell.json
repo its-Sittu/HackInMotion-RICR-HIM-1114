@@ -184,7 +184,18 @@
     "Glutes",
     "Sittu",
     "Rahul",
-    "Rajesh"
+    "Rajesh",
+    "Speciality",
+    "Saket",
+    "Sarita",
+    "Vihar",
+    "Okhla",
+    "AIIMS",
+    "Aurobindo",
+    "Ansari",
+    "Nagar",
+    "leaflet",
+    "Overpass"
   ],
   "ignorePaths": [
     "**/node_modules/**",
