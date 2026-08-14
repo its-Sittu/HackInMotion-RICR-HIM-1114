@@ -93,15 +93,7 @@ export default function DashboardPage() {
     }
   ]
 
-  // Mock upcoming appointments
-  const upcomingAppointment = {
-    doctor: 'Dr. Sarah Jenkins, MD',
-    specialty: 'Cardiologist & Heart Specialist',
-    date: 'Tomorrow, Aug 14',
-    time: '10:30 AM',
-    location: 'Metropolitan Medical Center, Room 402',
-    avatar: 'SJ'
-  }
+
 
   // Mock medical records
   const recentRecords = [
@@ -236,44 +228,43 @@ export default function DashboardPage() {
                 </div>
               </section>
 
-              {/* Upcoming Appointment */}
+              {/* Real Drug Interactions & Safety Hub */}
               <section className="dash-card dash-appointment-card">
                 <div className="dash-card-header">
-                  <h3 className="dash-card-title">Next Appointment</h3>
-                  <span className="dash-badge-pulse">Confirmed</span>
+                  <h3 className="dash-card-title">⚡ Real Drug Interactions</h3>
+                  <span className="dash-badge-pulse" style={{ background: '#d1fae5', color: '#059669' }}>FDA Live Engine</span>
                 </div>
 
                 <div className="dash-appointment-body">
-                  <div className="dash-doc-avatar-large">
-                    {upcomingAppointment.avatar}
+                  <div className="dash-doc-avatar-large" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#ffffff', fontSize: '1.5rem' }}>
+                    ⚡
                   </div>
                   <div className="dash-appointment-details">
-                    <h4>{upcomingAppointment.doctor}</h4>
-                    <p className="dash-doc-spec">{upcomingAppointment.specialty}</p>
+                    <h4 style={{ color: '#0f172a', fontWeight: 800 }}>FDA & Gemini Clinical Safety Engine</h4>
+                    <p className="dash-doc-spec" style={{ color: '#64748b' }}>Instant Active Compound & Overdose Risk Scanner</p>
 
-                    <div className="dash-appt-meta-grid">
+                    <div className="dash-appt-meta-grid" style={{ marginTop: '0.6rem' }}>
                       <div className="dash-appt-meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                          <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        <span>{upcomingAppointment.date}</span>
+                        <span>🛡️ Overdose Risk Prevention</span>
                       </div>
                       <div className="dash-appt-meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        <span>{upcomingAppointment.time}</span>
+                        <span>🔬 Active Compound Overlap</span>
                       </div>
                     </div>
 
-                    <p className="dash-appt-loc">📍 {upcomingAppointment.location}</p>
+                    <p className="dash-appt-loc" style={{ marginTop: '0.5rem', color: '#475569' }}>
+                      Check if Paracetamol, Ibuprofen, or prescription medicines are safe to take together.
+                    </p>
                   </div>
                 </div>
 
                 <div className="dash-appointment-actions">
-                  <button className="dash-btn-primary">Join Telehealth Room</button>
-                  <button className="dash-btn-secondary">Reschedule</button>
+                  <button className="dash-btn-primary" onClick={() => setActiveTab('drug-interactions')} style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#10b981' }}>
+                    Run Interaction Check ⚡
+                  </button>
+                  <button className="dash-btn-secondary" onClick={() => setActiveTab('symptom-checker')}>
+                    Body Symptom Checker 🩺
+                  </button>
                 </div>
               </section>
             </div>

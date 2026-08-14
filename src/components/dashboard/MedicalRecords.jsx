@@ -68,23 +68,6 @@ const INITIAL_RECORDS = [
       'Dosage Schedule: Pre-Breakfast (Khali pet 30 mins before food)',
       'Manufacturer: Sun Pharmaceutical Industries'
     ]
-  },
-  {
-    id: 'rec-5',
-    title: 'Cardiology Follow-up Consultation',
-    category: 'Appointments',
-    typeIcon: '🩺',
-    date: 'Aug 16, 2026 • 11:00 AM',
-    status: 'SCHEDULED 📅',
-    statusBg: '#fef3c7',
-    statusColor: '#b45309',
-    summary: 'Scheduled follow-up consultation with Dr. Sarah Jenkins (Senior Consultant Cardiologist).',
-    doctorNote: 'Bring recent BP log and active prescription list to the appointment.',
-    details: [
-      'Specialist: Dr. Sarah Jenkins (Rating ⭐ 4.9)',
-      'Location: PulseMed Telehealth Suite / City Heart Clinic',
-      'Status: Confirmed & Reminder Sent'
-    ]
   }
 ]
 
@@ -93,8 +76,7 @@ const CATEGORIES = [
   { id: 'Drug Interactions', label: '🧪 Drug Interactions' },
   { id: 'Symptom Checks', label: '🩺 Symptom Checks' },
   { id: 'Medicines', label: '💊 Medicines' },
-  { id: 'Lab Reports', label: '📄 Lab Reports' },
-  { id: 'Appointments', label: '🩺 Appointments' }
+  { id: 'Lab Reports', label: '📄 Lab Reports' }
 ]
 
 export default function MedicalRecords() {
