@@ -10,6 +10,16 @@ export default function LandingPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
 
+  // Determine current theme class based on scroll progress
+  const getThemeClass = (progress) => {
+    if (progress <= 0.22) return 'theme-hero'
+    if (progress <= 0.48) return 'theme-lungs'
+    if (progress <= 0.72) return 'theme-kidneys'
+    return 'theme-human'
+  }
+
+  const activeThemeClass = getThemeClass(scrollProgress)
+
   // Track page scroll progress (0.0 to 1.0)
   useEffect(() => {
     const handleScroll = () => {
@@ -51,8 +61,8 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="medisafe-landing">
-      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ORGAN ON RIGHT SIDE) ── */}
+    <div className={`medisafe-landing ${activeThemeClass}`}>
+      {/* ── 3D CONTINUOUS SCROLL CANVAS (3D ORGAN ROTATING SLOWLY ON RIGHT) ── */}
       <Medical3DCanvas scrollProgress={scrollProgress} />
 
       {/* ── FLOATING GLASS NAVBAR (BORDERLESS) ───────────────── */}
@@ -85,7 +95,7 @@ export default function LandingPage() {
 
       {/* ── CONTINUOUS SCROLL SECTIONS (LEFT COLUMN CONTENT) ──── */}
       <div className="medisafe-scroll-wrapper">
-        {/* ── SECTION 1: HERO (BEATING 3D HEART ON RIGHT SIDE) ── */}
+        {/* ── SECTION 1: HERO (SLOW 3D HEART ROTATION ON RIGHT) ─ */}
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
             <div className="hero-badge-pill">
@@ -173,24 +183,36 @@ export default function LandingPage() {
               Follow pre/post meal clinical diet schedules, mark food consumed, and track dynamic health compliance across all integrated modules.
             </p>
 
-            <div className="orbiting-panels-container">
-              <div className="orbiting-panel-badge">
-                <span>💊 Medication Safety</span>
+            {/* Reference Image 2 Style Floating Glass Feature Pills */}
+            <div className="reference-feature-pills-row">
+              <div className="reference-feature-pill-card">
+                <div className="reference-feature-icon-circle" style={{ backgroundColor: '#10b981' }}>
+                  ⚡
+                </div>
+                <div className="reference-feature-info">
+                  <span className="reference-feature-title">Drug Interaction</span>
+                  <span className="reference-feature-desc">FDA Compound Scanner</span>
+                </div>
               </div>
-              <div className="orbiting-panel-badge">
-                <span>⚡ Drug Interaction</span>
+
+              <div className="reference-feature-pill-card">
+                <div className="reference-feature-icon-circle" style={{ backgroundColor: '#6366f1' }}>
+                  ⏰
+                </div>
+                <div className="reference-feature-info">
+                  <span className="reference-feature-title">Smart Alarms</span>
+                  <span className="reference-feature-desc">Audio + Family Alerts</span>
+                </div>
               </div>
-              <div className="orbiting-panel-badge">
-                <span>⚠️ Risk Detection</span>
-              </div>
-              <div className="orbiting-panel-badge">
-                <span>⏰ Medication Reminder</span>
-              </div>
-              <div className="orbiting-panel-badge">
-                <span>🩺 AI Health Assistant</span>
-              </div>
-              <div className="orbiting-panel-badge">
-                <span>👨‍👩‍👧 Caregiver Alerts</span>
+
+              <div className="reference-feature-pill-card">
+                <div className="reference-feature-icon-circle" style={{ backgroundColor: '#f59e0b' }}>
+                  🥗
+                </div>
+                <div className="reference-feature-info">
+                  <span className="reference-feature-title">Diet Schedule</span>
+                  <span className="reference-feature-desc">Medication Sync</span>
+                </div>
               </div>
             </div>
           </div>
@@ -203,7 +225,7 @@ export default function LandingPage() {
             <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0.4rem 0 0.8rem 0', lineHeight: 1.15 }}>
               One place for safer medication decisions.
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: '1.05rem', margin: 0, lineHeight: 1.55 }}>
+            <p style={{ color: '#cbd5e1', fontSize: '1.05rem', margin: 0, lineHeight: 1.55 }}>
               Comprehensive clinical tools built to prevent prescription errors and empower patient safety.
             </p>
           </div>

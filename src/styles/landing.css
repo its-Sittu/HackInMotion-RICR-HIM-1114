@@ -1,10 +1,10 @@
-/* ─── MediSafe Borderless Executive 3D Scroll System ────────────── */
+/* ─── MediSafe Reference-Inspired Gradient Mesh 3D Scroll System ─── */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #030712;
+  background-color: #0b0711;
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
@@ -15,8 +15,34 @@ html, body {
   position: relative;
   width: 100vw;
   min-height: 100vh;
-  background: #030712;
+  background: #0b0711;
   box-sizing: border-box;
+  transition: background 0.8s ease-in-out;
+}
+
+/* Dynamic Scroll Stage Background Themes (Inspired by Reference Images) */
+.medisafe-landing.theme-hero {
+  background: radial-gradient(circle at 75% 30%, rgba(217, 70, 239, 0.25) 0%, transparent 55%),
+              radial-gradient(circle at 20% 70%, rgba(99, 102, 241, 0.2) 0%, transparent 55%),
+              linear-gradient(135deg, #1e1b4b 0%, #2e1065 45%, #0f172a 100%);
+}
+
+.medisafe-landing.theme-lungs {
+  background: radial-gradient(circle at 75% 30%, rgba(6, 182, 212, 0.28) 0%, transparent 55%),
+              radial-gradient(circle at 20% 70%, rgba(16, 185, 129, 0.2) 0%, transparent 55%),
+              linear-gradient(135deg, #022c22 0%, #034e7b 45%, #0f172a 100%);
+}
+
+.medisafe-landing.theme-kidneys {
+  background: radial-gradient(circle at 75% 30%, rgba(245, 158, 11, 0.28) 0%, transparent 55%),
+              radial-gradient(circle at 20% 70%, rgba(217, 119, 6, 0.2) 0%, transparent 55%),
+              linear-gradient(135deg, #3f2305 0%, #78350f 45%, #0f172a 100%);
+}
+
+.medisafe-landing.theme-human {
+  background: radial-gradient(circle at 75% 30%, rgba(168, 85, 247, 0.28) 0%, transparent 55%),
+              radial-gradient(circle at 20% 70%, rgba(56, 189, 248, 0.25) 0%, transparent 55%),
+              linear-gradient(135deg, #130b2b 0%, #1e1b4b 50%, #0f172a 100%);
 }
 
 /* ─── Floating Glassmorphism Navbar (Borderless) ──────────────── */
@@ -26,7 +52,7 @@ html, body {
   left: 0;
   right: 0;
   height: 72px;
-  background: rgba(3, 7, 18, 0.65);
+  background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 9999;
@@ -39,7 +65,7 @@ html, body {
 }
 
 .medisafe-navbar.scrolled {
-  background: rgba(3, 7, 18, 0.92);
+  background: rgba(15, 23, 42, 0.88);
   height: 62px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -80,7 +106,7 @@ html, body {
 .medisafe-nav-item {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: #cbd5e1;
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -96,7 +122,7 @@ html, body {
 }
 
 .btn-nav-login {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   color: #e2e8f0;
   border: none;
   padding: 0.55rem 1.2rem;
@@ -108,7 +134,7 @@ html, body {
 }
 
 .btn-nav-login:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
   color: #ffffff;
 }
 
@@ -155,12 +181,13 @@ html, body {
   z-index: 5;
 }
 
-/* ── SECTION 1: HERO (HEART ON RIGHT) ────────────────────────── */
+/* ── SECTION 1: HERO (HEART ON RIGHT SIDE) ───────────────────── */
 .hero-badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background: rgba(99, 102, 241, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
   border: none;
   padding: 0.45rem 1.15rem;
   border-radius: 30px;
@@ -168,7 +195,7 @@ html, body {
   font-weight: 800;
   color: #a5b4fc;
   margin-bottom: 1.6rem;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .hero-main-heading {
@@ -177,7 +204,7 @@ html, body {
   line-height: 1.05;
   letter-spacing: -1.8px;
   margin: 0 0 1.2rem 0;
-  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #818cf8 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -185,7 +212,7 @@ html, body {
 .hero-tagline {
   font-size: clamp(1.1rem, 2.1vw, 1.45rem);
   font-weight: 600;
-  color: #cbd5e1;
+  color: #f1f5f9;
   margin: 0 0 1.2rem 0;
   line-height: 1.55;
   font-style: italic;
@@ -231,7 +258,7 @@ html, body {
 }
 
 .btn-medisafe-secondary {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   color: #f1f5f9;
   border: none;
   padding: 0.95rem 2rem;
@@ -242,18 +269,18 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   transition: all 0.25s ease;
 }
 
 .btn-medisafe-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .scroll-explore-indicator {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #64748b;
+  color: #94a3b8;
   letter-spacing: 2px;
   animation: bounce 2s infinite;
   display: inline-block;
@@ -267,14 +294,14 @@ html, body {
 
 /* ── BORDERLESS ANATOMICAL & WORKFLOW CARDS ─────────────────── */
 .anatomical-quote-box {
-  background: rgba(15, 23, 42, 0.68);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: none;
   border-radius: 28px;
   padding: 2.6rem 3rem;
   max-width: clamp(480px, 50vw, 650px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
   text-align: left;
 }
 
@@ -284,8 +311,8 @@ html, body {
   color: #38bdf8;
   text-transform: uppercase;
   letter-spacing: 1px;
-  background: rgba(56, 189, 248, 0.12);
-  padding: 0.3rem 0.8rem;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 0.35rem 0.85rem;
   border-radius: 20px;
   display: inline-block;
   margin-bottom: 0.85rem;
@@ -302,32 +329,64 @@ html, body {
 
 .anatomical-subtext {
   font-size: 1.08rem;
-  color: #94a3b8;
+  color: #cbd5e1;
   line-height: 1.6;
   margin: 0;
 }
 
-/* ── SECTION 4: HOLOGRAPHIC HUMAN BODY & ORBITING PANELS ───── */
-.orbiting-panels-container {
+/* ── REFERENCE-INSPIRED FLOATING GLASS FEATURE CARDS (IMAGE 2 STYLE) ── */
+.reference-feature-pills-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 1.8rem;
+  gap: 1.2rem;
+  margin-top: 2rem;
 }
 
-.orbiting-panel-badge {
-  background: rgba(99, 102, 241, 0.15);
-  border: none;
-  backdrop-filter: blur(14px);
-  padding: 0.75rem 1.3rem;
-  border-radius: 18px;
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: #f8fafc;
+.reference-feature-pill-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  border-radius: 22px;
+  padding: 1.1rem 1.4rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  gap: 0.9rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  min-width: 180px;
+  flex: 1;
+  transition: transform 0.25s ease;
+}
+
+.reference-feature-pill-card:hover {
+  transform: translateY(-3px);
+}
+
+.reference-feature-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.reference-feature-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-feature-title {
+  fontSize: 0.94rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.reference-feature-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 700;
 }
 
 /* ── SECTION 5: PRODUCT VALUE (4 CAPABILITIES CARDS - BORDERLESS) ── */
@@ -346,14 +405,14 @@ html, body {
 }
 
 .capability-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(24px);
   border: none;
   border-radius: 24px;
   padding: 1.8rem;
   text-align: left;
   transition: all 0.3s ease;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
 }
 
 .capability-card:hover {
@@ -377,7 +436,7 @@ html, body {
 
 .capability-desc {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: #cbd5e1;
   line-height: 1.55;
   margin: 0;
 }
@@ -385,11 +444,11 @@ html, body {
 /* ── SECTION 6: FINAL CTA SLIDE (BORDERLESS) ───────────────── */
 .final-cta-box {
   max-width: clamp(480px, 52vw, 720px);
-  background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.22) 0%, rgba(3, 7, 18, 0.88) 75%);
+  background: radial-gradient(circle at 30% 50%, rgba(217, 70, 239, 0.25) 0%, rgba(15, 23, 42, 0.85) 75%);
   border: none;
   border-radius: 32px;
   padding: 3.2rem 2.8rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(24px);
   text-align: left;
 }
