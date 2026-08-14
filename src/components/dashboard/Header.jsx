@@ -31,7 +31,7 @@ const getInitials = (name) => {
   return name.slice(0, 2).toUpperCase()
 }
 
-export default function Header() {
+export default function Header({ showGreeting = true }) {
   const { user } = useAuth()
   const greeting = getGreetingTime()
   const displayName = getUserDisplayName(user)
@@ -42,37 +42,39 @@ export default function Header() {
     <header className="dash-header" style={{
       display: 'flex',
       alignItems: 'center',
-      justify: 'space-between',
+      justify: showGreeting ? 'space-between' : 'flex-end',
       gap: '1.5rem',
       paddingBottom: '1.2rem',
       borderBottom: '1px solid #e2e8f0',
       marginBottom: '1rem',
       flexWrap: 'wrap'
     }}>
-      <div className="dash-greeting">
-        <h1 className="dash-title" style={{
-          fontSize: '1.75rem',
-          fontWeight: 800,
-          letterSpacing: '-0.03em',
-          color: '#0f172a',
-          margin: '0 0 0.3rem 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          flexWrap: 'wrap'
-        }}>
-          <span>{greeting.text}, {displayName}</span>
-          <span style={{ fontSize: '1.6rem' }}>{greeting.icon}</span>
-        </h1>
-        <p className="dash-subtitle" style={{
-          color: '#64748b',
-          fontSize: '0.92rem',
-          margin: 0,
-          fontWeight: 500
-        }}>
-          Here is your PulseMed health & medication safety overview.
-        </p>
-      </div>
+      {showGreeting && (
+        <div className="dash-greeting">
+          <h1 className="dash-title" style={{
+            fontSize: '1.75rem',
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            color: '#0f172a',
+            margin: '0 0 0.3rem 0',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            flexWrap: 'wrap'
+          }}>
+            <span>{greeting.text}, {displayName}</span>
+            <span style={{ fontSize: '1.6rem' }}>{greeting.icon}</span>
+          </h1>
+          <p className="dash-subtitle" style={{
+            color: '#64748b',
+            fontSize: '0.92rem',
+            margin: 0,
+            fontWeight: 500
+          }}>
+            Here is your PulseMed health & medication safety overview.
+          </p>
+        </div>
+      )}
 
       <div className="dash-header-actions" style={{
         display: 'flex',

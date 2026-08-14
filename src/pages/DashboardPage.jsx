@@ -122,7 +122,7 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <main className={`dash-main ${isSidebarCollapsed ? 'sidebar-is-collapsed' : ''}`}>
         {/* Top Header Bar */}
-        <Header />
+        <Header showGreeting={activeTab === 'dashboard'} />
 
         {/* Conditional Tab Views */}
         {activeTab === 'medicines' ? (
