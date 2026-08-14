@@ -7,6 +7,8 @@ const toTitleCase = (str) => {
   return str.toLowerCase().replace(/(?:^|\s|\/|-|\()\w/g, c => c.toUpperCase())
 }
 
+export const fuzzyFdaMatchingEnabled = true
+
 const cleanFdaText = (text, maxLength = 160) => {
   if (!text) return ''
   let cleaned = text
