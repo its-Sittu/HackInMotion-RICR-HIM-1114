@@ -119,7 +119,7 @@ const getInitials = (name) => {
   return name.slice(0, 2).toUpperCase()
 }
 
-export default function Sidebar({ activeId = 'dashboard', onNav }) {
+export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = false, onToggleCollapse }) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
@@ -134,19 +134,34 @@ export default function Sidebar({ activeId = 'dashboard', onNav }) {
   }
 
   return (
-    <aside className="medisafe-sidebar">
-      {/* Brand */}
-      <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-        <div className="brand-icon-wrapper">
-          <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M12 8v8"/><path d="M8 12h8"/>
-          </svg>
+    <aside className={`medisafe-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
+      {/* Brand & Collapse Toggle Header */}
+      <div className="sidebar-brand-row">
+        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="PulseMed Home">
+          <div className="brand-icon-wrapper">
+            <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 8v8"/><path d="M8 12h8"/>
+            </svg>
+          </div>
+          {!isCollapsed && <span className="brand-name">PulseMed</span>}
         </div>
-        <span className="brand-name">PulseMed</span>
+
+        {/* Minimize Arrow Toggle Button */}
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="sidebar-collapse-btn"
+          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}>
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation List */}
       <nav className="sidebar-nav">
         <ul className="nav-list">
           {navItems.map((item) => (
@@ -156,26 +171,29 @@ export default function Sidebar({ activeId = 'dashboard', onNav }) {
                 id={`nav-${item.id}`}
                 className={`nav-item-btn ${activeId === item.id ? 'active' : ''}`}
                 aria-current={activeId === item.id ? 'page' : undefined}
+                title={isCollapsed ? item.label : undefined}
                 onClick={() => onNav && onNav(item.id)}
               >
                 <span className="nav-icon" aria-hidden="true">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
+                {!isCollapsed && <span className="nav-label">{item.label}</span>}
               </button>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* Footer / Logout */}
+      {/* Footer / User Profile & Logout */}
       <div className="sidebar-footer">
-        <div className="sidebar-user-card">
+        <div className="sidebar-user-card" title={isCollapsed ? displayName : undefined}>
           <div className="sidebar-user-avatar">{initials}</div>
-          <div className="sidebar-user-info">
-            <span className="sidebar-user-name">{displayName}</span>
-            <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' ? 'Verified Member' : 'Guest Account'}</span>
-          </div>
+          {!isCollapsed && (
+            <div className="sidebar-user-info">
+              <span className="sidebar-user-name">{displayName}</span>
+              <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' ? 'Verified Member' : 'Guest Account'}</span>
+            </div>
+          )}
         </div>
-        <button type="button" className="logout-btn" onClick={handleLogout} id="logout-btn">
+        <button type="button" className="logout-btn" onClick={handleLogout} id="logout-btn" title={isCollapsed ? 'Sign Out' : undefined}>
           <span className="nav-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -183,7 +201,7 @@ export default function Sidebar({ activeId = 'dashboard', onNav }) {
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </span>
-          <span className="nav-label">Sign Out</span>
+          {!isCollapsed && <span className="nav-label">Sign Out</span>}
         </button>
       </div>
     </aside>

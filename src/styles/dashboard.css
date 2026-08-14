@@ -12,34 +12,60 @@
 .medisafe-sidebar {
   width: 260px;
   min-width: 260px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
   background: #ffffff;
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
+  padding: 1.4rem 1rem;
   box-sizing: border-box;
-  z-index: 20;
+  z-index: 100;
+  overflow-y: auto;
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+}
+
+.medisafe-sidebar.is-collapsed {
+  width: 80px;
+  min-width: 80px;
+  padding: 1.4rem 0.5rem;
+}
+
+.sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 1.2rem;
+}
+
+.medisafe-sidebar.is-collapsed .sidebar-brand-row {
+  justify: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .sidebar-brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0.5rem 1.5rem 0.5rem;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 1rem;
 }
 
 .brand-icon-wrapper {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify: center;
   color: white;
-  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
 }
 
 .brand-name {
@@ -50,6 +76,28 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  white-space: nowrap;
+}
+
+.sidebar-collapse-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-collapse-btn:hover {
+  background: #e0e7ff;
+  border-color: #c7d2fe;
+  color: #4f46e5;
 }
 
 .sidebar-nav {
@@ -62,7 +110,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.65rem; /* Increased vertical spacing between items as requested */
 }
 
 .nav-item-wrapper {
@@ -72,9 +120,9 @@
 .nav-item-btn {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.8rem;
   width: 100%;
-  padding: 0.75rem 0.85rem;
+  padding: 0.78rem 0.85rem;
   background: transparent;
   border: none;
   border-radius: 12px;
@@ -85,6 +133,12 @@
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.medisafe-sidebar.is-collapsed .nav-item-btn {
+  justify-content: center;
+  padding: 0.78rem 0;
 }
 
 .nav-item-btn:hover {
@@ -102,6 +156,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .sidebar-footer {
@@ -121,6 +176,10 @@
   background: #f8faff;
 }
 
+.medisafe-sidebar.is-collapsed .sidebar-user-card {
+  justify-content: center;
+}
+
 .sidebar-user-avatar {
   width: 34px;
   height: 34px;
@@ -132,6 +191,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .sidebar-user-info {
@@ -163,6 +223,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.medisafe-sidebar.is-collapsed .logout-btn {
+  justify-content: center;
 }
 
 .logout-btn:hover {
@@ -171,15 +236,22 @@
   color: #ef4444;
 }
 
-/* ─── Main Content ───────────────────────────────────────────── */
+/* ─── Main Content (Fixed Sidebar Offset & Scrollable Page) ──── */
 .dash-main {
   flex-grow: 1;
+  margin-left: 260px;
+  width: calc(100% - 260px);
   padding: 2rem 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  max-width: 1280px;
   box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.dash-main.sidebar-is-collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
 }
 
 /* Header */

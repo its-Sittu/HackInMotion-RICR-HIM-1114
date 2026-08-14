@@ -9,6 +9,25 @@ import '../styles/dashboard.css'
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('pulsemed_sidebar_collapsed') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed(prev => {
+      const next = !prev
+      try {
+        localStorage.setItem('pulsemed_sidebar_collapsed', String(next))
+      } catch {
+        // localStorage optional
+      }
+      return next
+    })
+  }
 
   // Mock vital statistics
   const vitals = [
@@ -100,11 +119,16 @@ export default function DashboardPage() {
 
   return (
     <div className="dash-layout">
-      {/* Dynamic Responsive Sidebar */}
-      <Sidebar activeId={activeTab} onNav={setActiveTab} />
+      {/* Dynamic Responsive Fixed Sidebar */}
+      <Sidebar
+        activeId={activeTab}
+        onNav={setActiveTab}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapse}
+      />
 
       {/* Main Content Area */}
-      <main className="dash-main">
+      <main className={`dash-main ${isSidebarCollapsed ? 'sidebar-is-collapsed' : ''}`}>
         {/* Top Header Bar */}
         <Header />
 
