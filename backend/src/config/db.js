@@ -1,9 +1,11 @@
 import mongoose from 'mongoose'
+import path from 'path'
+import fs from 'fs'
 
 /**
  * Connects to MongoDB using MONGODB_URI.
- * If local MongoDB is not running, seamlessly falls back to an in-memory MongoDB instance
- * for frictionless local development and testing.
+ * If local MongoDB is not running, seamlessly falls back to a disk-persisted
+ * dev MongoDB instance so user accounts stay saved across server restarts.
  */
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI
@@ -21,24 +23,42 @@ const connectDB = async () => {
   }
 
   // 2. Try connecting to local MongoDB daemon (127.0.0.1:27017)
-  const localUri = uri || 'mongodb://127.0.0.1:27017/mediguard'
+  const localUri = uri || 'mongodb://127.0.0.1:27017/pulsemed'
   try {
     const conn = await mongoose.connect(localUri, { serverSelectionTimeoutMS: 2000 })
     console.log(`MongoDB connected successfully — host: ${conn.connection.host}`)
-  } catch (_localErr) {
-    console.log(`[MongoDB] Local daemon not running on 127.0.0.1:27017. Starting Dev In-Memory Database...`)
+  } catch {
+    console.log(`[MongoDB] Local daemon not running on 127.0.0.1:27017. Starting Persistent Dev Database...`)
     
-    // 3. Fallback to In-Memory MongoDB for effortless local development
+    // 3. Fallback to Disk-Persisted Dev Database so accounts persist across server restarts
     try {
       const { MongoMemoryServer } = await import('mongodb-memory-server')
-      const mongod = await MongoMemoryServer.create()
+      const devDbDir = path.resolve(process.cwd(), '.devdb')
+      if (!fs.existsSync(devDbDir)) {
+        fs.mkdirSync(devDbDir, { recursive: true })
+      }
+
+      const mongod = await MongoMemoryServer.create({
+        instance: {
+          dbPath: devDbDir,
+          storageEngine: 'wiredTiger'
+        }
+      })
       const memUri = mongod.getUri()
       const conn = await mongoose.connect(memUri)
-      console.log(`MongoDB connected successfully (In-Memory Dev Database) — host: ${conn.connection.host}`)
-    } catch (memErr) {
-      console.error(`[MongoDB Error] Failed to start In-Memory Database: ${memErr.message}`)
-      console.error(`👉 Please update MONGODB_URI in backend/.env with your MongoDB Atlas connection string.`)
-      throw memErr
+      console.log(`MongoDB connected successfully (Persistent Dev Database) — host: ${conn.connection.host}`)
+    } catch {
+      // If wiredTiger persistence not supported in environment, fallback to memory mode
+      try {
+        const { MongoMemoryServer } = await import('mongodb-memory-server')
+        const mongod = await MongoMemoryServer.create()
+        const memUri = mongod.getUri()
+        const conn = await mongoose.connect(memUri)
+        console.log(`MongoDB connected successfully (In-Memory Dev Database) — host: ${conn.connection.host}`)
+      } catch (err) {
+        console.error(`[MongoDB Error] Failed to start Dev Database: ${err.message}`)
+        throw err
+      }
     }
   }
 }
