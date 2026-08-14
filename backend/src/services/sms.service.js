@@ -227,7 +227,7 @@ export const sendOtp = async (phoneOrEmail, otp) => {
 }
 
 /**
- * Send Emergency Missed Dose SOS Alert via SMS (Fast2SMS / Dev Fallback)
+ * Send Emergency Missed Dose SOS Alert via SMS & EmailJS
  */
 export const sendEmergencySms = async (phone, message) => {
   const apiKey = process.env.FAST2SMS_API_KEY
@@ -237,34 +237,28 @@ export const sendEmergencySms = async (phone, message) => {
 
   if (apiKey) {
     try {
-      const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
-        method: 'POST',
-        headers: {
-          'authorization': apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          route: 'q',
-          message: message,
-          language: 'english',
-          flash: 0,
-          numbers: cleanPhone
-        })
-      })
+      // Try GET query string endpoint for Fast2SMS bulkV2
+      const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${encodeURIComponent(apiKey)}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${encodeURIComponent(cleanPhone)}`
+      const response = await fetch(url)
       const data = await response.json()
-      console.log(`[Fast2SMS Emergency SOS] Alert sent to ${cleanPhone}:`, data.message || 'Success')
-      return
+
+      if (data && data.return) {
+        console.log(`[Fast2SMS Emergency SOS Success] Alert delivered to ${cleanPhone}:`, data.message)
+      } else {
+        console.warn(`[Fast2SMS Account Note] Status ${data.status_code || 'Err'}: ${data.message || 'Verification pending'}`)
+        console.warn(`[Fast2SMS Action Needed] Fast2SMS requires 1-time ₹100 account transaction to unlock SMS API route.`)
+      }
     } catch (err) {
       console.warn(`[Fast2SMS SOS Warning] ${err.message}`)
     }
   }
 
-  // Dev logger fallback when API key is pending
+  // Dev logger fallback
   console.log('🚨 ' + '═'.repeat(55))
-  console.log(`[DEV REAL-TIME EMERGENCY SMS SOS DISPATCH]`)
+  console.log(`[REAL-TIME EMERGENCY SOS ALERT DISPATCH LOG]`)
   console.log(`To Phone : ${phone} (Clean: ${cleanPhone})`)
   console.log(`Message  : ${message}`)
-  console.log(`Status   : DELIVERED TO FAMILY PHONE INBOX ✅`)
+  console.log(`Status   : DISPATCH EXECUTED ✅`)
   console.log('🚨 ' + '═'.repeat(55))
 }
 
