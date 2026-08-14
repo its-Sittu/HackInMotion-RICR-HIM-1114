@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import MedicationAlarm from './MedicationAlarm'
 
 const INITIAL_MARKED_DAYS = {
   '2026-08-10': { status: 'TAKEN', note: 'Morning & Night doses taken on time', typeIcon: '💊', color: '#10b981', bg: '#d1fae5' },
@@ -413,8 +414,11 @@ export default function MyHealth() {
           </div>
         </div>
 
-        {/* ── RIGHT: EXTRA HEALTH FEATURES & HYDRATION SUITE ─────────────── */}
+        {/* ── RIGHT: EXTRA HEALTH FEATURES & ALARM SUITE ─────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+          {/* Medication Audio Alarm & Reminders */}
+          <MedicationAlarm />
+
           {/* Daily Hydration Tracker */}
           <div style={{
             backgroundColor: '#ffffff',
