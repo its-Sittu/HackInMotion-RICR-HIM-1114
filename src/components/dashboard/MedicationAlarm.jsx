@@ -61,7 +61,7 @@ export default function MedicationAlarm() {
     }
   }, [alarms])
 
-  // Play synthesized audio beep chime tone
+  // Play premium crystal glass melodic health chime arpeggio (E5 -> G#5 -> B5 -> E6)
   const playSoundBeep = () => {
     try {
       if (!audioCtxRef.current) {
@@ -72,21 +72,29 @@ export default function MedicationAlarm() {
         ctx.resume()
       }
 
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
+      // Harmonic Crystal Chime Frequencies (E5, G#5, B5, E6)
+      const notes = [659.25, 830.61, 987.77, 1318.51]
+      const startTime = ctx.currentTime
 
-      osc.type = 'sine'
-      osc.frequency.setValueAtTime(880, ctx.currentTime) // A5 tone
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3)
+      notes.forEach((freq, idx) => {
+        const noteTime = startTime + (idx * 0.12)
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
 
-      gain.gain.setValueAtTime(0.3, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3)
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(freq, noteTime)
 
-      osc.connect(gain)
-      gain.connect(ctx.destination)
+        // Soft glass attack and crystal bell decay
+        gain.gain.setValueAtTime(0.001, noteTime)
+        gain.gain.linearRampToValueAtTime(0.22, noteTime + 0.03)
+        gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.55)
 
-      osc.start()
-      osc.stop(ctx.currentTime + 0.35)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+
+        osc.start(noteTime)
+        osc.stop(noteTime + 0.6)
+      })
     } catch {
       // Audio synth optional
     }
