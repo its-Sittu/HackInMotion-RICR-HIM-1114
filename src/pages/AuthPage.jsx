@@ -419,15 +419,28 @@ export default function AuthPage() {
     }
   }
 
-  const doGuestLogin = () => {
-    const guestUser = {
+  const doGuestLogin = async () => {
+    setLoading(true)
+    try {
+      const data = await api('/guest', {})
+      if (data && data.success && data.token) {
+        login(data.token, data.user)
+        navigate('/dashboard', { replace: true })
+        return
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setLoading(false)
+    }
+    // Safe client fallback if server cold start
+    const fallbackUser = {
       _id: 'guest_user_id',
       phone: 'guest@pulsemed.com',
       name: 'Guest User',
       isPhoneVerified: true
     }
-    const guestToken = 'pulsemed_guest_session_token'
-    login(guestToken, guestUser)
+    login(`guest_jwt_${Date.now()}`, fallbackUser)
     navigate('/dashboard', { replace: true })
   }
 

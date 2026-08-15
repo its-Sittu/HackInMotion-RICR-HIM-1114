@@ -1247,6 +1247,28 @@ export default function MedicineSearch() {
           )}
         </>
       )}
+
+      {/* Prominent Clinical Medical Disclaimer */}
+      <div style={{
+        marginTop: '2rem',
+        padding: '1rem 1.2rem',
+        backgroundColor: 'rgba(245, 158, 11, 0.08)',
+        border: '1px solid rgba(245, 158, 11, 0.25)',
+        borderRadius: '16px',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '0.75rem'
+      }}>
+        <span style={{ fontSize: '1.2rem', flexShrink: 0, marginTop: '0.1rem' }}>⚠️</span>
+        <div>
+          <strong style={{ color: '#fcd34d', fontSize: '0.86rem', display: 'block', marginBottom: '0.2rem' }}>
+            Official Medical & Clinical Information Disclaimer
+          </strong>
+          <p style={{ margin: 0, color: '#fef3c7', fontSize: '0.78rem', lineHeight: 1.5 }}>
+            MediSafe medicine details and dosages are sourced from OpenFDA, standard pharmacopeia, and clinical safety algorithms for informational and educational use only. Always consult a licensed medical practitioner or pharmacist before starting, altering, or discontinuing any prescribed medications.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

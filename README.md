@@ -114,8 +114,9 @@ Create a `.env` file inside `backend/`:
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/medisafe
-JWT_SECRET=medisafe_super_secret_jwt_key_2026
-FAST2SMS_API_KEY=your_fast2sms_api_key
+JWT_SECRET=<your_secure_random_jwt_secret_key>
+FAST2SMS_API_KEY=<your_fast2sms_api_key>
+GEMINI_API_KEY=<your_gemini_api_key>
 ```
 
 ### 3. Run Development Servers

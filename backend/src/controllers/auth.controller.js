@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import mongoose from 'mongoose'
 import validator from 'validator'
 import User from '../models/User.js'
 import { signToken } from '../config/jwt.js'
@@ -376,6 +377,58 @@ export const resetPasswordHandler = async (req, res, next) => {
 }
 
 /**
+ * POST /api/auth/guest
+ * Generates a valid server-signed JWT token for guest access.
+ * Persists a guest session in MongoDB so all protected routes function seamlessly.
+ */
+export const guestLoginHandler = async (_req, res, next) => {
+  try {
+    const guestPhone = `guest_${Date.now()}@pulsemed.com`
+    let guestUser = await User.create({
+      phone: guestPhone,
+      name: 'Guest User',
+      role: 'guest',
+      isGuest: true,
+      isPhoneVerified: true,
+      activeMedicines: [
+        { name: 'Paracetamol 500mg', dosage: '500mg', frequency: 'Twice Daily', timeOfDay: 'After Meal', active: true },
+        { name: 'Pantocid 40', dosage: '40mg', frequency: 'Once Daily', timeOfDay: 'Before Breakfast', active: true }
+      ]
+    })
+
+    const token = signToken(guestUser._id)
+
+    return res.status(200).json({
+      success: true,
+      token,
+      user: guestUser.toSafeObject()
+    })
+  } catch (err) {
+    // If DB is offline, issue a valid signed guest JWT
+    try {
+      const fallbackId = new mongoose.Types.ObjectId()
+      const token = signToken(fallbackId)
+      return res.status(200).json({
+        success: true,
+        token,
+        user: {
+          _id: fallbackId,
+          phone: 'guest@pulsemed.com',
+          name: 'Guest User',
+          role: 'guest',
+          isGuest: true,
+          isPhoneVerified: true,
+          activeMedicines: [],
+          interactionHistory: []
+        }
+      })
+    } catch {
+      next(err)
+    }
+  }
+}
+
+/**
  * POST /api/auth/logout
  * Stateless JWT — client discards token. Server acknowledges.
  */
@@ -395,7 +448,20 @@ export const getMeHandler = async (req, res, next) => {
     const user = await User.findById(req.userId)
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' })
+      // If user not in DB (e.g. ephemeral guest), return standard authenticated guest object
+      return res.status(200).json({
+        success: true,
+        user: {
+          _id: req.userId,
+          phone: 'guest@pulsemed.com',
+          name: 'Guest User',
+          role: 'guest',
+          isGuest: true,
+          isPhoneVerified: true,
+          activeMedicines: [],
+          interactionHistory: []
+        }
+      })
     }
 
     return res.status(200).json({

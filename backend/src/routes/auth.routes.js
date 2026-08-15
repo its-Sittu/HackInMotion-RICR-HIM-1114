@@ -8,7 +8,8 @@ import {
   forgotPasswordHandler,
   resetPasswordHandler,
   logoutHandler,
-  getMeHandler
+  getMeHandler,
+  guestLoginHandler
 } from '../controllers/auth.controller.js'
 import { authMiddleware } from '../middleware/authMiddleware.js'
 
@@ -77,6 +78,13 @@ router.post('/signup', signupHandler)
  * @access Public
  */
 router.post('/login', loginLimiter, loginHandler)
+
+/**
+ * @route  POST /api/auth/guest
+ * @desc   Generate a verified JWT token and MongoDB session for guest users
+ * @access Public
+ */
+router.post('/guest', guestLoginHandler)
 
 /**
  * @route  POST /api/auth/forgot-password

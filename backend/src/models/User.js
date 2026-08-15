@@ -26,6 +26,38 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    name: {
+      type: String,
+      default: 'PulseMed User'
+    },
+    role: {
+      type: String,
+      enum: ['user', 'guest', 'admin'],
+      default: 'user'
+    },
+    isGuest: {
+      type: Boolean,
+      default: false
+    },
+    activeMedicines: [
+      {
+        name: { type: String, required: true },
+        dosage: { type: String, default: '500mg' },
+        frequency: { type: String, default: 'Twice Daily' },
+        timeOfDay: { type: String, default: 'After Meal' },
+        startDate: { type: Date, default: Date.now },
+        active: { type: Boolean, default: true }
+      }
+    ],
+    interactionHistory: [
+      {
+        drug1: { type: String, required: true },
+        drug2: { type: String, required: true },
+        severity: { type: String, enum: ['Severe', 'Moderate', 'Mild', 'Safe'], default: 'Safe' },
+        summary: { type: String },
+        checkedAt: { type: Date, default: Date.now }
+      }
+    ],
     // OTP fields — stored as hash, never plaintext
     otpHash: {
       type: String,
@@ -61,6 +93,11 @@ userSchema.methods.toSafeObject = function () {
   return {
     _id: this._id,
     phone: this.phone,
+    name: this.name || this.phone?.split('@')[0] || 'User',
+    role: this.role || 'user',
+    isGuest: this.isGuest || false,
+    activeMedicines: this.activeMedicines || [],
+    interactionHistory: this.interactionHistory || [],
     isPhoneVerified: this.isPhoneVerified,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt

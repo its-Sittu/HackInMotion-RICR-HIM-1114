@@ -8,6 +8,9 @@
     "build": "vite build",
     "start": "node backend/src/server.js",
     "lint": "eslint .",
+    "lint:oxlint": "oxlint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "spellcheck": "npx -y cspell \"src/**/*.{js,jsx}\" \"backend/src/**/*.{js,jsx}\" \"README.md\" --config ./cspell.json",
     "preview": "vite preview"
   },

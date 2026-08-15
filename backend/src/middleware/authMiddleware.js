@@ -48,3 +48,23 @@ export const authMiddleware = (req, res, next) => {
     next(err)
   }
 }
+
+/**
+ * Optional authentication middleware for public endpoints.
+ * Attaches req.userId if a valid JWT is present without blocking unauthenticated requests.
+ */
+export const optionalAuthMiddleware = (req, _res, next) => {
+  try {
+    const authHeader = req.headers.authorization
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1]
+      if (token && !token.startsWith('guest_jwt_')) {
+        const decoded = verifyToken(token)
+        req.userId = decoded.userId
+      }
+    }
+  } catch {
+    // Optional - pass through
+  }
+  next()
+}

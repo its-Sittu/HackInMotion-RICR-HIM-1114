@@ -20,9 +20,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(USER_KEY)
   }, [])
 
-  // On mount, validate stored token against /api/auth/me (bypassing guest tokens)
+  // On mount, validate stored token against /api/auth/me
   useEffect(() => {
-    if (!token || token === 'pulsemed_guest_session_token' || token.startsWith('guest_')) return
+    if (!token) return
 
     let isMounted = true
 

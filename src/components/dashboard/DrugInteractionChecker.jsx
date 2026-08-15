@@ -41,22 +41,24 @@ export default function DrugInteractionChecker() {
       if (data.success) {
         setResult(data)
 
-        const isHigh = data.severity === 'high'
-        const isMod = data.severity === 'moderate'
+        const sev = (data.severity || 'Safe').toLowerCase()
+        const isSevere = sev.includes('severe') || sev.includes('high')
+        const isMod = sev.includes('moderate')
+        const isMild = sev.includes('mild')
 
         saveActivityToMedicalHistory({
           title: `Interaction Check: ${d1} + ${d2}`,
           category: 'Drug Interactions',
           typeIcon: '🧪',
-          status: isHigh ? 'HIGH RISK 🚨' : isMod ? 'CAUTION ⚠️' : 'SAFE ✅',
-          statusBg: isHigh ? '#ffe4e6' : isMod ? '#fef3c7' : '#d1fae5',
-          statusColor: isHigh ? '#be123c' : isMod ? '#b45309' : '#059669',
+          status: isSevere ? 'SEVERE RISK 🚨' : isMod ? 'CAUTION ⚠️' : isMild ? 'MILD / SAFE ℹ️' : 'SAFE ✅',
+          statusBg: isSevere ? '#ffe4e6' : isMod ? '#fef3c7' : isMild ? '#e0f2fe' : '#d1fae5',
+          statusColor: isSevere ? '#be123c' : isMod ? '#b45309' : isMild ? '#0284c7' : '#059669',
           summary: data.summary || `Interaction check between ${d1} and ${d2}`,
-          doctorNote: data.note || `Source: ${data.source || 'FDA Clinical Safety Database'}`,
+          doctorNote: data.note || `Source: ${data.source || 'OpenFDA Clinical Safety Database'}`,
           details: [
             `Medicines Checked: ${d1}, ${d2} ${showThird && drug3.trim() ? `, ${drug3.trim()}` : ''}`,
             `Risk Classification: ${data.riskClassification || 'Interaction Evaluated'}`,
-            `Source: ${data.source || 'FDA Database & Gemini AI'}`
+            `Source: ${data.source || 'OpenFDA Pharmacology & RxNav Engine'}`
           ]
         })
       }
@@ -445,20 +447,18 @@ export default function DrugInteractionChecker() {
         <div style={{
           backgroundColor: '#ffffff',
           borderRadius: '22px',
-          border: result.severity === 'high' ? '1px solid #fecdd3' :
-                  result.severity === 'moderate' ? '1px solid #fde68a' : '1px solid #a7f3d0',
+          border: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '1px solid #fecdd3' :
+                  (result.severity || '').toLowerCase().includes('moderate') ? '1px solid #fde68a' :
+                  (result.severity || '').toLowerCase().includes('mild') ? '1px solid #bae6fd' : '1px solid #a7f3d0',
           padding: '1.8rem',
           boxShadow: '0 12px 35px rgba(0,0,0,0.05)',
           position: 'relative',
           animation: 'fadeInUp 0.35s ease-out'
         }}>
-          
-          {/* ────────────────────────────────────────────────────────────
-              CATEGORY 1: RISK CLASSIFICATION BADGE & HEADER
-             ──────────────────────────────────────────────────────────── */}
+          {/* CATEGORY 1: RISK CLASSIFICATION BADGE & HEADER */}
           <div style={{
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '0.8rem',
@@ -468,27 +468,31 @@ export default function DrugInteractionChecker() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <span style={{
-                backgroundColor: result.severity === 'high' ? '#ffe4e6' :
-                                 result.severity === 'moderate' ? '#fef3c7' : '#d1fae5',
-                color: result.severity === 'high' ? '#be123c' :
-                       result.severity === 'moderate' ? '#b45309' : '#047857',
-                border: result.severity === 'high' ? '1px solid #fecdd3' :
-                        result.severity === 'moderate' ? '1px solid #fde68a' : '1px solid #a7f3d0',
+                backgroundColor: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '#ffe4e6' :
+                                 (result.severity || '').toLowerCase().includes('moderate') ? '#fef3c7' :
+                                 (result.severity || '').toLowerCase().includes('mild') ? '#e0f2fe' : '#d1fae5',
+                color: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '#be123c' :
+                       (result.severity || '').toLowerCase().includes('moderate') ? '#b45309' :
+                       (result.severity || '').toLowerCase().includes('mild') ? '#0284c7' : '#047857',
+                border: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '1px solid #fecdd3' :
+                        (result.severity || '').toLowerCase().includes('moderate') ? '1px solid #fde68a' :
+                        (result.severity || '').toLowerCase().includes('mild') ? '1px solid #bae6fd' : '1px solid #a7f3d0',
                 padding: '0.45rem 0.95rem',
                 borderRadius: '12px',
                 fontSize: '0.86rem',
                 fontWeight: 800,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: result.severity === 'high' ? '0 4px 12px rgba(225, 29, 72, 0.12)' : 'none'
+                gap: '0.4rem'
               }}>
-                {result.severity === 'high' ? '🚨' : result.severity === 'moderate' ? '⚠️' : '✅'}
-                <span>{result.riskClassification || (result.severity === 'high' ? 'HIGH INTERACTION RISK' : result.severity === 'moderate' ? 'MODERATE CAUTION REQUIRED' : 'SAFE COMBINATION')}</span>
+                {(result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '🚨' :
+                 (result.severity || '').toLowerCase().includes('moderate') ? '⚠️' :
+                 (result.severity || '').toLowerCase().includes('mild') ? 'ℹ️' : '✅'}
+                <span>{result.riskClassification || ((result.severity || '').toLowerCase().includes('severe') ? 'SEVERE CONTRAINDICATION (High Risk)' : (result.severity || '').toLowerCase().includes('moderate') ? 'MODERATE CAUTION REQUIRED' : 'SAFE COMBINATION')}</span>
               </span>
 
               <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
-                {result.source || 'FDA & Clinical Pharmacology Check'}
+                {result.source || 'OpenFDA & Clinical Pharmacology Database'}
               </span>
             </div>
 
@@ -497,24 +501,24 @@ export default function DrugInteractionChecker() {
             </span>
           </div>
 
-          {/* ────────────────────────────────────────────────────────────
-              CATEGORY 2: 📌 QUICK SUMMARY (IN SHORT)
-             ──────────────────────────────────────────────────────────── */}
+          {/* CATEGORY 2: QUICK SUMMARY */}
           <div style={{
-            backgroundColor: result.severity === 'high' ? '#fff1f2' :
-                             result.severity === 'moderate' ? '#fffbeb' : '#f0f9ff',
-            borderLeft: result.severity === 'high' ? '5px solid #e11d48' :
-                        result.severity === 'moderate' ? '5px solid #f59e0b' : '5px solid #0284c7',
+            backgroundColor: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '#fff1f2' :
+                             (result.severity || '').toLowerCase().includes('moderate') ? '#fffbeb' :
+                             (result.severity || '').toLowerCase().includes('mild') ? '#f0f9ff' : '#f0fdf4',
+            borderLeft: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '5px solid #e11d48' :
+                        (result.severity || '').toLowerCase().includes('moderate') ? '5px solid #f59e0b' :
+                        (result.severity || '').toLowerCase().includes('mild') ? '5px solid #0284c7' : '5px solid #10b981',
             borderRadius: '14px',
             padding: '1.15rem 1.35rem',
-            marginBottom: '1.3rem',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+            marginBottom: '1.3rem'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
               <span style={{ fontSize: '1.1rem' }}>📌</span>
               <strong style={{
-                color: result.severity === 'high' ? '#be123c' :
-                       result.severity === 'moderate' ? '#b45309' : '#0369a1',
+                color: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '#be123c' :
+                       (result.severity || '').toLowerCase().includes('moderate') ? '#b45309' :
+                       (result.severity || '').toLowerCase().includes('mild') ? '#0369a1' : '#047857',
                 fontSize: '0.88rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.4px'
@@ -525,8 +529,9 @@ export default function DrugInteractionChecker() {
             <p style={{
               margin: 0,
               fontSize: '0.96rem',
-              color: result.severity === 'high' ? '#881337' :
-                     result.severity === 'moderate' ? '#78350f' : '#0c4a6e',
+              color: (result.severity || '').toLowerCase().includes('severe') || (result.severity || '').toLowerCase().includes('high') ? '#881337' :
+                     (result.severity || '').toLowerCase().includes('moderate') ? '#78350f' :
+                     (result.severity || '').toLowerCase().includes('mild') ? '#0c4a6e' : '#064e3b',
               fontWeight: 600,
               lineHeight: 1.55
             }}>
@@ -534,9 +539,7 @@ export default function DrugInteractionChecker() {
             </p>
           </div>
 
-          {/* ────────────────────────────────────────────────────────────
-              CATEGORY 3: 💡 IMPORTANT KEY POINTS (BULLET POINTS)
-             ──────────────────────────────────────────────────────────── */}
+          {/* CATEGORY 3: IMPORTANT KEY POINTS */}
           <div style={{
             backgroundColor: '#fafafa',
             borderRadius: '14px',
@@ -564,9 +567,7 @@ export default function DrugInteractionChecker() {
             </div>
           </div>
 
-          {/* ────────────────────────────────────────────────────────────
-              CATEGORY 4: ⚠️ IMPORTANT NOTE & SAFETY GUIDELINES
-             ──────────────────────────────────────────────────────────── */}
+          {/* CATEGORY 4: IMPORTANT NOTE & SAFETY GUIDELINES */}
           <div style={{
             backgroundColor: '#fff1f2',
             border: '1px solid #fecdd3',
@@ -585,11 +586,11 @@ export default function DrugInteractionChecker() {
             </p>
           </div>
 
-          {/* Doctor Disclaimer */}
+          {/* Clinical Disclaimer */}
           <div style={{ marginTop: '1.3rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ fontSize: '0.95rem' }}>👨‍⚕️</span>
             <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontStyle: 'italic' }}>
-              PulseMed Real Drug Interaction Checker uses FDA clinical data and Gemini AI. Always consult your prescribing doctor before changing prescribed medicine schedules.
+              PulseMed Real Drug Interaction Checker uses OpenFDA clinical data and Gemini AI. Always consult your prescribing physician before changing prescribed medicine schedules.
             </span>
           </div>
         </div>

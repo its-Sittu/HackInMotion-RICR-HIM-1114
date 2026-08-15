@@ -1,5 +1,15 @@
+import mongoose from 'mongoose'
+import User from '../models/User.js'
+
 /**
- * Medicine Search Controller — openFDA API integration + Real Drug Interaction Checker + Body Map Symptom Checker
+ * Medicine Search Controller & Clinical Pharmacology Engine
+ * Features:
+ * - OpenFDA Integration + Local 10k+ Medicines
+ * - Fuzzy Levenshtein Misspelling & Typo Matching
+ * - Multi-Drug Clinical Interaction Matrix (Severe, Moderate, Mild)
+ * - Safe Header-based Gemini AI Integration
+ * - Dynamic Clinical Symptom Diagnosis & Red-Flag Triage
+ * - MongoDB Persistent User Medicines CRUD
  */
 
 const toTitleCase = (str) => {
@@ -8,6 +18,44 @@ const toTitleCase = (str) => {
 }
 
 export const fuzzyFdaMatchingEnabled = true
+
+// ─── Levenshtein Distance & Fuzzy Search ─────────────────────────────────────
+export const levenshteinDistance = (a = '', b = '') => {
+  const al = a.toLowerCase()
+  const bl = b.toLowerCase()
+  const matrix = []
+  for (let i = 0; i <= bl.length; i++) matrix[i] = [i]
+  for (let j = 0; j <= al.length; j++) matrix[0][j] = j
+  for (let i = 1; i <= bl.length; i++) {
+    for (let j = 1; j <= al.length; j++) {
+      if (bl.charAt(i - 1) === al.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
+    }
+  }
+  return matrix[bl.length][al.length]
+}
+
+export const isFuzzyMatch = (target, query, maxDist = 2) => {
+  if (!target || !query) return false
+  const t = target.toLowerCase()
+  const q = query.toLowerCase()
+  if (t.includes(q) || q.includes(t)) return true
+
+  const words = t.split(/[\s/,\-_()]+/).filter(w => w.length >= 3)
+  for (const word of words) {
+    if (Math.abs(word.length - q.length) <= maxDist) {
+      if (levenshteinDistance(word, q) <= maxDist) return true
+    }
+  }
+  return false
+}
 
 const cleanFdaText = (text, maxLength = 160) => {
   if (!text) return ''
@@ -35,7 +83,7 @@ const callGoogleGeminiApi = async (promptText, apiKey, responseMimeType = 'text/
 
   for (const model of models) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 7000)
 
@@ -48,7 +96,10 @@ const callGoogleGeminiApi = async (promptText, apiKey, responseMimeType = 'text/
 
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': cleanKey
+        },
         signal: controller.signal,
         body: JSON.stringify(bodyObj)
       })
@@ -219,12 +270,23 @@ export const searchMedicinesHandler = async (req, res, next) => {
       })
     }
 
-    const localMatches = LOCAL_MEDICINE_DATABASE.filter(med =>
-      med.brandName.toLowerCase().includes(query) ||
-      med.genericName.toLowerCase().includes(query) ||
-      med.category.toLowerCase().includes(query) ||
-      med.purpose.toLowerCase().includes(query)
-    )
+    const localMatches = LOCAL_MEDICINE_DATABASE.filter(med => {
+      const matchExact =
+        med.brandName.toLowerCase().includes(query) ||
+        med.genericName.toLowerCase().includes(query) ||
+        med.category.toLowerCase().includes(query) ||
+        med.purpose.toLowerCase().includes(query) ||
+        (med.activeIngredients && med.activeIngredients.toLowerCase().includes(query))
+
+      if (matchExact) return true
+
+      // Fuzzy check for typos (e.g. paracitamol, combiflamm, aspirnn, azithromicin, pantocidd)
+      return (
+        isFuzzyMatch(med.brandName, query, 2) ||
+        isFuzzyMatch(med.genericName, query, 2) ||
+        isFuzzyMatch(med.activeIngredients, query, 2)
+      )
+    })
 
     let fdaMedicines = []
     try {
@@ -909,6 +971,78 @@ Return JSON ONLY in this structure:
       urgencyLevel: 'low',
       conditions: mockConditions,
       safetyWarning: mockWarning
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// ─── User Persistent Medicines CRUD (MongoDB) ──────────────────────────────────
+export const getUserMedicinesHandler = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId)
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    return res.status(200).json({
+      success: true,
+      medicines: user.activeMedicines || []
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const addUserMedicineHandler = async (req, res, next) => {
+  try {
+    const { name, dosage = '500mg', frequency = 'Twice Daily', timeOfDay = 'After Meal' } = req.body
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'Medicine name is required.' })
+    }
+
+    const user = await User.findById(req.userId)
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    const newMed = {
+      name: name.trim(),
+      dosage: dosage.trim(),
+      frequency: frequency.trim(),
+      timeOfDay: timeOfDay.trim(),
+      startDate: new Date(),
+      active: true
+    }
+
+    user.activeMedicines.unshift(newMed)
+    await user.save()
+
+    return res.status(201).json({
+      success: true,
+      message: 'Medication added successfully.',
+      medicines: user.activeMedicines
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const deleteUserMedicineHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const user = await User.findById(req.userId)
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    user.activeMedicines = user.activeMedicines.filter(m => String(m._id) !== String(id))
+    await user.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Medication removed successfully.',
+      medicines: user.activeMedicines
     })
   } catch (err) {
     next(err)
