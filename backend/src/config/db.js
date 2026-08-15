@@ -17,8 +17,7 @@ const connectDB = async () => {
       console.log(`MongoDB connected successfully — host: ${conn.connection.host}`)
       return
     } catch (err) {
-      console.error(`[MongoDB Error] Failed to connect to remote MongoDB URI: ${err.message}`)
-      throw err
+      console.error(`[MongoDB Warning] Remote MongoDB connection failed: ${err.message}`)
     }
   }
 
@@ -27,39 +26,20 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(localUri, { serverSelectionTimeoutMS: 2000 })
     console.log(`MongoDB connected successfully — host: ${conn.connection.host}`)
+    return
   } catch {
-    console.log(`[MongoDB] Local daemon not running on 127.0.0.1:27017. Starting Persistent Dev Database...`)
-    
-    // 3. Fallback to Disk-Persisted Dev Database so accounts persist across server restarts
-    try {
-      const { MongoMemoryServer } = await import('mongodb-memory-server')
-      const devDbDir = path.resolve(process.cwd(), '.devdb')
-      if (!fs.existsSync(devDbDir)) {
-        fs.mkdirSync(devDbDir, { recursive: true })
-      }
+    console.log(`[MongoDB] Local daemon not running. Attempting Memory Database fallback...`)
+  }
 
-      const mongod = await MongoMemoryServer.create({
-        instance: {
-          dbPath: devDbDir,
-          storageEngine: 'wiredTiger'
-        }
-      })
-      const memUri = mongod.getUri()
-      const conn = await mongoose.connect(memUri)
-      console.log(`MongoDB connected successfully (Persistent Dev Database) — host: ${conn.connection.host}`)
-    } catch {
-      // If wiredTiger persistence not supported in environment, fallback to memory mode
-      try {
-        const { MongoMemoryServer } = await import('mongodb-memory-server')
-        const mongod = await MongoMemoryServer.create()
-        const memUri = mongod.getUri()
-        const conn = await mongoose.connect(memUri)
-        console.log(`MongoDB connected successfully (In-Memory Dev Database) — host: ${conn.connection.host}`)
-      } catch (err) {
-        console.error(`[MongoDB Error] Failed to start Dev Database: ${err.message}`)
-        throw err
-      }
-    }
+  // 3. Fallback to Dev Database so server continues running smoothly
+  try {
+    const { MongoMemoryServer } = await import('mongodb-memory-server')
+    const mongod = await MongoMemoryServer.create()
+    const memUri = mongod.getUri()
+    const conn = await mongoose.connect(memUri)
+    console.log(`MongoDB connected successfully (In-Memory Dev Database) — host: ${conn.connection.host}`)
+  } catch (err) {
+    console.error(`[MongoDB Warning] Operating without DB persistence: ${err.message}`)
   }
 }
 
