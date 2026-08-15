@@ -200,18 +200,18 @@ export default function NearbyHospitalsMap() {
   }, [fetchRealHospitals, userLocation.lat, userLocation.lng])
 
   return (
-    <section className="dash-card" style={{ padding: '2rem', gridColumn: '1 / -1', background: 'rgba(15, 23, 42, 0.85)', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
+    <section className="dash-card" style={{ padding: 'clamp(1rem, 3vw, 2rem)', gridColumn: '1 / -1', background: 'rgba(15, 23, 42, 0.85)', borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
       {/* Section Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.4rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <div style={{ width: '45px', height: '45px', borderRadius: '14px', background: 'linear-gradient(135deg, #ef4444 0%, #f43f5e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)' }}>
+          <div style={{ width: '45px', height: '45px', borderRadius: '14px', background: 'linear-gradient(135deg, #ef4444 0%, #f43f5e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)', flexShrink: 0 }}>
             📍
           </div>
           <div>
-            <h3 className="dash-card-title" style={{ fontSize: '1.4rem', fontWeight: 900, color: '#ffffff', margin: 0 }}>
+            <h3 className="dash-card-title" style={{ fontSize: 'clamp(1.15rem, 3vw, 1.4rem)', fontWeight: 900, color: '#ffffff', margin: 0 }}>
               Live Emergency Hospitals Radar (OpenStreetMap + GPS)
             </h3>
-            <p style={{ color: '#94a3b8', fontSize: '0.88rem', margin: '0.2rem 0 0 0' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: '0.2rem 0 0 0' }}>
               Real-time Overpass API location query, live hospital distance, and 24x7 emergency contacts.
             </p>
           </div>
@@ -224,9 +224,9 @@ export default function NearbyHospitalsMap() {
             background: 'linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%)',
             color: '#ffffff',
             border: 'none',
-            padding: '0.7rem 1.4rem',
+            padding: '0.65rem 1.2rem',
             borderRadius: '14px',
-            fontSize: '0.88rem',
+            fontSize: '0.85rem',
             fontWeight: 800,
             cursor: 'pointer',
             display: 'flex',
@@ -246,7 +246,7 @@ export default function NearbyHospitalsMap() {
       )}
 
       {/* Main Map + Real Hospital Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.6rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.4rem' }}>
         {/* Real Interactive Leaflet Map Container */}
         <div
           ref={mapContainerRef}

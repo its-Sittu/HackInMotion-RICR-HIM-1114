@@ -258,28 +258,32 @@
 /* ── OTP Box Container ───────────────────────────────────── */
 .otp-boxes,
 .auth-otp-grid {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 1.2rem 0 1.5rem;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-width: 360px;
+  margin: 1.2rem auto 1.5rem auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 .otp-box,
 .auth-otp-input {
-  width: 48px;
-  height: 56px;
+  width: 100%;
+  max-width: 48px;
+  height: 52px;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #f8fafc;
   background: rgba(255, 255, 255, 0.07);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
+  border-radius: 12px;
   outline: none;
   font-family: inherit;
   transition: all 0.2s ease;
   caret-color: #06b6d4;
   box-sizing: border-box;
+  padding: 0;
 }
 .otp-box:focus,
 .auth-otp-input:focus {
@@ -413,8 +417,24 @@
 
 @media (max-width: 480px) {
   .auth-card {
-    padding: 2rem 1.5rem;
-    margin: 1rem;
+    padding: 1.75rem 1.15rem;
+    margin: 0.85rem;
     border-radius: 22px;
+  }
+  .auth-title {
+    font-size: 1.45rem;
+  }
+  .auth-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.4rem;
+  }
+  .auth-otp-grid {
+    gap: 5px;
+    max-width: 100%;
+  }
+  .auth-otp-input {
+    height: 48px;
+    font-size: 1.25rem;
+    border-radius: 10px;
   }
 }

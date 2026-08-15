@@ -230,7 +230,7 @@ export default function DrugInteractionChecker() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '960px' }}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: showThird ? 'repeat(3, 1fr)' : '1fr 1fr',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
               gap: '1rem',
               alignItems: 'start'
             }}>

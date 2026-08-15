@@ -956,8 +956,8 @@ export default function MedicineSearch() {
           {!loading && filteredMedicines.length > 0 && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-              gap: '1.5rem',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.25rem',
               alignItems: 'stretch'
             }}>
               {filteredMedicines.map((med) => {

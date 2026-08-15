@@ -516,11 +516,11 @@ html, body {
 /* ─── Responsive Adjustments ────────────────────────────────── */
 @media (max-width: 992px) {
   .medisafe-navbar {
-    padding: 0 1.8rem;
+    padding: 0 1.5rem;
   }
 
   .medisafe-section {
-    padding: 90px 1.8rem 40px 1.8rem;
+    padding: 85px 1.5rem 40px 1.5rem;
     align-items: flex-start;
   }
 
@@ -534,5 +534,56 @@ html, body {
 
   .medisafe-nav-menu {
     display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .medisafe-navbar {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .medisafe-brand-name {
+    font-size: 1.15rem;
+  }
+
+  .medisafe-section {
+    padding: 75px 1rem 30px 1rem;
+  }
+
+  .hero-main-heading {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .hero-description {
+    font-size: 0.95rem !important;
+  }
+
+  .hero-actions-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .btn-primary-action,
+  .btn-secondary-action {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .capabilities-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .final-cta-box {
+    padding: 2rem 1.4rem !important;
+    border-radius: 24px !important;
+  }
+
+  .final-cta-heading {
+    font-size: 1.7rem !important;
   }
 }

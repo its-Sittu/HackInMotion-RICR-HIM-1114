@@ -240,8 +240,8 @@ export default function DashboardPage() {
                     ⚡
                   </div>
                   <div className="dash-appointment-details">
-                    <h4 style={{ color: '#0f172a', fontWeight: 800 }}>FDA & Gemini Clinical Safety Engine</h4>
-                    <p className="dash-doc-spec" style={{ color: '#64748b' }}>Instant Active Compound & Overdose Risk Scanner</p>
+                    <h4 style={{ fontWeight: 800 }}>FDA & Gemini Clinical Safety Engine</h4>
+                    <p className="dash-doc-spec">Instant Active Compound & Overdose Risk Scanner</p>
 
                     <div className="dash-appt-meta-grid" style={{ marginTop: '0.6rem' }}>
                       <div className="dash-appt-meta-item">
@@ -252,7 +252,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    <p className="dash-appt-loc" style={{ marginTop: '0.5rem', color: '#475569' }}>
+                    <p className="dash-appt-loc" style={{ marginTop: '0.5rem' }}>
                       Check if Paracetamol, Ibuprofen, or prescription medicines are safe to take together.
                     </p>
                   </div>

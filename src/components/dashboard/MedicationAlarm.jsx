@@ -690,7 +690,7 @@ export default function MedicationAlarm() {
             </div>
 
             {/* Right Controls: Alarm Time Badge & Modify Button */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
               {/* Alarm Time Badge */}
               <button
                 type="button"

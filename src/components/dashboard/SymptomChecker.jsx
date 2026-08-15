@@ -193,8 +193,8 @@ export default function SymptomChecker() {
       {/* ── MAIN 2-COLUMN LAYOUT ────────────────────────────────────────── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(340px, 390px) 1fr',
-        gap: '1.6rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '1.4rem',
         marginBottom: '1.8rem',
         alignItems: 'start'
       }}>
