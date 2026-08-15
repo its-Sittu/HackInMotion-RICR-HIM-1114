@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
+import { getApiUrl } from '../../utils/apiConfig'
 
 const POPULAR_INTERACTIONS = [
   { drug1: 'Dolo 650', drug2: 'Combiflam', label: '⚡ Dolo 650 + Combiflam' },
@@ -27,7 +28,7 @@ export default function DrugInteractionChecker() {
     setResult(null)
 
     try {
-      const res = await fetch('/api/medicines/check-interaction', {
+      const res = await fetch(getApiUrl('/api/medicines/check-interaction'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

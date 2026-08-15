@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
+import { getApiUrl } from '../../utils/apiConfig'
 
 const CATEGORIES = [
   { id: 'All', label: '🌐 All Medicines' },
@@ -300,7 +301,7 @@ export default function MedicineSearch() {
   const fetchMedicines = useCallback(async (q) => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/medicines/search?q=${encodeURIComponent(q)}`)
+      const res = await fetch(getApiUrl(`/api/medicines/search?q=${encodeURIComponent(q)}`))
       const data = await res.json()
       if (data.success && data.medicines && data.medicines.length > 0) {
         setMedicines(data.medicines)
@@ -351,7 +352,7 @@ export default function MedicineSearch() {
     setAiLoading(true)
     setAiResponse(null)
     try {
-      const res = await fetch('/api/medicines/ai-consult', {
+      const res = await fetch(getApiUrl('/api/medicines/ai-consult'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: textToAsk.trim() })

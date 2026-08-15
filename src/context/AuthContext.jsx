@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { getApiUrl } from '../utils/apiConfig'
 
 const AuthContext = createContext(null)
 
@@ -27,7 +28,7 @@ export function AuthProvider({ children }) {
 
     const validateToken = async () => {
       try {
-        const res = await fetch('/api/auth/me', {
+        const res = await fetch(getApiUrl('/api/auth/me'), {
           headers: { Authorization: `Bearer ${token}` }
         })
         const data = await res.json()
@@ -71,7 +72,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(async () => {
     if (token && !token.includes('guest')) {
       try {
-        await fetch('/api/auth/logout', {
+        await fetch(getApiUrl('/api/auth/logout'), {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` }
         })

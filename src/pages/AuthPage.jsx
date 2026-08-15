@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../utils/apiConfig'
 import '../styles/auth.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const api = async (path, body) => {
   try {
-    const res = await fetch(`/api/auth${path}`, {
+    const res = await fetch(getApiUrl(`/api/auth${path}`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)

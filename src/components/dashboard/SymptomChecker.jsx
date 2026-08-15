@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
+import { getApiUrl } from '../../utils/apiConfig'
 
 // Body parts definition for SVG Interactive Mannequin
 const BODY_PARTS_CONFIG = {
@@ -123,7 +124,7 @@ export default function SymptomChecker() {
     setAnalysisResult(null)
 
     try {
-      const res = await fetch('/api/medicines/analyze-symptoms', {
+      const res = await fetch(getApiUrl('/api/medicines/analyze-symptoms'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
