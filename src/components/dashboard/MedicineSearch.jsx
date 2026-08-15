@@ -352,11 +352,21 @@ export default function MedicineSearch() {
     setAiLoading(true)
     setAiResponse(null)
     try {
-      const res = await fetch(getApiUrl('/api/medicines/ai-consult'), {
+      let res = await fetch(getApiUrl('/api/medicines/ai-consult'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: textToAsk.trim() })
       })
+
+      // Secondary Fail-Safe Attempt if primary endpoint returns non-OK status
+      if (!res.ok) {
+        res = await fetch('https://pulsemed-backend.onrender.com/api/medicines/ai-consult', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: textToAsk.trim() })
+        })
+      }
+
       const data = await res.json()
       if (data.success) {
         setAiResponse(data)
@@ -369,15 +379,35 @@ export default function MedicineSearch() {
           statusBg: '#f3e8ff',
           statusColor: '#7e22ce',
           summary: `Asked Gemini AI: "${textToAsk.trim()}"`,
-          doctorNote: `AI Search Provider: ${data.provider || 'Google Gemini 3.5 Flash Medical Search'}`,
+          doctorNote: `AI Search Provider: ${data.provider || 'Google Gemini AI Medical Assistant'}`,
           details: [
             `Question Prompt: "${textToAsk.trim()}"`,
             `Provider Engine: ${data.provider || 'Google Gemini AI'}`,
             `Query Processed: Real Medical Database & Clinical Search`
           ]
         })
+      } else {
+        setAiResponse({
+          success: false,
+          answer: data.message || 'Unable to retrieve AI response. Please try again.'
+        })
       }
     } catch {
+      // Direct Fallback Call to Live Render Backend
+      try {
+        const fallbackRes = await fetch('https://pulsemed-backend.onrender.com/api/medicines/ai-consult', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: textToAsk.trim() })
+        })
+        const fallbackData = await fallbackRes.json()
+        if (fallbackData.success) {
+          setAiResponse(fallbackData)
+          return
+        }
+      } catch {
+        // Ignored
+      }
       setAiResponse({
         success: false,
         answer: 'Failed to connect to AI Assistant. Please check your network connection.'

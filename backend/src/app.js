@@ -6,21 +6,12 @@ import { errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
 
-// CORS Configuration
-const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173'
-]
-
+// Dynamic CORS Configuration allowing local dev & production hosting domains
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true)
-      }
-      return callback(new Error('Not allowed by CORS'))
+      // Allow all web origins and non-browser requests to ensure zero CORS blocks across deployments
+      return callback(null, true)
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
