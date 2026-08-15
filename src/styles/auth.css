@@ -256,29 +256,42 @@
 .strength-label.strong { color: #10b981; }
 
 /* ── OTP Box Container ───────────────────────────────────── */
-.otp-boxes {
+.otp-boxes,
+.auth-otp-grid {
   display: flex;
   gap: 10px;
   justify-content: center;
-  margin: 1.5rem 0;
+  margin: 1.2rem 0 1.5rem;
+  flex-wrap: nowrap;
 }
-.otp-box {
+.otp-box,
+.auth-otp-input {
   width: 48px;
-  height: 54px;
+  height: 56px;
   text-align: center;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #f8fafc;
-  background: rgba(255, 255, 255, 0.06);
-  border: none;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   outline: none;
   font-family: inherit;
   transition: all 0.2s ease;
+  caret-color: #06b6d4;
+  box-sizing: border-box;
 }
-.otp-box:focus {
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.5);
+.otp-box:focus,
+.auth-otp-input:focus {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+  color: #ffffff;
+}
+.auth-otp-input.filled {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.5);
+  color: #ffffff;
 }
 
 /* ── Buttons ────────────────────────────────────────────── */

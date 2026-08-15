@@ -137,7 +137,7 @@ const sendWithEmailJS = async (phoneOrEmail, otp) => {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Origin': process.env.FRONTEND_URL || 'http://localhost:5173'
+        'Origin': process.env.EMAILJS_ORIGIN || process.env.FRONTEND_URL || 'https://pulsemed-backend.onrender.com'
       },
       body: JSON.stringify({
         service_id: serviceId,
