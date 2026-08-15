@@ -39,7 +39,7 @@ export default function UserProfile() {
     <div style={{ width: '100%', padding: '0.5rem 0', animation: 'auth-card-in 0.4s ease', boxSizing: 'border-box' }}>
       {/* Full-Width Wide Landscape Card Container */}
       <div
-        className="auth-card"
+        className="dash-settings-card"
         style={{
           width: '100%',
           maxWidth: '100%',
