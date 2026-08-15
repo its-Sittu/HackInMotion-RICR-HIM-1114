@@ -101,14 +101,17 @@ export const sendOtpHandler = async (req, res, next) => {
       await user.save()
     }
 
-    // Dispatch OTP dispatch asynchronously so browser gets instant response
+    // For email: try server-side send but also return OTP so browser can send via EmailJS
+    const isEmail = normalized.includes('@')
     sendOtp(normalized, otp).catch(err => {
       console.warn('[OTP Dispatch Background Warning]:', err.message)
     })
 
     return res.status(200).json({
       success: true,
-      message: 'OTP sent successfully. It expires in 5 minutes.'
+      message: 'OTP sent successfully. It expires in 5 minutes.',
+      // Return OTP for email users so browser can send via EmailJS (more reliable)
+      ...(isEmail && { otp })
     })
   } catch (err) {
     next(err)

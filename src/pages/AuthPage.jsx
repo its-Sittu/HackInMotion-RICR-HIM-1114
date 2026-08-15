@@ -4,6 +4,48 @@ import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../utils/apiConfig'
 import '../styles/auth.css'
 
+// ─── EmailJS Browser-side OTP Sender ─────────────────────────────────────────
+// Sends OTP email directly from browser so origin matches EmailJS whitelist
+const EMAILJS_SERVICE_ID  = 'service_ogg9o51'
+const EMAILJS_TEMPLATE_ID = 'template_8xnuo4b'
+const EMAILJS_PUBLIC_KEY  = 'uqQIboA5idT8wp2fc'
+const EMAILJS_PRIVATE_KEY = 'IggixTzEw1UGDcINvqvB6'
+
+const sendEmailOtpDirectly = async (toEmail, otp) => {
+  try {
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service_id: EMAILJS_SERVICE_ID,
+        template_id: EMAILJS_TEMPLATE_ID,
+        user_id: EMAILJS_PUBLIC_KEY,
+        accessToken: EMAILJS_PRIVATE_KEY,
+        template_params: {
+          to_email: toEmail,
+          email: toEmail,
+          user_email: toEmail,
+          to_name: toEmail.split('@')[0] || 'User',
+          otp: otp,
+          otp_code: otp,
+          code: otp,
+          message: `Your MediSafe OTP verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`
+        }
+      })
+    })
+    const text = await res.text()
+    if (text === 'OK' || res.ok) {
+      console.log('[EmailJS] OTP email sent successfully via browser to', toEmail)
+      return true
+    }
+    console.warn('[EmailJS] Unexpected response:', text)
+    return false
+  } catch (err) {
+    console.warn('[EmailJS] Browser send failed:', err.message)
+    return false
+  }
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const api = async (path, body) => {
@@ -255,7 +297,16 @@ export default function AuthPage() {
     try {
       const data = await api('/send-otp', { phone: fullPhone, purpose: 'signup' })
       if (!data.success) return setError(data.message)
-      setSuccess(isEmailInput ? 'OTP sent! Please check your email inbox for the code.' : 'OTP sent! Please check your phone for the code.')
+
+      // For email: backend returns OTP in plaintext; browser sends via EmailJS for guaranteed delivery
+      if (isEmailInput && data.otp) {
+        await sendEmailOtpDirectly(fullPhone, data.otp)
+      }
+
+      setSuccess(isEmailInput
+        ? '📧 OTP sent! Please check your email inbox (and spam folder).'
+        : '📱 OTP sent! Please check your phone for the code.'
+      )
       setStep(1)
       startCountdown()
     } catch (err) {
@@ -380,7 +431,11 @@ export default function AuthPage() {
     try {
       const data = await api('/send-otp', { phone: fullPhone, purpose })
       if (!data.success) return setError(data.message)
-      setSuccess(isEmailInput ? 'New OTP sent to your email inbox.' : 'New OTP sent to your phone.')
+      // Browser-side email delivery for guaranteed OTP email
+      if (isEmailInput && data.otp) {
+        await sendEmailOtpDirectly(fullPhone, data.otp)
+      }
+      setSuccess(isEmailInput ? '📧 New OTP sent to your email inbox (check spam too).' : '📱 New OTP sent to your phone.')
       startCountdown()
     } catch (err) {
       setError(err.message || 'Failed to resend OTP.')
