@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken'
 
+const FALLBACK_SECRET = 'mediguard_prod_secret_HackInMotion_RICR_HIM_2026'
+
 const getSecret = () => {
-  const secret = process.env.JWT_SECRET
-  if (!secret) {
-    throw new Error('JWT_SECRET is not defined in environment variables.')
+  const secret = process.env.JWT_SECRET || FALLBACK_SECRET
+  if (!process.env.JWT_SECRET) {
+    console.warn('[JWT] WARNING: JWT_SECRET env var not set — using fallback secret. Set JWT_SECRET in production!')
   }
   return secret
 }

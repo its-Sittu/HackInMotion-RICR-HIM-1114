@@ -11,3 +11,27 @@ services:
         value: production
       - key: PORT
         value: 5000
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_URL
+        value: https://hack-in-motion-ricr-him-1114.vercel.app
+      - key: EMAILJS_SERVICE_ID
+        value: service_ogg9o51
+      - key: EMAILJS_PUBLIC_KEY
+        value: uqQIboA5idT8wp2fc
+      - key: EMAILJS_TEMPLATE_ID
+        value: template_8xnuo4b
+      - key: EMAILJS_PRIVATE_KEY
+        sync: false
+      - key: EMAILJS_ORIGIN
+        value: https://pulsemed-backend.onrender.com
+      - key: FAST2SMS_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DRUG_INTERACTION_API_KEY
+        sync: false
