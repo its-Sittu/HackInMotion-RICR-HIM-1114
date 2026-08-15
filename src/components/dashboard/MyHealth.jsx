@@ -154,10 +154,10 @@ export default function MyHealth() {
       {/* ── ULTRA-EXECUTIVE HERO BANNER ───────────────────────────────────── */}
       <div style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        borderRadius: '22px',
-        padding: '1.8rem 2rem',
-        marginBottom: '1.6rem',
         color: '#ffffff',
+        padding: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+        marginBottom: '1.4rem',
+        borderRadius: '24px',
         boxShadow: '0 20px 50px -15px rgba(15, 23, 42, 0.6)',
         position: 'relative',
         overflow: 'hidden',
@@ -171,31 +171,30 @@ export default function MyHealth() {
         }} />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
               <div style={{
                 background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                width: '50px',
-                height: '50px',
-                borderRadius: '16px',
+                width: '46px',
+                height: '46px',
+                borderRadius: '14px',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
-                fontSize: '1.45rem',
+                justifyContent: 'center',
+                fontSize: '1.4rem',
                 boxShadow: '0 8px 20px rgba(99, 102, 241, 0.35)',
-                flexShrink: 0,
-                marginTop: '0.1rem'
+                flexShrink: 0
               }}>
                 📅
               </div>
 
               <div>
-                <span style={{ color: '#818cf8', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>
+                <span style={{ color: '#818cf8', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '0.15rem' }}>
                   Interactive Patient Health Calendar
                 </span>
 
                 <h1 style={{
-                  fontSize: '1.7rem',
+                  fontSize: 'clamp(1.25rem, 3.5vw, 1.7rem)',
                   fontWeight: 800,
                   margin: 0,
                   letterSpacing: '-0.5px',
@@ -209,20 +208,20 @@ export default function MyHealth() {
             </div>
 
             {/* Quick Stats Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <div style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: '14px',
-                padding: '0.5rem 0.85rem',
+                padding: '0.45rem 0.75rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.55rem'
+                gap: '0.5rem'
               }}>
-                <span style={{ fontSize: '1.1rem' }}>💊</span>
+                <span style={{ fontSize: '1rem' }}>💊</span>
                 <div>
-                  <span style={{ fontSize: '0.68rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Adherence Rate</span>
-                  <strong style={{ fontSize: '0.84rem', color: '#34d399', fontWeight: 800 }}>{adherenceRate}% Excellent</strong>
+                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Adherence Rate</span>
+                  <strong style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 800 }}>{adherenceRate}% Excellent</strong>
                 </div>
               </div>
 
@@ -230,31 +229,31 @@ export default function MyHealth() {
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: '14px',
-                padding: '0.5rem 0.85rem',
+                padding: '0.45rem 0.75rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.55rem'
+                gap: '0.5rem'
               }}>
-                <span style={{ fontSize: '1.1rem' }}>🔥</span>
+                <span style={{ fontSize: '1rem' }}>🔥</span>
                 <div>
-                  <span style={{ fontSize: '0.68rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Total Days Marked</span>
-                  <strong style={{ fontSize: '0.84rem', color: '#f8fafc', fontWeight: 800 }}>{totalMarkedCount} Days</strong>
+                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Total Days</span>
+                  <strong style={{ fontSize: '0.82rem', color: '#f8fafc', fontWeight: 800 }}>{totalMarkedCount} Days</strong>
                 </div>
               </div>
             </div>
           </div>
 
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0, maxWidth: '780px', lineHeight: 1.5 }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.86rem', margin: 0, maxWidth: '780px', lineHeight: 1.5 }}>
             Click on any date to mark medication intake (Dose Taken 💊, Missed ⚠️, Lab Checkup 🩺) or add personal health notes. Click again to easily remove or update markings.
           </p>
         </div>
       </div>
 
-      {/* ── 2-COLUMN LAYOUT: SLEEK COMPACT WIDGET CALENDAR ON LEFT ───────────── */}
+      {/* ── 2-COLUMN LAYOUT: RESPONSIVE WIDGET CALENDAR & MEDICATION ALARM ───────────── */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(350px, 410px) 1fr',
-        gap: '1.6rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+        gap: '1.4rem',
         alignItems: 'start',
         width: '100%',
         boxSizing: 'border-box'

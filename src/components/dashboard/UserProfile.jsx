@@ -55,52 +55,20 @@ export default function UserProfile() {
           overflow: 'hidden'
         }}
       >
-        {/* Top Header Row with Title & Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1.2rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1.2rem' }}>
+        {/* Top Header Row with Title */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.8rem', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1.2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', boxShadow: '0 0 20px rgba(244, 63, 94, 0.35)' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '15px', background: 'linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', boxShadow: '0 0 20px rgba(244, 63, 94, 0.35)', flexShrink: 0 }}>
               👤
             </div>
             <div>
-              <h1 className="auth-title" style={{ fontSize: '1.8rem', fontWeight: 900, margin: 0, color: '#ffffff' }}>
+              <h1 className="auth-title" style={{ fontSize: 'clamp(1.3rem, 3.5vw, 1.75rem)', fontWeight: 900, margin: 0, color: '#ffffff' }}>
                 Edit Profile
               </h1>
-              <p style={{ color: '#94a3b8', margin: '0.2rem 0 0 0', fontSize: '0.9rem' }}>
+              <p style={{ color: '#94a3b8', margin: '0.2rem 0 0 0', fontSize: '0.86rem' }}>
                 Manage your personal identity, contact email, and core health details.
               </p>
             </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => setShowPasswordModal(true)}
-              style={{
-                padding: '0.75rem 1.4rem',
-                background: 'linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '14px',
-                fontSize: '0.9rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 4px 15px rgba(3, 105, 161, 0.35)'
-              }}
-            >
-              Change Password 🔒
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSave}
-              className="btn-auth-primary"
-              style={{ padding: '0.75rem 1.6rem', borderRadius: '14px', fontSize: '0.9rem', width: 'auto', marginTop: 0 }}
-            >
-              Save Profile 💾
-            </button>
           </div>
         </div>
 
@@ -111,7 +79,7 @@ export default function UserProfile() {
         )}
 
         {/* Clean Form Grid Layout */}
-        <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.6rem', width: '100%', boxSizing: 'border-box' }}>
+        <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.4rem', width: '100%', boxSizing: 'border-box' }}>
           {/* First Name */}
           <div className="auth-form-group" style={{ marginBottom: 0 }}>
             <label className="auth-label" htmlFor="firstName">First Name</label>
@@ -240,6 +208,57 @@ export default function UserProfile() {
               <option value="B-">B-</option>
               <option value="AB+">AB+</option>
             </select>
+          </div>
+
+          {/* Bottom Action Buttons Row */}
+          <div style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: '0.85rem',
+            marginTop: '0.8rem',
+            paddingTop: '1.4rem',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            flexWrap: 'wrap'
+          }}>
+            <button
+              type="button"
+              onClick={() => setShowPasswordModal(true)}
+              style={{
+                padding: '0.75rem 1.4rem',
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '14px',
+                fontSize: '0.88rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 4px 15px rgba(3, 105, 161, 0.35)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Change Password 🔒
+            </button>
+
+            <button
+              type="submit"
+              className="btn-auth-primary"
+              style={{
+                padding: '0.75rem 1.8rem',
+                borderRadius: '14px',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                width: 'auto',
+                marginTop: 0,
+                cursor: 'pointer'
+              }}
+            >
+              Save Profile 💾
+            </button>
           </div>
         </form>
 

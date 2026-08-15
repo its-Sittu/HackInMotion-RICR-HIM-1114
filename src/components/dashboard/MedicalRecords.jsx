@@ -160,9 +160,9 @@ export default function MedicalRecords() {
       {/* ── ULTRA-EXECUTIVE HERO BANNER ───────────────────────────────────── */}
       <div style={{
         background: 'linear-gradient(135deg, #090d16 0%, #111827 40%, #1e1b4b 100%)',
-        borderRadius: '22px',
-        padding: '1.8rem 2rem',
-        marginBottom: '1.6rem',
+        borderRadius: '24px',
+        padding: 'clamp(1.1rem, 3.5vw, 1.8rem)',
+        marginBottom: '1.4rem',
         color: '#ffffff',
         boxShadow: '0 20px 50px -15px rgba(15, 23, 42, 0.6)',
         position: 'relative',
@@ -177,41 +177,40 @@ export default function MedicalRecords() {
         }} />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
               <div style={{
                 background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                width: '50px',
-                height: '50px',
-                borderRadius: '16px',
+                width: '46px',
+                height: '46px',
+                borderRadius: '14px',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
-                fontSize: '1.45rem',
+                justifyContent: 'center',
+                fontSize: '1.4rem',
                 boxShadow: '0 8px 20px rgba(99, 102, 241, 0.35)',
-                flexShrink: 0,
-                marginTop: '0.1rem'
+                flexShrink: 0
               }}>
                 📂
               </div>
 
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.3rem' }}>
-                  <span style={{ color: '#818cf8', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase' }}>
-                    Patient Health Vault & Timeline
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.15rem' }}>
+                  <span style={{ color: '#818cf8', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    Patient Health Vault
                   </span>
 
                   <span style={{
                     backgroundColor: 'rgba(16, 185, 129, 0.15)',
                     color: '#34d399',
                     border: '1px solid rgba(52, 211, 153, 0.35)',
-                    padding: '0.18rem 0.6rem',
+                    padding: '0.15rem 0.5rem',
                     borderRadius: '20px',
-                    fontSize: '0.68rem',
+                    fontSize: '0.65rem',
                     fontWeight: 800,
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.35rem'
+                    gap: '0.3rem'
                   }}>
                     <span style={{ width: '6px', height: '6px', backgroundColor: '#34d399', borderRadius: '50%', display: 'inline-block', animation: 'pulseDot 1.8s infinite' }} />
                     HEALTH SYNC ACTIVE
@@ -219,7 +218,7 @@ export default function MedicalRecords() {
                 </div>
 
                 <h1 style={{
-                  fontSize: '1.7rem',
+                  fontSize: 'clamp(1.25rem, 3.5vw, 1.7rem)',
                   fontWeight: 800,
                   margin: 0,
                   letterSpacing: '-0.5px',
@@ -227,7 +226,7 @@ export default function MedicalRecords() {
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
                 }}>
-                  Structured Medical Records & Activity History
+                  Structured Medical Records &amp; Activity History
                 </h1>
               </div>
             </div>
