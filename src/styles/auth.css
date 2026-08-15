@@ -169,11 +169,16 @@
   margin-bottom: 0.55rem;
 }
 
+/* ── Input Wrap & Inner Eye Toggle Button ────────────────── */
+.auth-input-wrap,
 .auth-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .auth-input-icon {
   position: absolute;
   left: 14px;
@@ -181,14 +186,16 @@
   pointer-events: none;
   display: flex;
   align-items: center;
+  z-index: 2;
 }
+
 .auth-input {
   width: 100%;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.06);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 0.85rem 1rem 0.85rem 2.6rem;
+  padding: 0.85rem 2.8rem 0.85rem 2.6rem;
   font-size: 0.95rem;
   font-family: inherit;
   color: #f8fafc;
@@ -200,27 +207,34 @@
 }
 .auth-input:focus {
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.45);
-}
-.auth-input.has-eye {
-  padding-right: 2.8rem;
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
 }
 
+.auth-pw-toggle,
 .auth-eye-btn {
   position: absolute;
   right: 12px;
-  background: none;
-  border: none;
-  color: #64748b;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  color: #94a3b8 !important;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   display: flex;
   align-items: center;
-  border-radius: 6px;
-  transition: color 0.15s ease;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  z-index: 5;
+  box-shadow: none !important;
+  outline: none;
 }
+.auth-pw-toggle:hover,
 .auth-eye-btn:hover {
-  color: #cbd5e1;
+  color: #38bdf8 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ── Password Strength Bar ───────────────────────────────── */
@@ -298,13 +312,14 @@
   color: #ffffff;
 }
 
-/* ── Buttons ────────────────────────────────────────────── */
+/* ── Primary Action Buttons (Sign In, Send OTP, Complete) ── */
+.auth-btn-primary,
 .btn-auth-primary {
   width: 100%;
-  padding: 0.95rem 1.5rem;
-  background: linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%);
-  color: #ffffff;
-  border: none;
+  padding: 0.9rem 1.5rem;
+  background: linear-gradient(135deg, #f43f5e 0%, #06b6d4 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
   border-radius: 16px;
   font-size: 1rem;
   font-weight: 800;
@@ -314,28 +329,33 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 0 28px rgba(244, 63, 94, 0.4);
+  box-shadow: 0 4px 25px rgba(244, 63, 94, 0.4) !important;
   transition: all 0.25s ease;
   margin-top: 0.5rem;
+  box-sizing: border-box;
 }
+.auth-btn-primary:hover:not(:disabled),
 .btn-auth-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 0 38px rgba(6, 182, 212, 0.6);
+  box-shadow: 0 6px 32px rgba(6, 182, 212, 0.55) !important;
 }
+.auth-btn-primary:disabled,
 .btn-auth-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
+/* ── Secondary / Guest Button ── */
+.auth-btn-secondary,
 .btn-auth-guest {
   width: 100%;
-  padding: 0.85rem 1.5rem;
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-  border: none;
+  padding: 0.82rem 1.5rem;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 16px;
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 0.92rem;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   display: flex;
@@ -344,19 +364,24 @@
   gap: 8px;
   backdrop-filter: blur(12px);
   transition: all 0.25s ease;
-  margin-top: 0.8rem;
+  margin-top: 0.4rem;
+  box-sizing: border-box;
 }
+.auth-btn-secondary:hover,
 .btn-auth-guest:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
 }
 
 /* ── Divider ────────────────────────────────────────────── */
 .auth-divider {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
-  margin: 1.5rem 0;
+  margin: 1.2rem 0;
   color: #64748b;
   font-size: 0.78rem;
   font-weight: 800;
@@ -371,35 +396,44 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ── Link Actions ───────────────────────────────────────── */
-.auth-forgot-link {
-  display: block;
-  text-align: right;
+/* ── Interactive Inline Link Buttons (Forgot password & Create account) ── */
+.auth-link,
+.auth-forgot-link,
+.auth-footer-link {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: inherit;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #38bdf8 !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
   text-decoration: none;
-  margin-top: 0.5rem;
-  transition: color 0.2s ease;
+  box-shadow: none !important;
+  outline: none;
 }
-.auth-forgot-link:hover {
-  color: #818cf8;
+.auth-link:hover,
+.auth-forgot-link:hover,
+.auth-footer-link:hover {
+  color: #818cf8 !important;
+  text-decoration: underline;
+  transform: translateY(-1px);
 }
 
+.auth-footer,
 .auth-footer-text {
   text-align: center;
   font-size: 0.88rem;
   color: #94a3b8;
-  margin-top: 1.8rem;
-}
-.auth-footer-link {
-  color: #38bdf8;
-  font-weight: 800;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.auth-footer-link:hover {
-  color: #818cf8;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 /* ── Spinner ────────────────────────────────────────────── */
