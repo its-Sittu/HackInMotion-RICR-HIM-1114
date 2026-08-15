@@ -208,7 +208,7 @@ export default function CurrentMedicines() {
             🎯
           </div>
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>Today's Dosage Adherence</span>
+            <span style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700, display: 'block' }}>Today&apos;s Dosage Adherence</span>
             <strong style={{ fontSize: '1rem', color: '#f8fafc', fontWeight: 900 }}>{takenCount} of {medicines.length} Doses Taken ({adherenceRate}%)</strong>
           </div>
         </div>

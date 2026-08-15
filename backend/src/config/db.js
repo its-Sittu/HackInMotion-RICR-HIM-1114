@@ -1,6 +1,4 @@
 import mongoose from 'mongoose'
-import path from 'path'
-import fs from 'fs'
 
 /**
  * Connects to MongoDB using MONGODB_URI.
