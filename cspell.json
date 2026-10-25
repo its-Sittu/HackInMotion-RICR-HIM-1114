@@ -211,7 +211,20 @@
     "Kumari",
     "Amit",
     "OPENSTRMAP",
-    "schs"
+    "schs",
+    "Pharmx",
+    "pharmx",
+    "PHARMX",
+    "mediguard",
+    "paracitamol",
+    "combiflamm",
+    "aspirnn",
+    "azithromicin",
+    "pantocidd",
+    "Atorva",
+    "notif",
+    "Iggix",
+    "Nvqv"
   ],
   "ignorePaths": [
     "**/node_modules/**",

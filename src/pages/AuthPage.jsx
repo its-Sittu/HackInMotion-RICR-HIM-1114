@@ -29,7 +29,7 @@ const sendEmailOtpDirectly = async (toEmail, otp) => {
           otp: otp,
           otp_code: otp,
           code: otp,
-          message: `Your MediSafe OTP verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`
+          message: `Your Pharmx AI OTP verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`
         }
       })
     })
@@ -111,7 +111,7 @@ function Logo() {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       </div>
-      <span className="auth-logo-text">MEDISAFE</span>
+      <span className="auth-logo-text">PHARMX AI</span>
     </div>
   )
 }
@@ -436,7 +436,7 @@ export default function AuthPage() {
     // Safe client fallback if server cold start
     const fallbackUser = {
       _id: 'guest_user_id',
-      phone: 'guest@pulsemed.com',
+      phone: 'guest@pharmx.ai',
       name: 'Guest User',
       isPhoneVerified: true
     }
@@ -559,7 +559,7 @@ export default function AuthPage() {
             </svg>
           </div>
           <h2 className="auth-title">Account Created!</h2>
-          <p className="auth-subtitle">Welcome to PulseMed. Your account is ready.</p>
+          <p className="auth-subtitle">Welcome to Pharmx AI. Your account is ready.</p>
           <button id="auth-goto-dashboard-btn" className="auth-btn-primary" onClick={() => navigate(from, { replace: true })}>
             Go to Dashboard
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -604,7 +604,7 @@ export default function AuthPage() {
         {mode === 'login' && (
           <>
             <h2 className="auth-title">Welcome back</h2>
-            <p className="auth-subtitle">Sign in to your MediSafe account</p>
+            <p className="auth-subtitle">Sign in to your Pharmx AI account</p>
 
             <Alert type="error"   message={error} />
             <Alert type="success" message={success} />

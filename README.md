@@ -1,4 +1,4 @@
-# 🏥 MediSafe — Smart Medicine Safety &amp; Drug Interaction Assistant
+# 🏥 Pharmx AI — Smart Medicine Safety &amp; Drug Interaction Assistant
 
 [![Hackathon](https://img.shields.io/badge/HackInMotion_2026-Pre--Qualifier_Round_Zero-6366f1.svg?style=for-the-badge)](https://github.com/its-Sittu/HackInMotion-RICR-HIM-1114)
 [![React](https://img.shields.io/badge/React_19-Vite_8-06b6d4.svg?style=for-the-badge&amp;logo=react)](https://react.dev/)
@@ -14,9 +14,9 @@
 ---
 
 ## 📌 Executive Summary
-**MediSafe** is an AI-powered, clinical-grade digital health assistant designed to eliminate **Adverse Drug Events (ADEs)**, accidental overdose overlaps, and dangerous drug-drug interactions. 
+**Pharmx AI** is an AI-powered, clinical-grade digital health assistant designed to eliminate **Adverse Drug Events (ADEs)**, accidental overdose overlaps, and dangerous drug-drug interactions. 
 
-By integrating **FDA clinical guidelines**, **fuzzy-search misspelling tolerance**, **Fast2SMS mobile OTP verification**, **interactive 3D anatomical organ models**, and **geospatial emergency hospital radar**, MediSafe empowers patients and caregivers with immediate, clear, and action-oriented medication safety insights.
+By integrating **FDA clinical guidelines**, **fuzzy-search misspelling tolerance**, **Fast2SMS mobile OTP verification**, **interactive 3D anatomical organ models**, and **geospatial emergency hospital radar**, Pharmx AI empowers patients and caregivers with immediate, clear, and action-oriented medication safety insights.
 
 ---
 
@@ -43,7 +43,7 @@ By integrating **FDA clinical guidelines**, **fuzzy-search misspelling tolerance
 +-----------------------+    +-----------------------+    +-----------------------+
 ```
 
-![MediSafe System Architecture Diagram](architecture-diagram.png)
+![Pharmx AI System Architecture Diagram](architecture-diagram.png)
 
 ---
 
@@ -113,7 +113,7 @@ cd ..
 Create a `.env` file inside `backend/`:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/medisafe
+MONGODB_URI=mongodb://localhost:27017/pharmx_ai
 JWT_SECRET=<your_secure_random_jwt_secret_key>
 FAST2SMS_API_KEY=<your_fast2sms_api_key>
 GEMINI_API_KEY=<your_gemini_api_key>
@@ -129,7 +129,7 @@ cd backend
 npm run dev
 ```
 
-Open browser at `http://localhost:5173` to access MediSafe.
+Open browser at `http://localhost:5173` to access Pharmx AI.
 
 ---
 
@@ -182,4 +182,4 @@ HackInMotion-RICR-HIM-1114/
 ---
 
 ## ⚕️ Medical Disclaimer
-*MediSafe is an educational and decision-support tool. It does not replace professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition or prescription medication regime.*
+*Pharmx AI is an educational and decision-support tool. It does not replace professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition or prescription medication regime.*

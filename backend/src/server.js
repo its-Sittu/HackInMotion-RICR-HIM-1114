@@ -18,28 +18,28 @@ const startServer = async () => {
     // 2. Start Express only after DB is ready
     const server = app.listen(PORT, () => {
       console.log(
-        `PulseMed backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`
+        `Pharmx AI backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`
       )
     })
 
     // Handle unhandled promise rejections
     process.on('unhandledRejection', (err) => {
-      console.error('[MediGuard Backend] Unhandled Rejection:', err.message)
+      console.error('[Pharmx AI Backend] Unhandled Rejection:', err.message)
       server.close(() => process.exit(1))
     })
 
     // Graceful shutdown handling
     process.on('SIGTERM', () => {
-      console.log('[MediGuard Backend] SIGTERM received. Shutting down gracefully...')
+      console.log('[Pharmx AI Backend] SIGTERM received. Shutting down gracefully...')
       server.close(() => {
-        console.log('[MediGuard Backend] Process terminated')
+        console.log('[Pharmx AI Backend] Process terminated')
         process.exit(0)
       })
     })
 
     return server
   } catch (err) {
-    console.error('[MediGuard Backend] Failed to start server:', err.message)
+    console.error('[Pharmx AI Backend] Failed to start server:', err.message)
     process.exit(1)
   }
 }

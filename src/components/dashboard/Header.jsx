@@ -36,7 +36,7 @@ export default function Header() {
   const greeting = getGreetingTime()
   const displayName = getUserDisplayName(user)
   const initials = getInitials(displayName)
-  const isGuest = !user || user.phone === 'guest@medisafe.com'
+  const isGuest = !user || user.phone === 'guest@medisafe.com' || user.phone === 'guest@pharmx.ai' || user.phone === 'guest@pulsemed.com'
 
   return (
     <header className="dash-header" style={{
@@ -69,7 +69,7 @@ export default function Header() {
           margin: 0,
           fontWeight: 500
         }}>
-          Here is your MediSafe intelligent medicine safety &amp; interaction overview.
+          Here is your Pharmx AI intelligent medicine safety &amp; interaction overview.
         </p>
       </div>
 
@@ -141,7 +141,7 @@ export default function Header() {
               {displayName}
             </span>
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isGuest ? '#f59e0b' : '#6366f1', lineHeight: 1.25 }}>
-              {isGuest ? 'Guest Account' : 'PulseMed Member'}
+              {isGuest ? 'Guest Account' : 'Pharmx AI Member'}
             </span>
           </div>
         </div>

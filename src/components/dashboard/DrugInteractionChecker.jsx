@@ -590,7 +590,7 @@ export default function DrugInteractionChecker() {
           <div style={{ marginTop: '1.3rem', paddingTop: '0.85rem', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span style={{ fontSize: '0.95rem' }}>👨‍⚕️</span>
             <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontStyle: 'italic' }}>
-              PulseMed Real Drug Interaction Checker uses OpenFDA clinical data and Gemini AI. Always consult your prescribing physician before changing prescribed medicine schedules.
+              Pharmx AI Real Drug Interaction Checker uses OpenFDA clinical data and Gemini AI. Always consult your prescribing physician before changing prescribed medicine schedules.
             </span>
           </div>
         </div>

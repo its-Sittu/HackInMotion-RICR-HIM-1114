@@ -293,7 +293,7 @@ export default function MedicalRecords() {
           </div>
 
           <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: '0 0 1.4rem 0', maxWidth: '760px', lineHeight: 1.5 }}>
-            Structured timeline capturing all your PulseMed interactions: drug interaction safety checks, body map symptom analyses, prescribed medicines, lab PDFs, and doctor appointments.
+            Structured timeline capturing all your Pharmx AI interactions: drug interaction safety checks, body map symptom analyses, prescribed medicines, lab PDFs, and doctor appointments.
           </p>
 
           {/* Search Input Bar */}

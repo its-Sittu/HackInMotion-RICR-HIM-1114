@@ -38,11 +38,11 @@ export default function LandingPage() {
   const handleGuestContinue = () => {
     const guestUser = {
       _id: 'guest_user_id',
-      phone: 'guest@medisafe.com',
+      phone: 'guest@pharmx.ai',
       name: 'Guest User',
       isPhoneVerified: true
     }
-    const guestToken = 'medisafe_guest_session_token'
+    const guestToken = 'pharmx_guest_session_token'
     login(guestToken, guestUser)
     navigate('/dashboard')
   }
@@ -71,7 +71,7 @@ export default function LandingPage() {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          <span className="medisafe-brand-name">MEDISAFE</span>
+          <span className="medisafe-brand-name">PHARMX AI</span>
         </div>
 
         <nav className="medisafe-nav-menu">
@@ -97,7 +97,7 @@ export default function LandingPage() {
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
             <h1 className="hero-main-heading">
-              MEDISAFE
+              PHARMX AI
             </h1>
 
             <p className="hero-tagline">
@@ -111,7 +111,7 @@ export default function LandingPage() {
             {/* Reference Image Style Pill Buttons */}
             <div className="hero-btn-row">
               <button type="button" className="btn-medisafe-primary" onClick={handleGuestContinue}>
-                <span>Explore MediSafe</span>
+                <span>Explore Pharmx AI</span>
                 <div className="btn-arrow-circle">↗</div>
               </button>
 
@@ -266,7 +266,7 @@ export default function LandingPage() {
         <section id="sec-cta" className="medisafe-section">
           <div className="final-cta-box">
             <h2 className="final-cta-heading">
-              Your medicines should help you.<br />MediSafe helps you take them safely.
+              Your medicines should help you.<br />Pharmx AI helps you take them safely.
             </h2>
 
             <div className="hero-btn-row">

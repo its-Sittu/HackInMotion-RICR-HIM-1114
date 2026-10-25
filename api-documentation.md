@@ -1,8 +1,8 @@
-# 🌐 MediSafe REST API Documentation
+# 🌐 Pharmx AI REST API Documentation
 
 **HackInMotion 2026 — Team RICR-HIM-1114**  
 **Theme:** Healthcare &amp; HealthTech  
-**Project:** MediSafe — Smart Medicine Safety &amp; Drug Interaction Assistant  
+**Project:** Pharmx AI — Smart Medicine Safety &amp; Drug Interaction Assistant  
 
 ---
 
@@ -18,14 +18,14 @@
 ---
 
 ## 1. Overview
-The MediSafe backend REST API provides secure patient authentication, real-time FDA active compound drug-drug interaction scanning, mobile Fast2SMS OTP verification, dosage adherence tracking, and geospatial emergency hospital lookup via OpenStreetMap Overpass integration.
+The Pharmx AI backend REST API provides secure patient authentication, real-time FDA active compound drug-drug interaction scanning, mobile Fast2SMS OTP verification, dosage adherence tracking, and geospatial emergency hospital lookup via OpenStreetMap Overpass integration.
 
 ---
 
 ## 2. Base URL &amp; Authentication
 
 - **Development Base URL:** `http://localhost:5000/api`
-- **Production Base URL:** `https://medisafe-api.onrender.com/api`
+- **Production Base URL:** `https://pharmx-ai-api.onrender.com/api`
 
 ### Headers:
 ```http

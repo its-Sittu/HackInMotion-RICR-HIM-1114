@@ -499,7 +499,7 @@ export default function MedicineSearch() {
                     letterSpacing: '1px',
                     textTransform: 'uppercase'
                   }}>
-                    PulseMed Safety Directory
+                    Pharmx AI Safety Directory
                   </span>
 
                   <span style={{
@@ -844,7 +844,7 @@ export default function MedicineSearch() {
               <div style={{ marginTop: '1.2rem', paddingTop: '0.8rem', borderTop: '1px solid #f3e8ff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span style={{ fontSize: '0.95rem' }}>👨‍⚕️</span>
                 <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontStyle: 'italic' }}>
-                  PulseMed AI provides educational health recommendations. Always consult a certified medical practitioner for prescription treatments.
+                  Pharmx AI provides educational health recommendations. Always consult a certified medical practitioner for prescription treatments.
                 </span>
               </div>
             </div>

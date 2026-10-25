@@ -30,8 +30,8 @@ export function saveActivityToMedicalHistory(activity) {
       status: activity.status || 'LOGGED ✅',
       statusBg: activity.statusBg || '#d1fae5',
       statusColor: activity.statusColor || '#059669',
-      summary: activity.summary || 'Health activity recorded in PulseMed system.',
-      doctorNote: activity.doctorNote || 'Logged automatically by PulseMed Activity Engine.',
+      summary: activity.summary || 'Health activity recorded in Pharmx AI system.',
+      doctorNote: activity.doctorNote || 'Logged automatically by Pharmx AI Activity Engine.',
       details: Array.isArray(activity.details) ? activity.details : [activity.summary || 'Activity recorded']
     }
 

@@ -562,7 +562,7 @@ export const aiConsultHandler = async (req, res, next) => {
     // 1. Direct Real-Time Gemini AI 3.5 Flash Search API Call
     if (geminiKey && geminiKey.trim()) {
       try {
-        const promptText = `You are PulseMed Senior Medical Diagnostic & Pharmacological AI Search Engine.
+        const promptText = `You are Pharmx AI Senior Medical Diagnostic & Pharmacological AI Search Engine.
 The patient searched for: "${q}".
 
 ${fdaData.found ? `FDA & MEDICAL DATABASE REAL DRUG RECORD:
@@ -612,7 +612,7 @@ Format your response clearly into clean, well-structured sections using exact Ma
 
     return res.status(200).json({
       success: true,
-      provider: fdaData.found ? 'PulseMed FDA & Clinical Medical Database Engine' : 'Google Gemini AI & Clinical Database Engine',
+      provider: fdaData.found ? 'Pharmx AI FDA & Clinical Medical Database Engine' : 'Google Gemini AI & Clinical Database Engine',
       query: q,
       answer
     })

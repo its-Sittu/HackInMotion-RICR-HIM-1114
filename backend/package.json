@@ -1,7 +1,7 @@
 {
-  "name": "mediguard-backend",
+  "name": "pharmx-ai-backend",
   "version": "1.0.0",
-  "description": "MediGuard - Smart Medicine Safety & Drug Interaction Backend",
+  "description": "Pharmx AI - Smart Medicine Safety & Drug Interaction Backend",
   "type": "module",
   "main": "src/server.js",
   "scripts": {

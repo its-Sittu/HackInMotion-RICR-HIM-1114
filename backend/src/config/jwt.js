@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const FALLBACK_SECRET = 'mediguard_prod_secret_HackInMotion_RICR_HIM_2026'
+const FALLBACK_SECRET = 'pharmx_prod_secret_HackInMotion_RICR_HIM_2026'
 
 const getSecret = () => {
   const secret = process.env.JWT_SECRET || FALLBACK_SECRET

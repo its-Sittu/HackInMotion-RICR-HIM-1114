@@ -98,11 +98,11 @@ const getUserDisplayName = (user) => {
     }
     return user.phone
   }
-  return 'MediSafe Member'
+  return 'Pharmx AI Member'
 }
 
 const getInitials = (name) => {
-  if (!name) return 'MS'
+  if (!name) return 'PX'
   const parts = name.trim().split(/[\s._@]+/)
   if (parts.length >= 2 && parts[1]) {
     return (parts[0][0] + parts[1][0]).toUpperCase()
@@ -128,13 +128,13 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
     <aside className={`medisafe-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
       {/* Brand Header Row */}
       <div className="sidebar-brand-row">
-        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="MediSafe Home">
+        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="Pharmx AI Home">
           <div className="brand-icon-wrapper">
             <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          {!isCollapsed && <span className="brand-name">MEDISAFE</span>}
+          {!isCollapsed && <span className="brand-name">PHARMX AI</span>}
         </div>
 
         {/* Mobile Quick Sign Out Button */}
@@ -194,7 +194,7 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
           {!isCollapsed && (
             <div className="sidebar-user-info">
               <span className="sidebar-user-name">{displayName}</span>
-              <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' ? 'Verified Member' : 'Guest Account'}</span>
+              <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' && user.phone !== 'guest@pharmx.ai' && user.phone !== 'guest@medisafe.com' ? 'Verified Member' : 'Guest Account'}</span>
             </div>
           )}
         </div>
