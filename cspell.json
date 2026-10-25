@@ -250,7 +250,11 @@
     "whatsapp",
     "WhatsApp",
     "webhook",
-    "Webhook"
+    "Webhook",
+    "QR",
+    "qr",
+    "Unlink",
+    "unlink"
   ],
   "ignorePaths": [
     "**/node_modules/**",
