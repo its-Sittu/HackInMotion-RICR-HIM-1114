@@ -16,8 +16,8 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 }
 
 export default function NearbyHospitalsMap() {
-  // Default center: New Delhi emergency healthcare center
-  const [userLocation, setUserLocation] = useState({ lat: 28.5355, lng: 77.2100 })
+  // Default center: Bhopal emergency healthcare center (MP)
+  const [userLocation, setUserLocation] = useState({ lat: 23.2599, lng: 77.4126 })
   const [hospitals, setHospitals] = useState([])
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -76,7 +76,7 @@ export default function NearbyHospitalsMap() {
     })
     const userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
       .addTo(map)
-      .bindPopup(`<b>🎯 You Are Here</b><br/>${isLiveGps ? 'Live GPS Verified' : 'Default City Location'}`)
+      .bindPopup(`<b>🎯 You Are Here</b><br/>${isLiveGps ? 'Live GPS Verified' : 'Bhopal City Center (MP)'}`)
     markersRef.current.push(userMarker)
 
     // 2. Real Hospital Pins from Overpass API
@@ -106,10 +106,12 @@ export default function NearbyHospitalsMap() {
 
   const loadFallbackHospitals = (lat, lng) => {
     const fallbackData = [
-      { id: 101, name: 'Max Super Speciality Hospital', address: 'Press Enclave Road, Saket, New Delhi', phone: '+91 11 2651 5050', lat: 28.5276, lng: 77.2131, bedsFree: 14, icuFree: 5 },
-      { id: 102, name: 'Apollo Hospital & Emergency Institute', address: 'Sarita Vihar, Mathura Road, New Delhi', phone: '+91 11 2692 5858', lat: 28.5385, lng: 77.2842, bedsFree: 22, icuFree: 8 },
-      { id: 103, name: 'Fortis Escorts Heart & Trauma Care', address: 'Okhla Road, New Delhi', phone: '+91 11 4713 5000', lat: 28.5601, lng: 77.2721, bedsFree: 19, icuFree: 4 },
-      { id: 104, name: 'AIIMS Emergency & Trauma Center', address: 'Ansari Nagar, New Delhi', phone: '+91 11 2658 8500', lat: 28.5672, lng: 77.2100, bedsFree: 35, icuFree: 12 }
+      { id: 101, name: 'AIIMS Bhopal Emergency & Trauma Centre', address: 'Saket Nagar, Habibganj, Bhopal', phone: '+91 755 267 2317', lat: 23.2066, lng: 77.4586, bedsFree: 38, icuFree: 14 },
+      { id: 102, name: 'Hamidia Hospital & GMC Trauma Unit', address: 'Royal Market, Near VIP Road, Bhopal', phone: '+91 755 254 0222', lat: 23.2625, lng: 77.3917, bedsFree: 45, icuFree: 18 },
+      { id: 103, name: 'Bansal Hospital & Multi Super Speciality', address: 'C-Sector, Shahpura, Manisha Market, Bhopal', phone: '+91 755 408 6000', lat: 23.1978, lng: 77.4328, bedsFree: 24, icuFree: 8 },
+      { id: 104, name: 'Bhopal Memorial Hospital (BMHRC)', address: 'Raisen Bypass Road, Karond, Bhopal', phone: '+91 755 274 0300', lat: 23.3082, lng: 77.4208, bedsFree: 29, icuFree: 10 },
+      { id: 105, name: 'Chirayu Medical College & Hospital', address: 'Bhopal-Indore Highway, Bairagarh, Bhopal', phone: '+91 755 667 9000', lat: 23.2690, lng: 77.3320, bedsFree: 32, icuFree: 11 },
+      { id: 106, name: 'Narmada Trauma Centre & Hospital', address: 'E-3/23, Arera Colony, Bhopal', phone: '+91 755 404 0000', lat: 23.2185, lng: 77.4300, bedsFree: 16, icuFree: 5 }
     ].map(h => ({
       ...h,
       distance: parseFloat(getDistanceFromLatLonInKm(lat, lng, h.lat, h.lng))
@@ -268,7 +270,7 @@ export default function NearbyHospitalsMap() {
               🏥 Found {hospitals.length} Real Hospitals Nearby
             </span>
             <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 700 }}>
-              {isLiveGps ? '✓ Live GPS Location Active' : radarActive ? '📍 Emergency Radar Active' : '📍 Delhi NCR Radar'}
+              {isLiveGps ? '✓ Live GPS Location Active' : radarActive ? '📍 Bhopal (MP) Emergency Radar' : '📍 Bhopal (MP) Radar'}
             </span>
           </div>
 

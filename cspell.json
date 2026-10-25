@@ -233,7 +233,20 @@
     "machli",
     "Ayurvedic",
     "Viruddha",
-    "Ahara"
+    "Ahara",
+    "Bhopal",
+    "Habibganj",
+    "BMHRC",
+    "Hamidia",
+    "Bansal",
+    "Chirayu",
+    "Bairagarh",
+    "Arera",
+    "Shahpura",
+    "Karond",
+    "Narmada",
+    "Raisen",
+    "Manisha"
   ],
   "ignorePaths": [
     "**/node_modules/**",
