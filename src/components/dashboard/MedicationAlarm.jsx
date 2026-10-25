@@ -104,7 +104,7 @@ export default function MedicationAlarm() {
   })
 
   const [activeRingingAlarm, setActiveRingingAlarm] = useState(null)
-  const [ringingTimer, setRingingTimer] = useState(60)
+  const [ringingTimer, setRingingTimer] = useState(10)
   const [familyCareSyncEnabled, setFamilyCareSyncEnabled] = useState(true)
 
   // Family WhatsApp Caregiver Contact state
@@ -138,7 +138,7 @@ export default function MedicationAlarm() {
           medicine: 'Pantocid 40mg (Pantoprazole)',
           recipient: 'Priya Sharma (+919876543210)',
           status: 'DISPATCHED',
-          trigger: 'Auto-Triggered on 60s Unanswered Timeout'
+          trigger: 'Auto-Triggered on 10s Unanswered Timeout'
         }
       ]
     } catch {
@@ -390,6 +390,7 @@ export default function MedicationAlarm() {
 
         if (isMatch) {
           if (!activeRingingAlarm || activeRingingAlarm.id !== alarm.id) {
+            setRingingTimer(10)
             setActiveRingingAlarm(alarm)
           }
         }
@@ -497,7 +498,7 @@ export default function MedicationAlarm() {
       medicine: alarm.medicine,
       recipient: `${contact.name} (${contact.phone})`,
       status: 'DELIVERED',
-      trigger: isManual ? 'Manual Caregiver SOS Button' : 'Auto 60s Ringing Timeout',
+      trigger: isManual ? 'Manual Caregiver SOS Button' : 'Auto 10s Ringing Timeout',
       gateway: `Linked Account (${gatewaySessionRef.current.linkedPhone})`
     }
 
@@ -516,7 +517,7 @@ export default function MedicationAlarm() {
         `Recipient: ${contact.name} (${contact.phone})`,
         `Medicine: ${alarm.medicine}`,
         `Gateway Session: ${gatewaySessionRef.current.sessionId} (Linked Device Active)`,
-        `Trigger: ${isManual ? 'Manual SOS Button' : '60-Sec Unanswered Ringing Timeout'}`,
+        `Trigger: ${isManual ? 'Manual SOS Button' : '10-Sec Unanswered Ringing Timeout'}`,
         `Gateway Protocol: WhatsApp Web Protocol`
       ]
     })
@@ -576,7 +577,7 @@ export default function MedicationAlarm() {
       status: 'MISSED ⚠️',
       statusBg: '#ffe4e6',
       statusColor: '#be123c',
-      summary: `1-minute alarm rang with no response for "${alarm.medicine}" (${alarm.time}). Marked as Missed.`,
+      summary: `10-second alarm rang with no response for "${alarm.medicine}" (${alarm.time}). Marked as Missed.`,
       doctorNote: `Dose missed by patient. Instruction: ${alarm.instruction}`,
       details: [
         `Medicine Missed: ${alarm.medicine}`,
@@ -665,7 +666,7 @@ export default function MedicationAlarm() {
     }
   }
 
-  // 60-Second Ringing Countdown Effect
+  // 10-Second Ringing Countdown Effect
   useEffect(() => {
     let timer = null
     if (activeRingingAlarm) {
@@ -766,6 +767,7 @@ export default function MedicationAlarm() {
 
   // Test trigger alarm sound manually
   const triggerTestAlarm = (alarm) => {
+    setRingingTimer(10)
     setActiveRingingAlarm(alarm)
   }
 
@@ -1142,9 +1144,9 @@ export default function MedicationAlarm() {
                   color: '#b45309',
                   cursor: 'pointer'
                 }}
-                title="Test alarm sound"
+                title="Test 10-second alarm"
               >
-                🔊 Test
+                🔔 Test 10s Ring
               </button>
 
               {/* Delete Icon */}
@@ -1448,7 +1450,7 @@ export default function MedicationAlarm() {
                 style={{ width: '17px', height: '17px', accentColor: '#059669', cursor: 'pointer' }}
               />
               <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
-                Auto-Dispatch WhatsApp Alert when 60s alarm expires
+                Auto-Dispatch WhatsApp Alert when 10s alarm expires
               </span>
             </label>
           </div>
@@ -1484,7 +1486,7 @@ export default function MedicationAlarm() {
 ⚠️ *URGENT:* Missed Dose Notification for Family Caregiver
 
 Dear *${familyContact.name}*,
-Patient did NOT respond to medication alarm within 60 seconds.
+Patient did NOT respond to medication alarm within 10 seconds.
 • 💊 Medicine: ${alarms[0]?.medicine || 'Prescribed Medicine'}
 • ⏰ Time: ${alarms[0]?.time || '08:00'} (Today)
 • ⚠️ Status: MISSED / UNANSWERED DOSE
@@ -2174,7 +2176,7 @@ Patient did NOT respond to medication alarm within 60 seconds.
                   ⚠️ Reason: Unanswered Medication Alarm
                 </span>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#7f1d1d', fontWeight: 600 }}>
-                  Patient did not respond within the 60-second window for <strong>{dispatchedAlertModal.alarm.medicine}</strong> ({dispatchedAlertModal.alarm.time}).
+                  Patient did not respond within the 10-second window for <strong>{dispatchedAlertModal.alarm.medicine}</strong> ({dispatchedAlertModal.alarm.time}).
                 </p>
                 <span style={{ fontSize: '0.72rem', color: '#b91c1c', display: 'block', marginTop: '0.3rem' }}>
                   Recipient: <strong>{dispatchedAlertModal.recipient}</strong>
