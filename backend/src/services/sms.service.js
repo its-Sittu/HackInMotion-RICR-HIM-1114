@@ -273,6 +273,18 @@ export const sendWhatsAppEmergencyAlert = async (phone, message) => {
   const cleanPhone = phone ? phone.replace(/\D/g, '') : ''
   const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone
 
+  // 0. Real Baileys WhatsApp Gateway (if paired via QR code)
+  try {
+    const { sendRealWhatsAppAlert } = await import('./whatsappGateway.service.js')
+    const baileysResult = await sendRealWhatsAppAlert(targetPhone, message)
+    if (baileysResult && baileysResult.success) {
+      console.log(`[Baileys WhatsApp Gateway] Dispatched real message to +${targetPhone} ✅`)
+      return baileysResult
+    }
+  } catch (baileysErr) {
+    console.warn(`[Baileys Real Gateway Note] ${baileysErr.message}`)
+  }
+
   // 1. Twilio WhatsApp (if configured)
   if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_NUMBER) {
     try {

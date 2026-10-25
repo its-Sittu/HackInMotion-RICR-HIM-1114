@@ -1,5 +1,11 @@
 import { Router } from 'express'
-import { checkHealth, sendEmergencySosHandler, sendWhatsAppSosHandler } from '../controllers/health.controller.js'
+import {
+  checkHealth,
+  sendEmergencySosHandler,
+  sendWhatsAppSosHandler,
+  getWhatsAppGatewayStatusHandler,
+  disconnectWhatsAppGatewayHandler
+} from '../controllers/health.controller.js'
 
 const router = Router()
 
@@ -24,5 +30,20 @@ router.post('/send-emergency-sos', sendEmergencySosHandler)
  */
 router.post('/send-whatsapp-sos', sendWhatsAppSosHandler)
 
+/**
+ * @route GET /api/health/whatsapp-gateway/status
+ * @desc  Stream real WhatsApp Web QR code and connection status
+ * @access Public
+ */
+router.get('/whatsapp-gateway/status', getWhatsAppGatewayStatusHandler)
+
+/**
+ * @route POST /api/health/whatsapp-gateway/disconnect
+ * @desc  Unlink active WhatsApp Web multi-device session
+ * @access Public
+ */
+router.post('/whatsapp-gateway/disconnect', disconnectWhatsAppGatewayHandler)
+
 export default router
+
 

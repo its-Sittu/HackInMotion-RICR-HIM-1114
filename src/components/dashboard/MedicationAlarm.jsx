@@ -183,6 +183,8 @@ export default function MedicationAlarm() {
   const [pairingStatus, setPairingStatus] = useState('IDLE') // 'IDLE' | 'PAIRING' | 'SUCCESS'
   const [qrCountdown, setQrCountdown] = useState(45)
   const [notConnectedWarningModal, setNotConnectedWarningModal] = useState(false)
+  const [realBackendQr, setRealBackendQr] = useState(null)
+  const [isLiveBaileysActive, setIsLiveBaileysActive] = useState(false)
   const gatewaySessionRef = useRef(gatewaySession)
 
   useEffect(() => {
@@ -417,6 +419,54 @@ export default function MedicationAlarm() {
     }
   }, [activeRingingAlarm])
 
+  // Poll real Baileys WhatsApp Gateway for live QR code and real phone pairing
+  useEffect(() => {
+    let pollInterval = null
+
+    if (showQrModal && pairingStatus !== 'SUCCESS') {
+      const fetchGatewayStatus = async () => {
+        try {
+          const res = await fetch(getApiUrl('/api/health/whatsapp-gateway/status'))
+          if (!res.ok) return
+          const data = await res.json()
+
+          if (data && data.success) {
+            setIsLiveBaileysActive(true)
+            if (data.qr) {
+              setRealBackendQr(data.qr)
+            }
+            if (data.status === 'CONNECTED') {
+              const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              setGatewaySession({
+                isConnected: true,
+                linkedPhone: data.user ? `+${data.user}` : (familyContact.phone || '+919876543210'),
+                linkedName: 'Linked WhatsApp Device',
+                linkedAt: `Today, ${now}`,
+                sessionId: `PHARMX-LIVE-${Math.floor(100000 + Math.random() * 900000)}`,
+                deviceInfo: 'Real WhatsApp Multi-Device Session (Live Baileys Engine)'
+              })
+              setPairingStatus('SUCCESS')
+              playSoundBeep()
+              setTimeout(() => {
+                setShowQrModal(false)
+                setPairingStatus('IDLE')
+              }, 1500)
+            }
+          }
+        } catch {
+          // Backend offline or local fallback
+        }
+      }
+
+      fetchGatewayStatus()
+      pollInterval = setInterval(fetchGatewayStatus, 2500)
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval)
+    }
+  }, [showQrModal, pairingStatus, familyContact.phone])
+
   const generateFamilyWhatsAppMessage = useCallback((alarm, contact) => {
     const timeStr = alarm?.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     const medName = alarm?.medicine || 'Prescribed Medicine'
@@ -570,12 +620,18 @@ export default function MedicationAlarm() {
   }
 
   // Disconnect / Unlink WhatsApp Gateway
-  const handleDisconnectGateway = () => {
+  const handleDisconnectGateway = async () => {
     setGatewaySession(prev => ({
       ...prev,
       isConnected: false,
       linkedAt: null
     }))
+    setRealBackendQr(null)
+    try {
+      await fetch(getApiUrl('/api/health/whatsapp-gateway/disconnect'), { method: 'POST' })
+    } catch {
+      // ignore
+    }
   }
 
   const handleTestWhatsAppGateway = () => {
@@ -2355,8 +2411,13 @@ Patient did NOT respond to medication alarm within 60 seconds.
                   💬
                 </span>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 800 }}>
+                  <h3 style={{ margin: 0, fontSize: '1.18rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     Link WhatsApp Web Gateway
+                    {isLiveBaileysActive && (
+                      <span style={{ fontSize: '0.65rem', backgroundColor: '#22c55e', color: '#ffffff', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                        ● Live Node Engine
+                      </span>
+                    )}
                   </h3>
                   <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>
                     Pharmx AI Automated Caregiver Surveillance Node
@@ -2461,84 +2522,115 @@ Patient did NOT respond to medication alarm within 60 seconds.
                         animation: 'qrScanBeam 2.5s infinite ease-in-out'
                       }} />
 
-                      {/* Authentic High-Resolution SVG QR Code */}
-                      <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="200" height="200" rx="14" fill="#ffffff" />
-                        
-                        {/* Finder Patterns Top-Left */}
-                        <rect x="16" y="16" width="48" height="48" rx="8" fill="#0f172a" />
-                        <rect x="22" y="22" width="36" height="36" rx="5" fill="#ffffff" />
-                        <rect x="28" y="28" width="24" height="24" rx="4" fill="#0f172a" />
-                        
-                        {/* Finder Patterns Top-Right */}
-                        <rect x="136" y="16" width="48" height="48" rx="8" fill="#0f172a" />
-                        <rect x="142" y="22" width="36" height="36" rx="5" fill="#ffffff" />
-                        <rect x="148" y="28" width="24" height="24" rx="4" fill="#0f172a" />
-                        
-                        {/* Finder Patterns Bottom-Left */}
-                        <rect x="16" y="136" width="48" height="48" rx="8" fill="#0f172a" />
-                        <rect x="22" y="142" width="36" height="36" rx="5" fill="#ffffff" />
-                        <rect x="28" y="148" width="24" height="24" rx="4" fill="#0f172a" />
-                        
-                        {/* Alignment Pattern */}
-                        <rect x="144" y="144" width="28" height="28" rx="5" fill="#0f172a" />
-                        <rect x="150" y="150" width="16" height="16" rx="3" fill="#ffffff" />
-                        <rect x="154" y="154" width="8" height="8" rx="2" fill="#0f172a" />
-                        
-                        {/* Module Grid Dots */}
-                        <rect x="74" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="90" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="106" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="82" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="98" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="114" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="74" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="90" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="114" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="82" y="54" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="102" y="54" width="8" height="8" fill="#0f172a" rx="1.5" />
+                      {realBackendQr ? (
+                        <div style={{ position: 'relative' }}>
+                          <img
+                            src={realBackendQr}
+                            alt="WhatsApp Web Live Cryptographic QR Code"
+                            style={{
+                              width: '200px',
+                              height: '200px',
+                              borderRadius: '10px',
+                              display: 'block'
+                            }}
+                          />
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '6px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            backgroundColor: 'rgba(5, 150, 105, 0.95)',
+                            color: '#ffffff',
+                            fontSize: '0.62rem',
+                            fontWeight: 800,
+                            padding: '2px 8px',
+                            borderRadius: '20px',
+                            whiteSpace: 'nowrap',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                          }}>
+                            ● LIVE BAILEYS QR
+                          </div>
+                        </div>
+                      ) : (
+                        /* Authentic High-Resolution SVG QR Code Fallback */
+                        <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="200" height="200" rx="14" fill="#ffffff" />
+                          
+                          {/* Finder Patterns Top-Left */}
+                          <rect x="16" y="16" width="48" height="48" rx="8" fill="#0f172a" />
+                          <rect x="22" y="22" width="36" height="36" rx="5" fill="#ffffff" />
+                          <rect x="28" y="28" width="24" height="24" rx="4" fill="#0f172a" />
+                          
+                          {/* Finder Patterns Top-Right */}
+                          <rect x="136" y="16" width="48" height="48" rx="8" fill="#0f172a" />
+                          <rect x="142" y="22" width="36" height="36" rx="5" fill="#ffffff" />
+                          <rect x="148" y="28" width="24" height="24" rx="4" fill="#0f172a" />
+                          
+                          {/* Finder Patterns Bottom-Left */}
+                          <rect x="16" y="136" width="48" height="48" rx="8" fill="#0f172a" />
+                          <rect x="22" y="142" width="36" height="36" rx="5" fill="#ffffff" />
+                          <rect x="28" y="148" width="24" height="24" rx="4" fill="#0f172a" />
+                          
+                          {/* Alignment Pattern */}
+                          <rect x="144" y="144" width="28" height="28" rx="5" fill="#0f172a" />
+                          <rect x="150" y="150" width="16" height="16" rx="3" fill="#ffffff" />
+                          <rect x="154" y="154" width="8" height="8" rx="2" fill="#0f172a" />
+                          
+                          {/* Module Grid Dots */}
+                          <rect x="74" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="90" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="106" y="18" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="82" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="98" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="114" y="30" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="74" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="90" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="114" y="42" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="82" y="54" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="102" y="54" width="8" height="8" fill="#0f172a" rx="1.5" />
 
-                        <rect x="18" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="34" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="50" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="26" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="42" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="58" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="18" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="34" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="54" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="26" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="46" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="18" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="34" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="50" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="26" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="42" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="58" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="18" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="34" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="54" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="26" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="46" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
 
-                        <rect x="138" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="154" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="174" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="146" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="166" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="138" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="158" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="174" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="146" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="166" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="138" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="154" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="174" y="74" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="146" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="166" y="86" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="138" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="158" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="174" y="98" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="146" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="166" y="110" width="8" height="8" fill="#0f172a" rx="1.5" />
 
-                        <rect x="74" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="94" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="114" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="82" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="102" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="122" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="74" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="94" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="114" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="82" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="102" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
-                        <rect x="122" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="74" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="94" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="114" y="138" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="82" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="102" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="122" y="150" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="74" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="94" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="114" y="166" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="82" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="102" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
+                          <rect x="122" y="178" width="8" height="8" fill="#0f172a" rx="1.5" />
 
-                        {/* WhatsApp Center Logo */}
-                        <circle cx="100" cy="100" r="24" fill="#ffffff" />
-                        <circle cx="100" cy="100" r="20" fill="#25D366" />
-                        <path d="M100 88C93.4 88 88 93.4 88 100C88 102.3 88.7 104.5 89.9 106.3L88.7 111L93.5 109.8C95.3 111 97.6 111.7 100 111.7C106.6 111.7 112 106.3 112 100C112 93.4 106.6 88 100 88ZM105.7 104.5C105.5 105.1 104.4 105.6 103.8 105.7C103.4 105.7 102.9 105.8 100.9 105C98.4 104 96.7 101.5 96.6 101.3C96.5 101.2 95.6 100 95.6 98.7C95.6 97.4 96.2 96.8 96.5 96.5C96.7 96.3 97 96.2 97.3 96.2C97.4 96.2 97.5 96.2 97.6 96.2C97.9 96.2 98 96.3 98.2 96.6C98.4 97.1 98.9 98.3 98.9 98.5C99 98.6 99 98.8 98.9 99C98.8 99.2 98.7 99.3 98.6 99.5C98.4 99.7 98.3 99.8 98.5 100.1C98.7 100.4 99.4 101.5 100.4 102.4C101.7 103.6 102.8 104 103.1 104.2C103.4 104.3 103.6 104.3 103.8 104.1C104 103.8 104.4 103.3 104.6 103C104.8 102.7 105 102.8 105.2 102.9C105.5 103 107.1 103.8 107.3 103.9C107.5 104 107.7 104.1 107.7 104.2C107.7 104.4 107.7 105.1 105.7 104.5Z" fill="#ffffff" />
-                      </svg>
+                          {/* WhatsApp Center Logo */}
+                          <circle cx="100" cy="100" r="24" fill="#ffffff" />
+                          <circle cx="100" cy="100" r="20" fill="#25D366" />
+                          <path d="M100 88C93.4 88 88 93.4 88 100C88 102.3 88.7 104.5 89.9 106.3L88.7 111L93.5 109.8C95.3 111 97.6 111.7 100 111.7C106.6 111.7 112 106.3 112 100C112 93.4 106.6 88 100 88ZM105.7 104.5C105.5 105.1 104.4 105.6 103.8 105.7C103.4 105.7 102.9 105.8 100.9 105C98.4 104 96.7 101.5 96.6 101.3C96.5 101.2 95.6 100 95.6 98.7C95.6 97.4 96.2 96.8 96.5 96.5C96.7 96.3 97 96.2 97.3 96.2C97.4 96.2 97.5 96.2 97.6 96.2C97.9 96.2 98 96.3 98.2 96.6C98.4 97.1 98.9 98.3 98.9 98.5C99 98.6 99 98.8 98.9 99C98.8 99.2 98.7 99.3 98.6 99.5C98.4 99.7 98.3 99.8 98.5 100.1C98.7 100.4 99.4 101.5 100.4 102.4C101.7 103.6 102.8 104 103.1 104.2C103.4 104.3 103.6 104.3 103.8 104.1C104 103.8 104.4 103.3 104.6 103C104.8 102.7 105 102.8 105.2 102.9C105.5 103 107.1 103.8 107.3 103.9C107.5 104 107.7 104.1 107.7 104.2C107.7 104.4 107.7 105.1 105.7 104.5Z" fill="#ffffff" />
+                        </svg>
+                      )}
                     </div>
 
                     <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, marginTop: '0.6rem', display: 'block' }}>

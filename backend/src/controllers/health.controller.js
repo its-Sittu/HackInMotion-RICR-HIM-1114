@@ -1,5 +1,10 @@
 import * as healthService from '../services/health.service.js'
 import { sendEmergencySms, sendWhatsAppEmergencyAlert } from '../services/sms.service.js'
+import {
+  startWhatsAppGateway,
+  getWhatsAppGatewayStatus,
+  disconnectWhatsAppGateway
+} from '../services/whatsappGateway.service.js'
 
 /**
  * Health check controller
@@ -97,6 +102,45 @@ export const getAdherenceStatsHandler = (req, res, next) => {
       adherenceRate: 96.5,
       completedScansThisWeek: 18,
       interactionRiskLevel: 'SAFE'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Get Real WhatsApp Gateway Status & Live QR Code (Baileys Engine)
+ * @route GET /api/health/whatsapp-gateway/status
+ */
+export const getWhatsAppGatewayStatusHandler = async (req, res, next) => {
+  try {
+    const current = getWhatsAppGatewayStatus()
+    if (current.status === 'DISCONNECTED') {
+      startWhatsAppGateway().catch((err) => console.warn('[Gateway Auto-Start]', err.message))
+    }
+    const updated = getWhatsAppGatewayStatus()
+    return res.status(200).json({
+      success: true,
+      status: updated.status,
+      qr: updated.qr,
+      user: updated.user
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Disconnect / Unlink Real WhatsApp Gateway Session
+ * @route POST /api/health/whatsapp-gateway/disconnect
+ */
+export const disconnectWhatsAppGatewayHandler = async (req, res, next) => {
+  try {
+    const result = await disconnectWhatsAppGateway()
+    return res.status(200).json({
+      success: true,
+      message: 'WhatsApp Gateway unlinked successfully.',
+      result
     })
   } catch (error) {
     next(error)

@@ -254,7 +254,13 @@
     "QR",
     "qr",
     "Unlink",
-    "unlink"
+    "unlink",
+    "baileys",
+    "Baileys",
+    "pino",
+    "jid",
+    "whiskeysockets",
+    "qrcode"
   ],
   "ignorePaths": [
     "**/node_modules/**",
