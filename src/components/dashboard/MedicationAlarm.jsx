@@ -106,6 +106,58 @@ export default function MedicationAlarm() {
   const [ringingTimer, setRingingTimer] = useState(60)
   const [familyCareSyncEnabled, setFamilyCareSyncEnabled] = useState(true)
 
+  // Family WhatsApp Caregiver Contact state
+  const [familyContact, setFamilyContact] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pulsemed_family_whatsapp_contact')
+      return saved ? JSON.parse(saved) : {
+        name: 'Priya Sharma (Daughter)',
+        relation: 'Primary Caregiver',
+        phone: '+919876543210',
+        autoAlertEnabled: true
+      }
+    } catch {
+      return {
+        name: 'Priya Sharma (Daughter)',
+        relation: 'Primary Caregiver',
+        phone: '+919876543210',
+        autoAlertEnabled: true
+      }
+    }
+  })
+
+  // WhatsApp Alert Dispatch History
+  const [whatsappAlertHistory, setWhatsappAlertHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pulsemed_whatsapp_alerts_history')
+      return saved ? JSON.parse(saved) : [
+        {
+          id: 'wa-hist-1',
+          time: 'Today, 08:01 AM',
+          medicine: 'Pantocid 40mg (Pantoprazole)',
+          recipient: 'Priya Sharma (+919876543210)',
+          status: 'DISPATCHED',
+          trigger: 'Auto-Triggered on 60s Unanswered Timeout'
+        }
+      ]
+    } catch {
+      return []
+    }
+  })
+
+  // Modals for WhatsApp gateway
+  const [dispatchedAlertModal, setDispatchedAlertModal] = useState(null)
+  const [isEditingCaregiver, setIsEditingCaregiver] = useState(false)
+  const [editName, setEditName] = useState(familyContact.name)
+  const [editPhone, setEditPhone] = useState(familyContact.phone)
+  const [editRelation, setEditRelation] = useState(familyContact.relation)
+  const [copiedAlert, setCopiedAlert] = useState(false)
+  const familyContactRef = useRef(familyContact)
+
+  useEffect(() => {
+    familyContactRef.current = familyContact
+  }, [familyContact])
+
   // Phone-Style Alarm Time Picker Modal state
   const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
   const [pickerHour, setPickerHour] = useState('08')
@@ -143,6 +195,22 @@ export default function MedicationAlarm() {
       // localStorage optional
     }
   }, [meals])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_family_whatsapp_contact', JSON.stringify(familyContact))
+    } catch {
+      // localStorage optional
+    }
+  }, [familyContact])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_whatsapp_alerts_history', JSON.stringify(whatsappAlertHistory))
+    } catch {
+      // localStorage optional
+    }
+  }, [whatsappAlertHistory])
 
   // Open Phone-Style Alarm Time Picker Modal for an alarm
   const openTimePickerModal = (alarm) => {
@@ -293,6 +361,67 @@ export default function MedicationAlarm() {
     }
   }, [activeRingingAlarm])
 
+  const generateFamilyWhatsAppMessage = useCallback((alarm, contact) => {
+    const timeStr = alarm?.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const medName = alarm?.medicine || 'Prescribed Medicine'
+    const instruction = alarm?.instruction || 'As advised by doctor'
+    const caregiverName = contact?.name || 'Family Caregiver'
+
+    return `🚨 *[PHARMX AI - PATIENT CRITICAL MEDICATION ALERT]* 🚨\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ *URGENT: MISSED DOSE NOTIFICATION FOR CAREGIVER*\n\nDear *${caregiverName}*,\nThis is an automated safety alert from the *Pharmx AI Clinical Monitoring Gateway*.\n\nYour family member (*Patient*) did *NOT* acknowledge or take their scheduled medication within the alarm window, and the dose is currently recorded as *MISSED*.\n\n📋 *MEDICATION DETAILS:*\n• 💊 *Medicine:* *${medName}*\n• ⏰ *Scheduled Time:* *${timeStr}* (Today)\n• 📌 *Food Protocol:* ${instruction}\n• ⚠️ *Current Status:* *MISSED / UNANSWERED DOSE*\n• 🏥 *Surveillance Node:* Pharmx AI Bhopal Clinical Radar\n\n🚨 *RECOMMENDED IMMEDIATE CAREGIVER ACTION:*\n1. Please call or contact the patient immediately to confirm if they have taken their medicine.\n2. If taken, ask them to confirm on the Pharmx AI Patient Safety Dashboard.\n3. If feeling dizzy, unwell, or in distress, please consult an emergency doctor or hospital immediately.\n\n🔗 *Emergency Patient Medical Portal:*\nhttps://hack-in-motion-ricr-him-1114.vercel.app\n\nStay safe,\n*Pharmx AI Patient Safety & Emergency Hospital Gateway*\n━━━━━━━━━━━━━━━━━━━━━━━━━━`
+  }, [])
+
+  const sendFamilyWhatsAppAlert = useCallback((alarm, isManual = false) => {
+    if (!alarm) return
+
+    const contact = familyContactRef.current
+    const rawDigits = (contact.phone || '').replace(/\D/g, '')
+    const targetPhone = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits
+    const message = generateFamilyWhatsAppMessage(alarm, contact)
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(message)}`
+
+    const newLog = {
+      id: `wa-alert-${Date.now()}`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      medicine: alarm.medicine,
+      recipient: `${contact.name} (${contact.phone})`,
+      status: 'DISPATCHED',
+      trigger: isManual ? 'Manual Caregiver SOS Button' : 'Auto 60s Ringing Timeout'
+    }
+
+    setWhatsappAlertHistory(prev => [newLog, ...prev.slice(0, 9)])
+
+    saveActivityToMedicalHistory({
+      title: `Family WhatsApp Alert: ${alarm.medicine}`,
+      category: 'Emergency SOS',
+      typeIcon: '📲',
+      status: 'WHATSAPP ALERT SENT 📲',
+      statusBg: '#ecfdf5',
+      statusColor: '#047857',
+      summary: `Automated WhatsApp SOS alert generated for caregiver ${contact.name} (${contact.phone}) regarding missed ${alarm.medicine}.`,
+      doctorNote: `Caregiver notified via WhatsApp Gateway. Immediate patient well-being check recommended.`,
+      details: [
+        `Recipient: ${contact.name} (${contact.phone})`,
+        `Medicine: ${alarm.medicine}`,
+        `Trigger: ${isManual ? 'Manual SOS Button' : '60-Sec Unanswered Ringing Timeout'}`,
+        `Gateway Protocol: WhatsApp API / Webhook`
+      ]
+    })
+
+    setDispatchedAlertModal({
+      alarm,
+      message,
+      whatsappUrl,
+      recipient: `${contact.name} (${contact.phone})`,
+      isManual
+    })
+
+    try {
+      window.open(whatsappUrl, '_blank')
+    } catch {
+      // Browser popup blocker fallback
+    }
+  }, [generateFamilyWhatsAppMessage])
+
   // Handle 1-Minute Unanswered Alarm Ringing Timeout -> Mark as Missed
   const handleUnansweredAlarm = useCallback((alarm) => {
     if (!alarm) return
@@ -321,7 +450,43 @@ export default function MedicationAlarm() {
         `Status: Missed Dose ⚠️`
       ]
     })
-  }, [])
+
+    // 🚨 AUTOMATIC FAMILY WHATSAPP GATEWAY TRIGGER
+    if (familyCareSyncEnabled && familyContactRef.current?.autoAlertEnabled) {
+      sendFamilyWhatsAppAlert(alarm, false)
+    }
+  }, [familyCareSyncEnabled, sendFamilyWhatsAppAlert])
+
+  const handleTestWhatsAppGateway = () => {
+    const testAlarm = alarms[0] || {
+      medicine: 'Dolo 650mg (Paracetamol)',
+      time: '14:00',
+      instruction: 'After Food (Khane Ke Baad)'
+    }
+    sendFamilyWhatsAppAlert(testAlarm, true)
+  }
+
+  const handleSaveCaregiverContact = () => {
+    if (!editPhone.trim()) return
+    const updated = {
+      ...familyContact,
+      name: editName.trim() || 'Primary Caregiver',
+      phone: editPhone.trim(),
+      relation: editRelation.trim() || 'Family Caregiver'
+    }
+    setFamilyContact(updated)
+    setIsEditingCaregiver(false)
+  }
+
+  const handleCopyAlertMessage = (text) => {
+    try {
+      navigator.clipboard.writeText(text)
+      setCopiedAlert(true)
+      setTimeout(() => setCopiedAlert(false), 2000)
+    } catch {
+      // fallback
+    }
+  }
 
   // 60-Second Ringing Countdown Effect
   useEffect(() => {
@@ -572,7 +737,7 @@ export default function MedicationAlarm() {
                   padding: '0.15rem 0.5rem',
                   borderRadius: '12px'
                 }}>
-                  ⏱️ {ringingTimer}s until Family SOS
+                  ⏱️ {ringingTimer}s until Family WhatsApp Alert
                 </span>
               </div>
 
@@ -583,12 +748,12 @@ export default function MedicationAlarm() {
                 📌 {activeRingingAlarm.instruction}
               </span>
               <span style={{ fontSize: '0.72rem', color: '#be123c', fontWeight: 700, marginTop: '0.2rem', display: 'block' }}>
-                ⚠️ If unanswered in {ringingTimer} seconds, automated SOS alert will be sent to 3 priority contacts.
+                ⚠️ If unanswered in {ringingTimer} seconds, automated WhatsApp SOS alert will be sent to <strong>{familyContact.name} ({familyContact.phone})</strong>.
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               type="button"
               onClick={() => handleMarkTaken(activeRingingAlarm.id)}
@@ -622,6 +787,28 @@ export default function MedicationAlarm() {
               }}
             >
               🔕 Snooze 5M
+            </button>
+
+            <button
+              type="button"
+              onClick={() => sendFamilyWhatsAppAlert(activeRingingAlarm, true)}
+              style={{
+                backgroundColor: '#059669',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '0.6rem 0.85rem',
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)'
+              }}
+              title="Immediately dispatch WhatsApp alert to family caregiver"
+            >
+              📲 Send WhatsApp Alert Now
             </button>
           </div>
         </div>
@@ -772,6 +959,279 @@ export default function MedicationAlarm() {
         ))}
       </div>
     </div>
+
+      {/* ── FAMILY WHATSAPP CAREGIVER PROTECTION GATEWAY ────────────────── */}
+      <div style={{
+        backgroundColor: '#ffffff',
+        borderRadius: '24px',
+        border: '1.5px solid #a7f3d0',
+        padding: '1.3rem 1.5rem',
+        boxShadow: '0 10px 30px rgba(5, 150, 105, 0.06)',
+        boxSizing: 'border-box',
+        marginTop: '1.4rem'
+      }}>
+        {/* Gateway Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ fontSize: '1.5rem', backgroundColor: '#ecfdf5', padding: '0.45rem', borderRadius: '14px', border: '1px solid #a7f3d0' }}>
+              👨‍👩‍👧
+            </span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                  Family WhatsApp Caregiver Alert Gateway
+                </h3>
+                <span style={{
+                  backgroundColor: familyCareSyncEnabled && familyContact.autoAlertEnabled ? '#dcfce7' : '#f1f5f9',
+                  color: familyCareSyncEnabled && familyContact.autoAlertEnabled ? '#15803d' : '#64748b',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '0.2rem 0.55rem',
+                  borderRadius: '20px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem'
+                }}>
+                  <span style={{
+                    width: '7px',
+                    height: '7px',
+                    borderRadius: '50%',
+                    backgroundColor: familyCareSyncEnabled && familyContact.autoAlertEnabled ? '#22c55e' : '#94a3b8',
+                    display: 'inline-block'
+                  }}></span>
+                  {familyCareSyncEnabled && familyContact.autoAlertEnabled ? 'GATEWAY LIVE & ARMED' : 'GATEWAY PAUSED'}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 500 }}>
+                Automated clinical WhatsApp notification dispatched to family when patient misses a medication dose.
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handleTestWhatsAppGateway}
+              style={{
+                backgroundColor: '#059669',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 3px 10px rgba(5, 150, 105, 0.25)'
+              }}
+              title="Send a sample WhatsApp clinical alert to caregiver"
+            >
+              📲 Test WhatsApp Gateway
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setEditName(familyContact.name)
+                setEditPhone(familyContact.phone)
+                setEditRelation(familyContact.relation)
+                setIsEditingCaregiver(true)
+              }}
+              style={{
+                backgroundColor: '#ffffff',
+                color: '#334155',
+                border: '1px solid #cbd5e1',
+                borderRadius: '10px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              ✏️ Configure Caregiver
+            </button>
+          </div>
+        </div>
+
+        {/* Gateway Main Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1rem', marginBottom: '1.2rem' }}>
+          {/* Caregiver Profile Card */}
+          <div style={{
+            backgroundColor: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '16px',
+            padding: '1rem 1.15rem'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+              <div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  DESIGNATED FAMILY RECIPIENT
+                </span>
+                <h4 style={{ margin: '0.15rem 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+                  {familyContact.name}
+                </h4>
+                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+                  Relationship: {familyContact.relation}
+                </span>
+              </div>
+              <span style={{ fontSize: '1.3rem' }}>🛡️</span>
+            </div>
+
+            <div style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              padding: '0.65rem 0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '0.85rem'
+            }}>
+              <div>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block', fontWeight: 700 }}>
+                  WhatsApp Phone Number:
+                </span>
+                <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', letterSpacing: '0.5px' }}>
+                  {familyContact.phone}
+                </span>
+              </div>
+              <span style={{
+                backgroundColor: '#ecfdf5',
+                color: '#059669',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                padding: '0.2rem 0.5rem',
+                borderRadius: '8px'
+              }}>
+                ✓ Verified
+              </span>
+            </div>
+
+            {/* Toggle */}
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}>
+              <input
+                type="checkbox"
+                checked={familyCareSyncEnabled && familyContact.autoAlertEnabled}
+                onChange={(e) => {
+                  const val = e.target.checked
+                  setFamilyCareSyncEnabled(val)
+                  setFamilyContact(prev => ({ ...prev, autoAlertEnabled: val }))
+                }}
+                style={{ width: '17px', height: '17px', accentColor: '#059669', cursor: 'pointer' }}
+              />
+              <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
+                Auto-Dispatch WhatsApp Alert when 60s alarm expires
+              </span>
+            </label>
+          </div>
+
+          {/* Clinical Message Protocol Preview */}
+          <div style={{
+            backgroundColor: '#064e3b',
+            color: '#ecfdf5',
+            borderRadius: '16px',
+            padding: '1rem 1.15rem',
+            fontFamily: 'monospace',
+            position: 'relative'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <span style={{ fontSize: '0.7rem', color: '#a7f3d0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                📲 WhatsApp Gateway Message Payload
+              </span>
+              <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(255,255,255,0.15)', color: '#ffffff', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
+                End-to-End Encrypted
+              </span>
+            </div>
+
+            <p style={{
+              fontSize: '0.73rem',
+              lineHeight: '1.45',
+              margin: 0,
+              whiteSpace: 'pre-line',
+              color: '#d1fae5',
+              maxHeight: '135px',
+              overflowY: 'auto'
+            }}>
+              {`🚨 *[PHARMX AI - PATIENT CRITICAL MEDICATION ALERT]*
+⚠️ *URGENT:* Missed Dose Notification for Family Caregiver
+
+Dear *${familyContact.name}*,
+Patient did NOT respond to medication alarm within 60 seconds.
+• 💊 Medicine: ${alarms[0]?.medicine || 'Prescribed Medicine'}
+• ⏰ Time: ${alarms[0]?.time || '08:00'} (Today)
+• ⚠️ Status: MISSED / UNANSWERED DOSE
+• 📞 Caregiver Action: Please contact patient immediately to verify safety.
+🔗 Portal: https://hack-in-motion-ricr-him-1114.vercel.app`}
+            </p>
+          </div>
+        </div>
+
+        {/* Dispatch History Audit Log */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Recent WhatsApp Caregiver Dispatch Audit ({whatsappAlertHistory.length})
+            </span>
+            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+              Real-time Caregiver Surveillance
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            {whatsappAlertHistory.slice(0, 3).map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '0.5rem 0.8rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                  fontSize: '0.75rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.9rem' }}>📲</span>
+                  <div>
+                    <strong style={{ color: '#0f172a' }}>{item.medicine}</strong>
+                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.68rem' }}>
+                      To: {item.recipient} • {item.trigger}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.7rem' }}>
+                    {item.time}
+                  </span>
+                  <span style={{
+                    backgroundColor: '#dcfce7',
+                    color: '#15803d',
+                    fontWeight: 800,
+                    fontSize: '0.66rem',
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '6px'
+                  }}>
+                    ✓ {item.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* ── HEALTHY FOOD PLANNING & SCHEDULE BOARD (ALARM KE NICHE) ────────── */}
       <div style={{
@@ -1329,6 +1789,244 @@ export default function MedicationAlarm() {
               </button>
               <button type="button" onClick={handleAddNewMeal} style={{ backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 2, boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)' }}>
                 ✓ Save Meal Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DISPATCHED WHATSAPP ALERT MODAL ─────────────────────────────── */}
+      {dispatchedAlertModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '520px',
+            width: '100%',
+            padding: '1.6rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem', backgroundColor: '#ecfdf5', padding: '0.35rem', borderRadius: '12px', border: '1px solid #a7f3d0' }}>
+                  📲
+                </span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                    Family WhatsApp Alert Dispatched!
+                  </h3>
+                  <span style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700 }}>
+                    Gateway Protocol: WhatsApp Webhook & Direct Chat API
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDispatchedAlertModal(null)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ marginBottom: '1.1rem' }}>
+              <div style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '12px',
+                padding: '0.75rem 0.9rem',
+                marginBottom: '0.9rem'
+              }}>
+                <span style={{ fontSize: '0.72rem', color: '#991b1b', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>
+                  ⚠️ Reason: Unanswered Medication Alarm
+                </span>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#7f1d1d', fontWeight: 600 }}>
+                  Patient did not respond within the 60-second window for <strong>{dispatchedAlertModal.alarm.medicine}</strong> ({dispatchedAlertModal.alarm.time}).
+                </p>
+                <span style={{ fontSize: '0.72rem', color: '#b91c1c', display: 'block', marginTop: '0.3rem' }}>
+                  Recipient: <strong>{dispatchedAlertModal.recipient}</strong>
+                </span>
+              </div>
+
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                WhatsApp Clinical Message Payload:
+              </label>
+              <div style={{
+                backgroundColor: '#0f172a',
+                color: '#e2e8f0',
+                borderRadius: '12px',
+                padding: '0.85rem 1rem',
+                fontSize: '0.74rem',
+                lineHeight: '1.5',
+                maxHeight: '180px',
+                overflowY: 'auto',
+                whiteSpace: 'pre-line',
+                fontFamily: 'monospace'
+              }}>
+                {dispatchedAlertModal.message}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => handleCopyAlertMessage(dispatchedAlertModal.message)}
+                style={{
+                  backgroundColor: '#f1f5f9',
+                  color: '#334155',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '12px',
+                  padding: '0.65rem 0.95rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  flex: 1
+                }}
+              >
+                {copiedAlert ? '✓ Copied!' : '📋 Copy Message'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    window.open(dispatchedAlertModal.whatsappUrl, '_blank')
+                  } catch {
+                    // ignore
+                  }
+                }}
+                style={{
+                  backgroundColor: '#059669',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '0.65rem 1rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  flex: 2,
+                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)'
+                }}
+              >
+                📲 Open WhatsApp Chat Directly
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CONFIGURE CAREGIVER DETAILS MODAL ──────────────────────────── */}
+      {isEditingCaregiver && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '460px',
+            width: '100%',
+            padding: '1.6rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                👨‍👩‍👧 Configure Family Caregiver
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsEditingCaregiver(false)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem', marginBottom: '1.3rem' }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  Caregiver Full Name:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Priya Sharma, Ramesh Sharma..."
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  Relationship to Patient:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Daughter / Primary Caregiver, Son, Spouse..."
+                  value={editRelation}
+                  onChange={(e) => setEditRelation(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  WhatsApp Phone Number (with Country Code):
+                </label>
+                <input
+                  type="tel"
+                  placeholder="e.g. +91 98765 43210 or 9876543210"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.25rem', display: 'block' }}>
+                  💡 Enter standard mobile number. The system automatically formats for WhatsApp API.
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setIsEditingCaregiver(false)}
+                style={{ backgroundColor: '#f1f5f9', color: '#475569', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveCaregiverContact}
+                style={{ backgroundColor: '#059669', color: '#ffffff', border: 'none', borderRadius: '12px', padding: '0.65rem 1rem', fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', flex: 2, boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)' }}
+              >
+                ✓ Save Caregiver Settings
               </button>
             </div>
           </div>

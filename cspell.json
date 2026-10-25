@@ -246,7 +246,11 @@
     "Karond",
     "Narmada",
     "Raisen",
-    "Manisha"
+    "Manisha",
+    "whatsapp",
+    "WhatsApp",
+    "webhook",
+    "Webhook"
   ],
   "ignorePaths": [
     "**/node_modules/**",
