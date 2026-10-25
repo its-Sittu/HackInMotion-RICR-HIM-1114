@@ -2523,34 +2523,16 @@ Patient did NOT respond to medication alarm within 60 seconds.
                       }} />
 
                       {realBackendQr ? (
-                        <div style={{ position: 'relative' }}>
-                          <img
-                            src={realBackendQr}
-                            alt="WhatsApp Web Live Cryptographic QR Code"
-                            style={{
-                              width: '200px',
-                              height: '200px',
-                              borderRadius: '10px',
-                              display: 'block'
-                            }}
-                          />
-                          <div style={{
-                            position: 'absolute',
-                            bottom: '6px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            backgroundColor: 'rgba(5, 150, 105, 0.95)',
-                            color: '#ffffff',
-                            fontSize: '0.62rem',
-                            fontWeight: 800,
-                            padding: '2px 8px',
-                            borderRadius: '20px',
-                            whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                          }}>
-                            ● LIVE BAILEYS QR
-                          </div>
-                        </div>
+                        <img
+                          src={realBackendQr}
+                          alt="WhatsApp Web Live Cryptographic QR Code"
+                          style={{
+                            width: '200px',
+                            height: '200px',
+                            borderRadius: '10px',
+                            display: 'block'
+                          }}
+                        />
                       ) : (
                         /* Authentic High-Resolution SVG QR Code Fallback */
                         <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
