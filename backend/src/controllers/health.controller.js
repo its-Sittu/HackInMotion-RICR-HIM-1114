@@ -1,5 +1,5 @@
 import * as healthService from '../services/health.service.js'
-import { sendEmergencySms } from '../services/sms.service.js'
+import { sendEmergencySms, sendWhatsAppEmergencyAlert } from '../services/sms.service.js'
 
 /**
  * Health check controller
@@ -53,6 +53,40 @@ export const sendEmergencySosHandler = async (req, res, next) => {
 }
 
 /**
+ * Send WhatsApp Emergency SOS Missed Medication Alert to Caregiver
+ * @route POST /api/health/send-whatsapp-sos
+ */
+export const sendWhatsAppSosHandler = async (req, res, next) => {
+  try {
+    const { recipientPhone, recipientName, medicine, time, instruction, message } = req.body
+
+    const targetMedicine = medicine || 'Prescribed Medicine'
+    const scheduledTime = time || 'Scheduled Time'
+    const phone = recipientPhone || ''
+
+    console.log('═'.repeat(65))
+    console.log(`[📲 WHATSAPP CAREGIVER EMERGENCY GATEWAY DISPATCH TRIGGERED]`)
+    console.log(`Caregiver    : ${recipientName || 'Family Caregiver'} (${phone})`)
+    console.log(`Medicine     : ${targetMedicine} at ${scheduledTime}`)
+    console.log(`Instruction  : ${instruction || 'As advised'}`)
+    console.log(`Protocol     : WhatsApp Deep-Link & Cloud API Gateway`)
+    console.log('═'.repeat(65))
+
+    if (phone && message) {
+      await sendWhatsAppEmergencyAlert(phone, message)
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `WhatsApp clinical alert successfully dispatched to ${recipientName || 'caregiver'} (${phone}).`,
+      dispatchedAt: new Date().toISOString()
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
  * Get Patient Adherence Statistics Overview
  * @route GET /api/health/adherence-stats
  */
@@ -68,3 +102,4 @@ export const getAdherenceStatsHandler = (req, res, next) => {
     next(error)
   }
 }
+

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { checkHealth, sendEmergencySosHandler } from '../controllers/health.controller.js'
+import { checkHealth, sendEmergencySosHandler, sendWhatsAppSosHandler } from '../controllers/health.controller.js'
 
 const router = Router()
 
@@ -17,4 +17,12 @@ router.get('/', checkHealth)
  */
 router.post('/send-emergency-sos', sendEmergencySosHandler)
 
+/**
+ * @route POST /api/health/send-whatsapp-sos
+ * @desc  Send WhatsApp Emergency SOS alert to family caregiver
+ * @access Public
+ */
+router.post('/send-whatsapp-sos', sendWhatsAppSosHandler)
+
 export default router
+

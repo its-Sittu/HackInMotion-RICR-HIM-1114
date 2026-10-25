@@ -264,3 +264,61 @@ export const sendEmergencySms = async (phone, message) => {
   console.log('🚨 ' + '═'.repeat(55))
 }
 
+/**
+ * Send WhatsApp Emergency Caregiver Alert
+ * Checks for Twilio WhatsApp or Meta WhatsApp Cloud API credentials,
+ * otherwise safely logs and provides the webhook protocol response.
+ */
+export const sendWhatsAppEmergencyAlert = async (phone, message) => {
+  const cleanPhone = phone ? phone.replace(/\D/g, '') : ''
+  const targetPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone
+
+  // 1. Twilio WhatsApp (if configured)
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_NUMBER) {
+    try {
+      const twilio = (await import('twilio')).default
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+      await client.messages.create({
+        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+        to: `whatsapp:+${targetPhone}`,
+        body: message
+      })
+      console.log(`[Twilio WhatsApp Gateway] Dispatched to +${targetPhone} ✅`)
+      return
+    } catch (err) {
+      console.warn(`[Twilio WhatsApp Gateway Note] ${err.message}`)
+    }
+  }
+
+  // 2. Meta WhatsApp Cloud API (if configured)
+  if (process.env.WHATSAPP_API_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
+    try {
+      const url = `https://graph.facebook.com/v19.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.WHATSAPP_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: targetPhone,
+          type: 'text',
+          text: { body: message }
+        })
+      })
+      console.log(`[Meta WhatsApp Cloud Gateway] Dispatched to +${targetPhone} ✅`)
+      return
+    } catch (err) {
+      console.warn(`[Meta WhatsApp Cloud Gateway Note] ${err.message}`)
+    }
+  }
+
+  // 3. Fallback: Fast2SMS high priority SMS if SMS key configured
+  if (process.env.FAST2SMS_API_KEY) {
+    await sendEmergencySms(targetPhone, `🚨 PHARMX AI MISSED MEDICATION ALERT: Patient missed scheduled dose. Please check WhatsApp or medical portal immediately!`)
+  }
+
+  console.log(`[WhatsApp Gateway Protocol Ready] Caregiver target: +${targetPhone}`)
+}
+

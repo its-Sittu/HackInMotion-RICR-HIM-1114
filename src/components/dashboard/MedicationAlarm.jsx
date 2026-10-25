@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
+import { getApiUrl } from '../../utils/apiConfig'
 
 const INITIAL_ALARMS = [
   {
@@ -414,6 +415,24 @@ export default function MedicationAlarm() {
       recipient: `${contact.name} (${contact.phone})`,
       isManual
     })
+
+    // Also dispatch to Backend WhatsApp Cloud & Twilio Gateway Service
+    try {
+      fetch(getApiUrl('/api/health/send-whatsapp-sos'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientPhone: targetPhone,
+          recipientName: contact.name,
+          medicine: alarm.medicine,
+          time: alarm.time,
+          instruction: alarm.instruction,
+          message
+        })
+      }).catch(() => {})
+    } catch {
+      // background gateway sync optional
+    }
 
     try {
       window.open(whatsappUrl, '_blank')
