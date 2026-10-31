@@ -1,14 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Medical3DCanvas from '../components/landing/Medical3DCanvas'
 import '../styles/landing.css'
+
+// ── GSAP + SplitText (GSAP 3.12+ bundled plugin) ────────────────────────
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText } from 'gsap/SplitText'
+
+gsap.registerPlugin(ScrollTrigger, SplitText)
 
 export default function LandingPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Refs for GSAP SplitText animation targets
+  const heroHeadingRef = useRef(null)
+  const heroTaglineRef = useRef(null)
+  const sectionRefs = useRef([])
 
   const getThemeClass = (progress) => {
     if (progress <= 0.22) return 'theme-hero'
@@ -35,6 +47,87 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // ── GSAP SplitText Animations ──────────────────────────────────
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero heading — char-by-char 3D flip
+      if (heroHeadingRef.current) {
+        const split = SplitText.create(heroHeadingRef.current, { type: 'chars' })
+        gsap.from(split.chars, {
+          rotationY: -90,
+          opacity: 0,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: 'back.out(1.4)',
+          transformOrigin: '50% 50% -20px'
+        })
+      }
+
+      // Hero tagline — char-by-char fade up
+      if (heroTaglineRef.current) {
+        const splitTagline = SplitText.create(heroTaglineRef.current, { type: 'chars,words' })
+        gsap.from(splitTagline.chars, {
+          opacity: 0,
+          y: 20,
+          duration: 0.4,
+          stagger: 0.02,
+          ease: 'power2.out',
+          delay: 0.8
+        })
+      }
+
+      // Scroll-triggered sections — char-by-char for each heading
+      sectionRefs.current.forEach((el) => {
+        if (!el) return
+        const heading = el.querySelector('.anatomical-heading')
+        const subtext = el.querySelector('.anatomical-subtext')
+        const pill = el.querySelector('.step-indicator-pill')
+
+        if (pill) {
+          gsap.from(pill, {
+            scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play none none reverse' },
+            opacity: 0,
+            y: -15,
+            duration: 0.5,
+            ease: 'power2.out'
+          })
+        }
+
+        if (heading) {
+          const splitH = SplitText.create(heading, { type: 'chars,words' })
+          gsap.from(splitH.chars, {
+            scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play none none reverse' },
+            rotationY: -90,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.03,
+            ease: 'back.out(1.4)',
+            transformOrigin: '50% 50% -20px'
+          })
+        }
+
+        if (subtext) {
+          gsap.from(subtext, {
+            scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play none none reverse' },
+            opacity: 0,
+            y: 30,
+            duration: 0.7,
+            ease: 'power2.out',
+            delay: 0.3
+          })
+        }
+      })
+    })
+
+    return () => ctx.revert()
+  }, [])
+
+  const addSectionRef = useCallback((el) => {
+    if (el && !sectionRefs.current.includes(el)) {
+      sectionRefs.current.push(el)
+    }
+  }, [])
+
   const handleGuestContinue = () => {
     const guestUser = {
       _id: 'guest_user_id',
@@ -42,7 +135,7 @@ export default function LandingPage() {
       name: 'Guest User',
       isPhoneVerified: true
     }
-    const guestToken = 'pharmx_guest_session_token'
+    const guestToken = `guest_jwt_${Date.now()}`
     login(guestToken, guestUser)
     navigate('/dashboard')
   }
@@ -96,11 +189,11 @@ export default function LandingPage() {
         {/* ── SECTION 1: HERO (REFERENCE IMAGE STYLE PILL BADGE & BUTTONS) ── */}
         <section id="sec-hero" className="medisafe-section">
           <div className="hero-content-col">
-            <h1 className="hero-main-heading">
+            <h1 className="hero-main-heading" ref={heroHeadingRef}>
               PHARMX AI
             </h1>
 
-            <p className="hero-tagline">
+            <p className="hero-tagline" ref={heroTaglineRef}>
               &ldquo;Because no patient should get hurt by the medicine that was supposed to help them.&rdquo;
             </p>
 
@@ -128,8 +221,8 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 2: HEART STAGE • WORKFLOW STEP 2 ───────── */}
-        <section id="sec-heart" className="medisafe-section">
-          <div className="anatomical-quote-box">
+        <section id="sec-heart" className="medisafe-section" ref={addSectionRef}>
+          <div className="anatomical-content">
             <span className="step-indicator-pill">Step 2 of 5 • Smart Audio Alarms &amp; Family Alerts</span>
             <h2 className="anatomical-heading">
               &ldquo;Every dose affects the body.&rdquo;
@@ -141,8 +234,8 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 3: LUNGS STAGE • WORKFLOW STEP 3 ────────── */}
-        <section id="sec-lungs" className="medisafe-section">
-          <div className="anatomical-quote-box">
+        <section id="sec-lungs" className="medisafe-section" ref={addSectionRef}>
+          <div className="anatomical-content">
             <span className="step-indicator-pill">Step 3 of 5 • Real Drug Interaction &amp; Overdose Engine</span>
             <h2 className="anatomical-heading">
               &ldquo;Every medicine has a journey.&rdquo;
@@ -154,8 +247,8 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 4: KIDNEYS STAGE • WORKFLOW STEP 4 ───────── */}
-        <section id="sec-kidney" className="medisafe-section">
-          <div className="anatomical-quote-box">
+        <section id="sec-kidney" className="medisafe-section" ref={addSectionRef}>
+          <div className="anatomical-content">
             <span className="step-indicator-pill">Step 4 of 5 • Body Symptom &amp; Burn Diagnostic Evaluator</span>
             <h2 className="anatomical-heading">
               &ldquo;The body processes every dose.&rdquo;
@@ -167,8 +260,8 @@ export default function LandingPage() {
         </section>
 
         {/* ── SECTION 5: FULL HUMAN STAGE • WORKFLOW STEP 5 ───── */}
-        <section id="sec-human" className="medisafe-section">
-          <div className="anatomical-quote-box">
+        <section id="sec-human" className="medisafe-section" ref={addSectionRef}>
+          <div className="anatomical-content">
             <span className="step-indicator-pill">Step 5 of 5 • Healthy Diet Sync &amp; Adherence Analytics</span>
             <h2 className="anatomical-heading">
               Visualizing Safety Across All Human Systems
@@ -264,7 +357,7 @@ export default function LandingPage() {
 
         {/* ── SECTION 7: FINAL CALL TO ACTION ────────────────── */}
         <section id="sec-cta" className="medisafe-section">
-          <div className="final-cta-box">
+          <div className="anatomical-content">
             <h2 className="final-cta-heading">
               Your medicines should help you.<br />Pharmx AI helps you take them safely.
             </h2>

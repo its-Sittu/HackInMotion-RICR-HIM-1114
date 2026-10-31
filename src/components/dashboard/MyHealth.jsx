@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import MedicationAlarm from './MedicationAlarm'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
+import '../../styles/my-health.css'
 
 const INITIAL_MARKED_DAYS = {
-  '2026-08-10': { status: 'TAKEN', note: 'Morning & Night doses taken on time', typeIcon: '💊', color: '#10b981', bg: '#d1fae5' },
-  '2026-08-11': { status: 'TAKEN', note: 'Took Pantocid 40 30 mins before breakfast', typeIcon: '💊', color: '#10b981', bg: '#d1fae5' },
-  '2026-08-12': { status: 'CHECKUP', note: 'Annual ECG & Cardiac checkup completed', typeIcon: '🩺', color: '#0284c7', bg: '#e0f2fe' },
-  '2026-08-13': { status: 'TAKEN', note: 'All medication doses completed', typeIcon: '💊', color: '#10b981', bg: '#d1fae5' }
+  '2026-08-10': { status: 'TAKEN', note: 'Morning & Night doses taken on time', typeIcon: '💊', color: '#10b981', bg: '#064e3b' },
+  '2026-08-11': { status: 'TAKEN', note: 'Took Pantocid 40 30 mins before breakfast', typeIcon: '💊', color: '#10b981', bg: '#064e3b' },
+  '2026-08-12': { status: 'CHECKUP', note: 'Annual ECG & Cardiac checkup completed', typeIcon: '🩺', color: '#38bdf8', bg: '#0c4a6e' },
+  '2026-08-13': { status: 'TAKEN', note: 'All medication doses completed', typeIcon: '💊', color: '#10b981', bg: '#064e3b' }
 }
 
 const MONTH_NAMES = [
@@ -16,9 +17,18 @@ const MONTH_NAMES = [
 
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
+const HEALTH_SUB_TABS = [
+  { id: 'all', label: 'All Modules (Overview)', icon: '🌟' },
+  { id: 'calendar', label: 'Health Calendar', icon: '📅' },
+  { id: 'alarms', label: 'Medication Alarms', icon: '⏰' },
+  { id: 'caregiver', label: 'Caregiver WhatsApp SOS', icon: '👨‍👩‍👧' },
+  { id: 'meals', label: 'Diet & Meal Routine', icon: '🥗' }
+]
+
 export default function MyHealth() {
   const [currentMonth, setCurrentMonth] = useState(7) // 0-indexed: 7 = August
   const [currentYear, setCurrentYear] = useState(2026)
+  const [activeSubTab, setActiveSubTab] = useState('all')
 
   const [markedDays, setMarkedDays] = useState(() => {
     try {
@@ -44,18 +54,18 @@ export default function MyHealth() {
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11)
-      setCurrentYear(prev => prev - 1)
+      setCurrentYear((prev) => prev - 1)
     } else {
-      setCurrentMonth(prev => prev - 1)
+      setCurrentMonth((prev) => prev - 1)
     }
   }
 
   const handleNextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0)
-      setCurrentYear(prev => prev + 1)
+      setCurrentYear((prev) => prev + 1)
     } else {
-      setCurrentMonth(prev => prev + 1)
+      setCurrentMonth((prev) => prev + 1)
     }
   }
 
@@ -80,19 +90,19 @@ export default function MyHealth() {
 
     let typeIcon = '💊'
     let color = '#10b981'
-    let bg = '#d1fae5'
+    let bg = '#064e3b'
 
     if (modalStatus === 'MISSED') {
       typeIcon = '⚠️'
-      color = '#e11d48'
-      bg = '#ffe4e6'
+      color = '#f43f5e'
+      bg = '#4c0519'
     } else if (modalStatus === 'CHECKUP') {
       typeIcon = '🩺'
-      color = '#0284c7'
-      bg = '#e0f2fe'
+      color = '#38bdf8'
+      bg = '#0c4a6e'
     }
 
-    setMarkedDays(prev => ({
+    setMarkedDays((prev) => ({
       ...prev,
       [selectedDayKey]: {
         status: modalStatus,
@@ -125,7 +135,7 @@ export default function MyHealth() {
   const handleRemoveMarking = () => {
     if (!selectedDayKey) return
 
-    setMarkedDays(prev => {
+    setMarkedDays((prev) => {
       const next = { ...prev }
       delete next[selectedDayKey]
       return next
@@ -139,403 +149,435 @@ export default function MyHealth() {
   const firstDayIndex = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7 // Mon = 0
 
   const totalMarkedCount = Object.keys(markedDays).length
-  const takenCount = Object.values(markedDays).filter(d => d.status === 'TAKEN').length
+  const takenCount = Object.values(markedDays).filter((d) => d.status === 'TAKEN').length
   const adherenceRate = totalMarkedCount > 0 ? Math.round((takenCount / totalMarkedCount) * 100) : 100
 
-  return (
-    <div style={{ marginTop: '-0.4rem', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <style>{`
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(14px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
-      {/* ── ULTRA-EXECUTIVE HERO BANNER ───────────────────────────────────── */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: '#ffffff',
-        padding: 'clamp(1.1rem, 3.5vw, 1.8rem)',
-        marginBottom: '1.4rem',
-        borderRadius: '24px',
-        boxShadow: '0 20px 50px -15px rgba(15, 23, 42, 0.6)',
-        position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0, right: 0, bottom: 0, left: 0,
-          backgroundImage: 'radial-gradient(circle at 85% 15%, rgba(129, 140, 248, 0.2) 0%, transparent 45%)',
-          pointerEvents: 'none'
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-                width: '46px',
-                height: '46px',
-                borderRadius: '14px',
+  // ── Render Calendar Widget Component ─────────────────────────
+  const renderCalendarCard = () => (
+    <div className="myhealth-card myhealth-calendar-card" style={{ padding: '1.4rem', height: '100%' }}>
+      {/* Calendar Header Bar */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.9) 100%)',
+          borderRadius: '16px',
+          padding: '0.9rem 1.1rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <button
+              type="button"
+              onClick={handlePrevMonth}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.4rem',
-                boxShadow: '0 8px 20px rgba(99, 102, 241, 0.35)',
-                flexShrink: 0
-              }}>
-                📅
-              </div>
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                color: '#ffffff',
+                transition: 'all 0.15s ease'
+              }}
+              title="Previous Month"
+            >
+              ‹
+            </button>
 
-              <div>
-                <span style={{ color: '#818cf8', fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '0.15rem' }}>
-                  Interactive Patient Health Calendar
+            <button
+              type="button"
+              onClick={handleNextMonth}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                color: '#ffffff',
+                transition: 'all 0.15s ease'
+              }}
+              title="Next Month"
+            >
+              ›
+            </button>
+          </div>
+
+          <h3
+            style={{
+              fontSize: '1.15rem',
+              fontWeight: 900,
+              margin: 0,
+              letterSpacing: '-0.02em',
+              color: '#ffffff'
+            }}
+          >
+            {MONTH_NAMES[currentMonth]} {currentYear}
+          </h3>
+        </div>
+
+        {/* Live Calendar Badge */}
+        <span
+          style={{
+            backgroundColor: 'rgba(99, 102, 241, 0.22)',
+            border: '1px solid rgba(99, 102, 241, 0.45)',
+            color: '#a5b4fc',
+            fontSize: '0.68rem',
+            fontWeight: 800,
+            padding: '0.22rem 0.6rem',
+            borderRadius: '20px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem'
+          }}
+        >
+          ✨ Interactive
+        </span>
+      </div>
+
+      {/* 7-Column Calendar Grid Header */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: '0.35rem',
+          textAlign: 'center',
+          marginBottom: '0.5rem',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+      >
+        {DAYS_OF_WEEK.map((day) => (
+          <div
+            key={day}
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 800,
+              color: '#818cf8',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              padding: '0.25rem 0',
+              backgroundColor: 'rgba(99, 102, 241, 0.08)',
+              borderRadius: '8px'
+            }}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar Days Grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: '0.4rem',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+      >
+        {/* Blank Leading Cells */}
+        {Array.from({ length: firstDayIndex }).map((_, idx) => (
+          <div
+            key={`blank-${idx}`}
+            style={{
+              minHeight: '52px',
+              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: '12px',
+              opacity: 0.2
+            }}
+          />
+        ))}
+
+        {/* Active Month Days */}
+        {Array.from({ length: daysInMonth }).map((_, idx) => {
+          const dayNum = idx + 1
+          const formattedDay = String(dayNum).padStart(2, '0')
+          const formattedMonth = String(currentMonth + 1).padStart(2, '0')
+          const dateKey = `${currentYear}-${formattedMonth}-${formattedDay}`
+          const marking = markedDays[dateKey]
+          const isToday = currentMonth === 7 && currentYear === 2026 && dayNum === 14
+
+          return (
+            <div
+              key={dateKey}
+              onClick={() => openDayModal(dayNum)}
+              className={`myhealth-calendar-cell ${isToday ? 'is-today' : ''}`}
+              style={{
+                backgroundColor: marking ? marking.bg : undefined,
+                borderColor: marking ? marking.color : undefined
+              }}
+              title={
+                marking
+                  ? `${dateKey}: ${marking.status} - ${marking.note || 'No note'}`
+                  : `Click to log health activity for ${dateKey}`
+              }
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: isToday || marking ? 900 : 700,
+                    color: isToday ? '#a5b4fc' : marking ? marking.color : '#cbd5e1'
+                  }}
+                >
+                  {dayNum}
                 </span>
 
-                <h1 style={{
-                  fontSize: 'clamp(1.25rem, 3.5vw, 1.7rem)',
-                  fontWeight: 800,
-                  margin: 0,
-                  letterSpacing: '-0.5px',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>
-                  Digital Medication & Adherence Tracker
-                </h1>
+                {isToday && (
+                  <span
+                    style={{
+                      fontSize: '0.46rem',
+                      backgroundColor: '#6366f1',
+                      color: '#ffffff',
+                      padding: '0.1rem 0.28rem',
+                      borderRadius: '4px',
+                      fontWeight: 900
+                    }}
+                  >
+                    TODAY
+                  </span>
+                )}
+              </div>
+
+              {/* Marked Badge or Placeholder */}
+              {marking ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', overflow: 'hidden' }}>
+                  <span style={{ fontSize: '0.68rem' }}>{marking.typeIcon}</span>
+                  <strong
+                    style={{
+                      fontSize: '0.52rem',
+                      color: marking.color,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      whiteSpace: 'nowrap',
+                      fontWeight: 900
+                    }}
+                  >
+                    {marking.status}
+                  </strong>
+                </div>
+              ) : (
+                <span style={{ fontSize: '0.5rem', color: '#64748b', fontWeight: 600 }}>+ Log</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Calendar Bottom Legend Bar */}
+      <div
+        style={{
+          marginTop: '1.2rem',
+          paddingTop: '0.85rem',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.6rem'
+        }}
+      >
+        <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Status Legend:
+        </span>
+        <div style={{ display: 'flex', gap: '0.45rem', fontSize: '0.68rem', fontWeight: 800, flexWrap: 'wrap' }}>
+          <span style={{ color: '#34d399', backgroundColor: 'rgba(16, 185, 129, 0.15)', padding: '0.2rem 0.55rem', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+            💊 Dose Taken
+          </span>
+          <span style={{ color: '#fb7185', backgroundColor: 'rgba(244, 63, 94, 0.15)', padding: '0.2rem 0.55rem', borderRadius: '8px', border: '1px solid rgba(244, 63, 94, 0.3)' }}>
+            ⚠️ Missed
+          </span>
+          <span style={{ color: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.15)', padding: '0.2rem 0.55rem', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+            🩺 Checkup
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="myhealth-container">
+      {/* ── ULTRA-EXECUTIVE HERO BANNER ───────────────────────────────────── */}
+      <div className="myhealth-hero-banner">
+        <div className="myhealth-hero-glow" />
+
+        <div className="myhealth-hero-content">
+          <div className="myhealth-hero-top">
+            <div className="myhealth-hero-brand">
+              <div className="myhealth-hero-icon-box">📅</div>
+              <div>
+                <span className="myhealth-hero-tag">Patient Health & Safety Command</span>
+                <h1 className="myhealth-hero-title">Digital Medication & Adherence Tracker</h1>
               </div>
             </div>
 
-            {/* Quick Stats Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '14px',
-                padding: '0.45rem 0.75rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                <span style={{ fontSize: '1rem' }}>💊</span>
+            {/* Executive Quick Stats */}
+            <div className="myhealth-hero-stats">
+              <div className="myhealth-stat-pill">
+                <span style={{ fontSize: '1.1rem' }}>💊</span>
                 <div>
-                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Adherence Rate</span>
-                  <strong style={{ fontSize: '0.82rem', color: '#34d399', fontWeight: 800 }}>{adherenceRate}% Excellent</strong>
+                  <span className="myhealth-stat-label">Adherence Rate</span>
+                  <span className="myhealth-stat-val" style={{ color: '#34d399' }}>
+                    {adherenceRate}% Excellent
+                  </span>
                 </div>
               </div>
 
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '14px',
-                padding: '0.45rem 0.75rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                <span style={{ fontSize: '1rem' }}>🔥</span>
+              <div className="myhealth-stat-pill">
+                <span style={{ fontSize: '1.1rem' }}>🔥</span>
                 <div>
-                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', display: 'block', fontWeight: 600, textTransform: 'uppercase' }}>Total Days</span>
-                  <strong style={{ fontSize: '0.82rem', color: '#f8fafc', fontWeight: 800 }}>{totalMarkedCount} Days</strong>
+                  <span className="myhealth-stat-label">Total Days Logged</span>
+                  <span className="myhealth-stat-val">{totalMarkedCount} Days</span>
+                </div>
+              </div>
+
+              <div className="myhealth-stat-pill">
+                <span style={{ fontSize: '1.1rem' }}>⚡</span>
+                <div>
+                  <span className="myhealth-stat-label">Safety Status</span>
+                  <span className="myhealth-stat-val" style={{ color: '#38bdf8' }}>
+                    Automated SOS
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          <p style={{ color: '#94a3b8', fontSize: '0.86rem', margin: 0, maxWidth: '780px', lineHeight: 1.5 }}>
-            Click on any date to mark medication intake (Dose Taken 💊, Missed ⚠️, Lab Checkup 🩺) or add personal health notes. Click again to easily remove or update markings.
+          <p className="myhealth-hero-desc">
+            Complete daily health adherence portal: track your medication schedule, set audio alarms, sync family caregiver WhatsApp SOS triggers, and manage clinical dietary meal routines.
           </p>
         </div>
       </div>
 
-      {/* ── 2-COLUMN LAYOUT: RESPONSIVE WIDGET CALENDAR & MEDICATION ALARM ───────────── */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
-        gap: '1.4rem',
-        alignItems: 'start',
-        width: '100%',
-        boxSizing: 'border-box'
-      }}>
+      {/* ── SEGMENTED NAVIGATION TABS (PROPER FOCUS & SPACED MODULARITY) ──── */}
+      <nav className="myhealth-nav-tabs" aria-label="Health Modules Filter">
+        {HEALTH_SUB_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`myhealth-tab-btn ${activeSubTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveSubTab(tab.id)}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </nav>
 
-        {/* ── LEFT: ULTRA-ATTRACTIVE DIGITAL HEALTH CALENDAR WIDGET ──────────── */}
-        <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '24px',
-          border: '1px solid #e2e8f0',
-          padding: '1.4rem',
-          boxShadow: '0 12px 35px rgba(0, 0, 0, 0.04)',
-          animation: 'fadeInUp 0.3s ease-out',
-          width: '100%',
-          boxSizing: 'border-box',
-          overflow: 'hidden'
-        }}>
-          {/* Calendar Header: Sleek Dark Gradient Header Bar */}
-          <div style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-            borderRadius: '16px',
-            padding: '0.9rem 1.1rem',
-            marginBottom: '1rem',
-            display: 'flex',
-            justify: 'space-between',
-            alignItems: 'center',
-            boxShadow: '0 6px 20px rgba(15, 23, 42, 0.25)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div style={{ display: 'flex', gap: '0.25rem' }}>
-                <button
-                  type="button"
-                  onClick={handlePrevMonth}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '50%',
-                    width: '28px',
-                    height: '28px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justify: 'center',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: 800,
-                    color: '#ffffff',
-                    transition: 'all 0.15s ease'
-                  }}
-                  title="Previous Month"
-                >
-                  ‹
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleNextMonth}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '50%',
-                    width: '28px',
-                    height: '28px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justify: 'center',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: 800,
-                    color: '#ffffff',
-                    transition: 'all 0.15s ease'
-                  }}
-                  title="Next Month"
-                >
-                  ›
-                </button>
-              </div>
-
-              <h2 style={{
-                fontSize: '1.15rem',
-                fontWeight: 900,
-                margin: 0,
-                letterSpacing: '-0.3px',
-                background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                {MONTH_NAMES[currentMonth]} {currentYear}
-              </h2>
-            </div>
-
-            {/* Today Badge */}
-            <span style={{
-              backgroundColor: 'rgba(129, 140, 248, 0.2)',
-              border: '1px solid rgba(129, 140, 248, 0.35)',
-              color: '#c7d2fe',
-              fontSize: '0.68rem',
-              fontWeight: 800,
-              padding: '0.2rem 0.55rem',
-              borderRadius: '20px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}>
-              ✨ Live Calendar
-            </span>
+      {/* ── TAB CONTENT ──────────────────────────────────────────────────── */}
+      {/* 1. ALL MODULES (OVERVIEW): BALANCED 2-ROW GRID WITH PROPER SPACING */}
+      {activeSubTab === 'all' && (
+        <>
+          {/* Row 1: Calendar & Medication Alarms side-by-side with equal visual weight */}
+          <div className="myhealth-top-grid">
+            {renderCalendarCard()}
+            <MedicationAlarm section="alarms" />
           </div>
 
-          {/* 7-Column Calendar Grid Header */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.35rem',
-            textAlign: 'center',
-            marginBottom: '0.5rem',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
-            {DAYS_OF_WEEK.map(day => (
-              <div key={day} style={{
-                fontSize: '0.68rem',
-                fontWeight: 900,
-                color: '#6366f1',
-                textTransform: 'uppercase',
-                letterSpacing: '0.6px',
-                padding: '0.2rem 0',
-                backgroundColor: '#f8fafc',
-                borderRadius: '6px'
-              }}>
-                {day}
-              </div>
-            ))}
+          {/* Row 2: Caregiver WhatsApp SOS Gateway (Full Width, Spacious) */}
+          <div className="myhealth-full-section">
+            <MedicationAlarm section="caregiver" />
           </div>
 
-          {/* Calendar Days Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '0.35rem',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
-            {/* Blank Leading Cells */}
-            {Array.from({ length: firstDayIndex }).map((_, idx) => (
-              <div key={`blank-${idx}`} style={{ minHeight: '48px', backgroundColor: '#f8fafc', borderRadius: '10px', opacity: 0.25 }} />
-            ))}
-
-            {/* Active Month Days */}
-            {Array.from({ length: daysInMonth }).map((_, idx) => {
-              const dayNum = idx + 1
-              const formattedDay = String(dayNum).padStart(2, '0')
-              const formattedMonth = String(currentMonth + 1).padStart(2, '0')
-              const dateKey = `${currentYear}-${formattedMonth}-${formattedDay}`
-              const marking = markedDays[dateKey]
-
-              const isToday = currentMonth === 7 && currentYear === 2026 && dayNum === 14
-
-              return (
-                <div
-                  key={dateKey}
-                  onClick={() => openDayModal(dayNum)}
-                  style={{
-                    minHeight: '52px',
-                    minWidth: 0,
-                    borderRadius: '12px',
-                    padding: '0.3rem 0.25rem',
-                    border: isToday ? '2px solid #6366f1' : marking ? `1.5px solid ${marking.color}` : '1px solid #e2e8f0',
-                    backgroundColor: marking ? marking.bg : isToday ? '#eef2ff' : '#ffffff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justify: 'space-between',
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: isToday ? '0 4px 14px rgba(99, 102, 241, 0.25)' : marking ? '0 2px 8px rgba(0,0,0,0.03)' : 'none',
-                    boxSizing: 'border-box',
-                    overflow: 'hidden'
-                  }}
-                  title={marking ? `${dateKey}: ${marking.status} - ${marking.note || 'No note'}` : `Click to mark ${dateKey}`}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{
-                      fontSize: '0.78rem',
-                      fontWeight: isToday || marking ? 900 : 700,
-                      color: isToday ? '#4338ca' : marking ? marking.color : '#0f172a'
-                    }}>
-                      {dayNum}
-                    </span>
-
-                    {isToday && (
-                      <span style={{ fontSize: '0.45rem', backgroundColor: '#6366f1', color: '#ffffff', padding: '0.08rem 0.2rem', borderRadius: '4px', fontWeight: 900 }}>
-                        TODAY
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Ultra-Attractive Marked Info Badge */}
-                  {marking ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', overflow: 'hidden' }}>
-                      <span style={{ fontSize: '0.7rem' }}>{marking.typeIcon}</span>
-                      <strong style={{ fontSize: '0.52rem', color: marking.color, textTransform: 'uppercase', letterSpacing: '0.1px', whiteSpace: 'nowrap', fontWeight: 900 }}>
-                        {marking.status}
-                      </strong>
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: '0.52rem', color: '#cbd5e1', fontWeight: 600 }}>
-                      + Mark
-                    </span>
-                  )}
-                </div>
-              )
-            })}
+          {/* Row 3: Healthy Food Planning Schedule (Full Width, Spacious) */}
+          <div className="myhealth-full-section">
+            <MedicationAlarm section="meals" />
           </div>
+        </>
+      )}
 
-          {/* Calendar Bottom Legend Bar */}
-          <div style={{
-            marginTop: '1rem',
-            paddingTop: '0.7rem',
-            borderTop: '1px solid #f1f5f9',
-            display: 'flex',
-            justify: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.4rem'
-          }}>
-            <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Legend:</span>
-            <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.68rem', fontWeight: 800 }}>
-              <span style={{ color: '#059669', backgroundColor: '#d1fae5', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
-                💊 Taken
-              </span>
-              <span style={{ color: '#be123c', backgroundColor: '#ffe4e6', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
-                ⚠️ Missed
-              </span>
-              <span style={{ color: '#0369a1', backgroundColor: '#e0f2fe', padding: '0.15rem 0.45rem', borderRadius: '6px' }}>
-                🩺 Checkup
-              </span>
-            </div>
-          </div>
+      {/* 2. CALENDAR TAB ONLY */}
+      {activeSubTab === 'calendar' && (
+        <div style={{ maxWidth: '850px', margin: '0 auto 2rem auto' }}>
+          {renderCalendarCard()}
         </div>
+      )}
 
-        {/* ── RIGHT: MEDICATION ALARM SUITE ─────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
-          {/* Medication Audio Alarm & Reminders & Diet Schedule */}
-          <MedicationAlarm />
+      {/* 3. ALARMS TAB ONLY */}
+      {activeSubTab === 'alarms' && (
+        <div style={{ maxWidth: '900px', margin: '0 auto 2rem auto' }}>
+          <MedicationAlarm section="alarms" />
         </div>
-      </div>
+      )}
+
+      {/* 4. CAREGIVER SOS TAB ONLY */}
+      {activeSubTab === 'caregiver' && (
+        <div style={{ maxWidth: '1000px', margin: '0 auto 2rem auto' }}>
+          <MedicationAlarm section="caregiver" />
+        </div>
+      )}
+
+      {/* 5. DIET & MEALS TAB ONLY */}
+      {activeSubTab === 'meals' && (
+        <div style={{ maxWidth: '1000px', margin: '0 auto 2rem auto' }}>
+          <MedicationAlarm section="meals" />
+        </div>
+      )}
 
       {/* ── DAY MARK & REMOVE MODAL ───────────────────────────────────── */}
       {selectedDayKey && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(6px)',
-          zIndex: 99999,
-          display: 'grid',
-          placeItems: 'center',
-          padding: '1.5rem',
-          boxSizing: 'border-box',
-          margin: 0
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            maxWidth: '460px',
-            width: '100%',
-            padding: '1.8rem',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
-            animation: 'fadeInUp 0.25s ease-out',
-            margin: 'auto',
-            boxSizing: 'border-box'
-          }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(11, 17, 32, 0.82)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 99999,
+            display: 'grid',
+            placeItems: 'center',
+            padding: '1.5rem',
+            boxSizing: 'border-box',
+            margin: 0
+          }}
+        >
+          <div
+            className="myhealth-card"
+            style={{
+              maxWidth: '480px',
+              width: '100%',
+              padding: '1.8rem',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.7)',
+              margin: 'auto',
+              boxSizing: 'border-box'
+            }}
+          >
             {/* Modal Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.3rem',
+                paddingBottom: '0.85rem',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
+            >
               <div>
-                <h3 style={{ margin: '0 0 0.15rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
-                  Mark Health Status
+                <h3 style={{ margin: '0 0 0.2rem 0', fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>
+                  Log Daily Health Status
                 </h3>
-                <span style={{ fontSize: '0.78rem', color: '#6366f1', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.78rem', color: '#818cf8', fontWeight: 700 }}>
                   Date: {selectedDayKey}
                 </span>
               </div>
@@ -544,15 +586,15 @@ export default function MyHealth() {
                 type="button"
                 onClick={() => setSelectedDayKey(null)}
                 style={{
-                  background: '#f1f5f9',
-                  border: 'none',
-                  color: '#64748b',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#cbd5e1',
                   borderRadius: '50%',
                   width: '32px',
                   height: '32px',
                   display: 'flex',
                   alignItems: 'center',
-                  justify: 'center',
+                  justifyContent: 'center',
                   cursor: 'pointer',
                   fontSize: '0.95rem'
                 }}
@@ -562,31 +604,42 @@ export default function MyHealth() {
             </div>
 
             {/* Status Type Selectors */}
-            <div style={{ marginBottom: '1.3rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.6rem' }}>
+            <div style={{ marginBottom: '1.4rem' }}>
+              <label
+                style={{
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  display: 'block',
+                  marginBottom: '0.65rem'
+                }}
+              >
                 Select Status Category:
               </label>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.65rem' }}>
                 <button
                   type="button"
                   onClick={() => setModalStatus('TAKEN')}
                   style={{
-                    padding: '0.7rem 0.5rem',
-                    borderRadius: '12px',
-                    border: modalStatus === 'TAKEN' ? '2px solid #10b981' : '1px solid #cbd5e1',
-                    backgroundColor: modalStatus === 'TAKEN' ? '#d1fae5' : '#ffffff',
-                    color: modalStatus === 'TAKEN' ? '#047857' : '#475569',
+                    padding: '0.75rem 0.5rem',
+                    borderRadius: '14px',
+                    border: modalStatus === 'TAKEN' ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: modalStatus === 'TAKEN' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                    color: modalStatus === 'TAKEN' ? '#34d399' : '#94a3b8',
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '0.3rem'
+                    gap: '0.35rem',
+                    transition: 'all 0.18s ease'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>💊</span>
+                  <span style={{ fontSize: '1.3rem' }}>💊</span>
                   <span>Dose Taken</span>
                 </button>
 
@@ -594,21 +647,22 @@ export default function MyHealth() {
                   type="button"
                   onClick={() => setModalStatus('MISSED')}
                   style={{
-                    padding: '0.7rem 0.5rem',
-                    borderRadius: '12px',
-                    border: modalStatus === 'MISSED' ? '2px solid #e11d48' : '1px solid #cbd5e1',
-                    backgroundColor: modalStatus === 'MISSED' ? '#ffe4e6' : '#ffffff',
-                    color: modalStatus === 'MISSED' ? '#be123c' : '#475569',
+                    padding: '0.75rem 0.5rem',
+                    borderRadius: '14px',
+                    border: modalStatus === 'MISSED' ? '2px solid #f43f5e' : '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: modalStatus === 'MISSED' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                    color: modalStatus === 'MISSED' ? '#fb7185' : '#94a3b8',
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '0.3rem'
+                    gap: '0.35rem',
+                    transition: 'all 0.18s ease'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                  <span style={{ fontSize: '1.3rem' }}>⚠️</span>
                   <span>Missed Dose</span>
                 </button>
 
@@ -616,30 +670,41 @@ export default function MyHealth() {
                   type="button"
                   onClick={() => setModalStatus('CHECKUP')}
                   style={{
-                    padding: '0.7rem 0.5rem',
-                    borderRadius: '12px',
-                    border: modalStatus === 'CHECKUP' ? '2px solid #0284c7' : '1px solid #cbd5e1',
-                    backgroundColor: modalStatus === 'CHECKUP' ? '#e0f2fe' : '#ffffff',
-                    color: modalStatus === 'CHECKUP' ? '#0369a1' : '#475569',
+                    padding: '0.75rem 0.5rem',
+                    borderRadius: '14px',
+                    border: modalStatus === 'CHECKUP' ? '2px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: modalStatus === 'CHECKUP' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                    color: modalStatus === 'CHECKUP' ? '#38bdf8' : '#94a3b8',
                     fontSize: '0.78rem',
                     fontWeight: 800,
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '0.3rem'
+                    gap: '0.35rem',
+                    transition: 'all 0.18s ease'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>🩺</span>
-                  <span>Lab / Checkup</span>
+                  <span style={{ fontSize: '1.3rem' }}>🩺</span>
+                  <span>Checkup</span>
                 </button>
               </div>
             </div>
 
-            {/* Custom Note Text Field */}
+            {/* Custom Note Field */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.5rem' }}>
-                Health Note (Optional):
+              <label
+                style={{
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  display: 'block',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                Health / Patient Note (Optional):
               </label>
 
               <input
@@ -649,9 +714,11 @@ export default function MyHealth() {
                 onChange={(e) => setModalNote(e.target.value)}
                 style={{
                   width: '100%',
-                  border: '1.5px solid #cbd5e1',
+                  border: '1.5px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  color: '#ffffff',
                   borderRadius: '12px',
-                  padding: '0.65rem 0.9rem',
+                  padding: '0.7rem 0.95rem',
                   fontSize: '0.88rem',
                   outline: 'none',
                   boxSizing: 'border-box'
@@ -659,25 +726,25 @@ export default function MyHealth() {
               />
             </div>
 
-            {/* Action Buttons: Remove Marking vs Save */}
+            {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               {markedDays[selectedDayKey] && (
                 <button
                   type="button"
                   onClick={handleRemoveMarking}
                   style={{
-                    backgroundColor: '#fff1f2',
-                    color: '#e11d48',
-                    border: '1px solid #fecdd3',
+                    backgroundColor: 'rgba(244, 63, 94, 0.15)',
+                    color: '#fb7185',
+                    border: '1px solid rgba(244, 63, 94, 0.35)',
                     borderRadius: '12px',
-                    padding: '0.65rem 1rem',
+                    padding: '0.7rem 1rem',
                     fontSize: '0.85rem',
                     fontWeight: 800,
                     cursor: 'pointer',
                     flex: 1
                   }}
                 >
-                  🗑️ Remove Marking
+                  🗑️ Remove
                 </button>
               )}
 
@@ -685,11 +752,11 @@ export default function MyHealth() {
                 type="button"
                 onClick={handleSaveMarking}
                 style={{
-                  backgroundColor: '#6366f1',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #38bdf8 100%)',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '12px',
-                  padding: '0.65rem 1rem',
+                  padding: '0.7rem 1.1rem',
                   fontSize: '0.85rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -697,7 +764,7 @@ export default function MyHealth() {
                   boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
                 }}
               >
-                ✓ Save Health Mark
+                ✓ Save Health Entry
               </button>
             </div>
           </div>

@@ -84,7 +84,7 @@ const INITIAL_MEALS = [
   }
 ]
 
-export default function MedicationAlarm() {
+export default function MedicationAlarm({ section = 'all' } = {}) {
   const [alarms, setAlarms] = useState(() => {
     try {
       const saved = localStorage.getItem('pulsemed_medication_alarms')
@@ -107,25 +107,82 @@ export default function MedicationAlarm() {
   const [ringingTimer, setRingingTimer] = useState(10)
   const [familyCareSyncEnabled, setFamilyCareSyncEnabled] = useState(true)
 
-  // Family WhatsApp Caregiver Contact state
-  const [familyContact, setFamilyContact] = useState(() => {
+  // Family WhatsApp Caregiver Contact state with Multi-Caregiver Directory (Add, Update, Delete)
+  const [caregivers, setCaregivers] = useState(() => {
     try {
-      const saved = localStorage.getItem('pulsemed_family_whatsapp_contact')
-      return saved ? JSON.parse(saved) : {
-        name: 'Priya Sharma (Daughter)',
-        relation: 'Primary Caregiver',
-        phone: '+919876543210',
-        autoAlertEnabled: true
+      const savedList = localStorage.getItem('pulsemed_caregivers_list')
+      if (savedList) {
+        const parsed = JSON.parse(savedList)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+      const savedSingle = localStorage.getItem('pulsemed_family_whatsapp_contact')
+      if (savedSingle) {
+        const single = JSON.parse(savedSingle)
+        return [{
+          id: single.id || 'cg-1',
+          name: single.name || 'Priya Sharma (Daughter)',
+          relation: single.relation || 'Primary Caregiver',
+          phone: single.phone || '+918789812990',
+          isPrimary: true,
+          autoAlertEnabled: single.autoAlertEnabled !== false
+        }]
       }
     } catch {
-      return {
+      // fallback
+    }
+    return [
+      {
+        id: 'cg-1',
         name: 'Priya Sharma (Daughter)',
         relation: 'Primary Caregiver',
-        phone: '+919876543210',
+        phone: '+918789812990',
+        isPrimary: true,
         autoAlertEnabled: true
       }
+    ]
+  })
+
+  const primaryCaregiver = caregivers.find(c => c.isPrimary) || caregivers[0] || null
+  const familyContact = primaryCaregiver || {
+    id: 'cg-none',
+    name: 'No Caregiver Configured',
+    relation: 'None',
+    phone: '',
+    isPrimary: false,
+    autoAlertEnabled: false
+  }
+
+  const caregiversRef = useRef(caregivers)
+  const familyContactRef = useRef(familyContact)
+
+  // Caregiver Modal States (Add, Edit, Delete Confirm)
+  const [showAddCaregiverModal, setShowAddCaregiverModal] = useState(false)
+  const [newCgName, setNewCgName] = useState('')
+  const [newCgRelation, setNewCgRelation] = useState('')
+  const [newCgPhone, setNewCgPhone] = useState('')
+  const [newCgIsPrimary, setNewCgIsPrimary] = useState(false)
+  const [newCgAutoAlert, setNewCgAutoAlert] = useState(true)
+
+  const [editingCaregiver, setEditingCaregiver] = useState(null)
+  const [editCgName, setEditCgName] = useState('')
+  const [editCgRelation, setEditCgRelation] = useState('')
+  const [editCgPhone, setEditCgPhone] = useState('')
+  const [editCgIsPrimary, setEditCgIsPrimary] = useState(false)
+  const [editCgAutoAlert, setEditCgAutoAlert] = useState(true)
+
+  const [deleteConfirmCaregiver, setDeleteConfirmCaregiver] = useState(null)
+  const [caregiverToast, setCaregiverToast] = useState('')
+
+  // Twilio Automated AI Voice Call System State
+  const [autoVoiceCallEnabled, setAutoVoiceCallEnabled] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pulsemed_auto_voice_call_enabled')
+      return saved !== null ? saved === 'true' : true
+    } catch {
+      return true
     }
   })
+// direct real phone call mode (no on-screen popup modal)
 
   // WhatsApp Alert Dispatch History
   const [whatsappAlertHistory, setWhatsappAlertHistory] = useState(() => {
@@ -148,12 +205,7 @@ export default function MedicationAlarm() {
 
   // Modals for WhatsApp gateway
   const [dispatchedAlertModal, setDispatchedAlertModal] = useState(null)
-  const [isEditingCaregiver, setIsEditingCaregiver] = useState(false)
-  const [editName, setEditName] = useState(familyContact.name)
-  const [editPhone, setEditPhone] = useState(familyContact.phone)
-  const [editRelation, setEditRelation] = useState(familyContact.relation)
   const [copiedAlert, setCopiedAlert] = useState(false)
-  const familyContactRef = useRef(familyContact)
 
   // WhatsApp Web QR Code Pairing Session State
   const [gatewaySession, setGatewaySession] = useState(() => {
@@ -213,8 +265,17 @@ export default function MedicationAlarm() {
   }, [showQrModal, pairingStatus])
 
   useEffect(() => {
+    caregiversRef.current = caregivers
     familyContactRef.current = familyContact
-  }, [familyContact])
+    try {
+      localStorage.setItem('pulsemed_caregivers_list', JSON.stringify(caregivers))
+      if (primaryCaregiver) {
+        localStorage.setItem('pulsemed_family_whatsapp_contact', JSON.stringify(primaryCaregiver))
+      }
+    } catch {
+      // localStorage optional
+    }
+  }, [caregivers, primaryCaregiver, familyContact])
 
   // Phone-Style Alarm Time Picker Modal state
   const [modifyModalAlarm, setModifyModalAlarm] = useState(null)
@@ -254,13 +315,7 @@ export default function MedicationAlarm() {
     }
   }, [meals])
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('pulsemed_family_whatsapp_contact', JSON.stringify(familyContact))
-    } catch {
-      // localStorage optional
-    }
-  }, [familyContact])
+// sync handled by multi-caregivers effect
 
   useEffect(() => {
     try {
@@ -477,7 +532,7 @@ export default function MedicationAlarm() {
     return `🚨 *[PHARMX AI - PATIENT CRITICAL MEDICATION ALERT]* 🚨\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ *URGENT: MISSED DOSE NOTIFICATION FOR CAREGIVER*\n\nDear *${caregiverName}*,\nThis is an automated safety alert from the *Pharmx AI Clinical Monitoring Gateway*.\n\nYour family member (*Patient*) did *NOT* acknowledge or take their scheduled medication within the alarm window, and the dose is currently recorded as *MISSED*.\n\n📋 *MEDICATION DETAILS:*\n• 💊 *Medicine:* *${medName}*\n• ⏰ *Scheduled Time:* *${timeStr}* (Today)\n• 📌 *Food Protocol:* ${instruction}\n• ⚠️ *Current Status:* *MISSED / UNANSWERED DOSE*\n• 🏥 *Surveillance Node:* Pharmx AI Bhopal Clinical Radar\n\n🚨 *RECOMMENDED IMMEDIATE CAREGIVER ACTION:*\n1. Please call or contact the patient immediately to confirm if they have taken their medicine.\n2. If taken, ask them to confirm on the Pharmx AI Patient Safety Dashboard.\n3. If feeling dizzy, unwell, or in distress, please consult an emergency doctor or hospital immediately.\n\n🔗 *Emergency Patient Medical Portal:*\nhttps://hack-in-motion-ricr-him-1114.vercel.app\n\nStay safe,\n*Pharmx AI Patient Safety & Emergency Hospital Gateway*\n━━━━━━━━━━━━━━━━━━━━━━━━━━`
   }, [])
 
-  const sendFamilyWhatsAppAlert = useCallback((alarm, isManual = false) => {
+  const sendFamilyWhatsAppAlert = useCallback((alarm, isManual = false, targetContact = null) => {
     if (!alarm) return
 
     // GUARD: Check if WhatsApp Gateway is linked via QR Code!
@@ -486,75 +541,93 @@ export default function MedicationAlarm() {
       return
     }
 
-    const contact = familyContactRef.current
-    const rawDigits = (contact.phone || '').replace(/\D/g, '')
-    const targetPhone = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits
-    const message = generateFamilyWhatsAppMessage(alarm, contact)
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(message)}`
-
-    const newLog = {
-      id: `wa-alert-${Date.now()}`,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      medicine: alarm.medicine,
-      recipient: `${contact.name} (${contact.phone})`,
-      status: 'DELIVERED',
-      trigger: isManual ? 'Manual Caregiver SOS Button' : 'Auto 10s Ringing Timeout',
-      gateway: `Linked Account (${gatewaySessionRef.current.linkedPhone})`
+    // Determine target recipient(s)
+    let recipients = []
+    if (targetContact) {
+      recipients = [targetContact]
+    } else {
+      recipients = caregiversRef.current.filter(c => c.autoAlertEnabled)
+      if (recipients.length === 0 && caregiversRef.current.length > 0) {
+        recipients = [caregiversRef.current[0]]
+      }
     }
 
-    setWhatsappAlertHistory(prev => [newLog, ...prev.slice(0, 9)])
+    if (recipients.length === 0) {
+      return
+    }
 
-    saveActivityToMedicalHistory({
-      title: `Family WhatsApp Alert: ${alarm.medicine}`,
-      category: 'Emergency SOS',
-      typeIcon: '📲',
-      status: 'WHATSAPP ALERT SENT 📲',
-      statusBg: '#ecfdf5',
-      statusColor: '#047857',
-      summary: `Automated WhatsApp SOS alert sent via linked gateway (${gatewaySessionRef.current.linkedPhone}) to caregiver ${contact.name} (${contact.phone}) regarding missed ${alarm.medicine}.`,
-      doctorNote: `Caregiver notified via Connected WhatsApp Gateway Session ${gatewaySessionRef.current.sessionId}. Immediate patient well-being check recommended.`,
-      details: [
-        `Recipient: ${contact.name} (${contact.phone})`,
-        `Medicine: ${alarm.medicine}`,
-        `Gateway Session: ${gatewaySessionRef.current.sessionId} (Linked Device Active)`,
-        `Trigger: ${isManual ? 'Manual SOS Button' : '10-Sec Unanswered Ringing Timeout'}`,
-        `Gateway Protocol: WhatsApp Web Protocol`
-      ]
-    })
+    recipients.forEach((contact, idx) => {
+      const rawDigits = (contact.phone || '').replace(/\D/g, '')
+      const targetPhone = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits
+      const message = generateFamilyWhatsAppMessage(alarm, contact)
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(message)}`
 
-    setDispatchedAlertModal({
-      alarm,
-      message,
-      whatsappUrl,
-      recipient: `${contact.name} (${contact.phone})`,
-      gatewayPhone: gatewaySessionRef.current.linkedPhone,
-      isManual
-    })
+      const newLog = {
+        id: `wa-alert-${Date.now()}-${idx}`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        medicine: alarm.medicine,
+        recipient: `${contact.name} (${contact.phone})`,
+        status: 'DELIVERED',
+        trigger: isManual ? 'Manual Caregiver SOS Button' : 'Auto 10s Ringing Timeout',
+        gateway: `Linked Account (${gatewaySessionRef.current.linkedPhone})`
+      }
 
-    // Also dispatch to Backend WhatsApp Cloud & Twilio Gateway Service
-    try {
-      fetch(getApiUrl('/api/health/send-whatsapp-sos'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          recipientPhone: targetPhone,
-          recipientName: contact.name,
-          medicine: alarm.medicine,
-          time: alarm.time,
-          instruction: alarm.instruction,
+      setWhatsappAlertHistory(prev => [newLog, ...prev.slice(0, 9)])
+
+      saveActivityToMedicalHistory({
+        title: `Family WhatsApp Alert: ${alarm.medicine}`,
+        category: 'Emergency SOS',
+        typeIcon: '📲',
+        status: 'WHATSAPP ALERT SENT 📲',
+        statusBg: '#ecfdf5',
+        statusColor: '#047857',
+        summary: `Automated WhatsApp SOS alert sent via linked gateway (${gatewaySessionRef.current.linkedPhone}) to caregiver ${contact.name} (${contact.phone}) regarding missed ${alarm.medicine}.`,
+        doctorNote: `Caregiver notified via Connected WhatsApp Gateway Session ${gatewaySessionRef.current.sessionId}. Immediate patient well-being check recommended.`,
+        details: [
+          `Recipient: ${contact.name} (${contact.phone})`,
+          `Medicine: ${alarm.medicine}`,
+          `Gateway Session: ${gatewaySessionRef.current.sessionId} (Linked Device Active)`,
+          `Trigger: ${isManual ? 'Manual SOS Button' : '10-Sec Unanswered Ringing Timeout'}`,
+          `Gateway Protocol: WhatsApp Web Protocol`
+        ]
+      })
+
+      // Backend sync
+      try {
+        fetch(getApiUrl('/api/health/send-whatsapp-sos'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipientPhone: targetPhone,
+            recipientName: contact.name,
+            medicine: alarm.medicine,
+            time: alarm.time,
+            instruction: alarm.instruction,
+            message,
+            sessionId: gatewaySessionRef.current.sessionId
+          })
+        }).catch(() => {})
+      } catch {
+        // background gateway sync optional
+      }
+
+      if (idx === 0) {
+        setDispatchedAlertModal({
+          alarm,
           message,
-          sessionId: gatewaySessionRef.current.sessionId
+          whatsappUrl,
+          recipient: `${contact.name} (${contact.phone})`,
+          gatewayPhone: gatewaySessionRef.current.linkedPhone,
+          isManual
         })
-      }).catch(() => {})
-    } catch {
-      // background gateway sync optional
-    }
 
-    try {
-      window.open(whatsappUrl, '_blank')
-    } catch {
-      // Browser popup blocker fallback
-    }
+        try {
+          window.open(whatsappUrl, '_blank')
+        } catch {
+          // Browser popup blocker fallback
+        }
+      }
+    })
   }, [generateFamilyWhatsAppMessage])
 
   // Handle 1-Minute Unanswered Alarm Ringing Timeout -> Mark as Missed
@@ -594,6 +667,11 @@ export default function MedicationAlarm() {
         setNotConnectedWarningModal(true)
       }
     }
+
+    // 📞 AUTOMATIC AI VOICE CALL TRIGGER (TWILIO PROGRAMMABLE VOICE)
+    if (autoVoiceCallEnabled) {
+      triggerAiVoiceCall(alarm, false)
+    }
   }, [familyCareSyncEnabled, sendFamilyWhatsAppAlert])
 
   // Simulate QR Code Camera Scan & Device Pairing
@@ -620,6 +698,59 @@ export default function MedicationAlarm() {
     }, 1600)
   }
 
+  // Save autoVoiceCallEnabled in localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_auto_voice_call_enabled', String(autoVoiceCallEnabled))
+    } catch {
+      // localStorage
+    }
+  }, [autoVoiceCallEnabled])
+
+  // Trigger Outbound AI Voice Call Directly to Real Phone (Twilio Programmable Voice)
+  const triggerAiVoiceCall = useCallback((alarm, isManual = false, targetContact = null) => {
+    if (!alarm) return
+
+    const recipient = targetContact || primaryCaregiver || {
+      name: 'Family Contact',
+      phone: '+918789812990'
+    }
+
+    const targetPhone = recipient.phone || '+918789812990'
+    playSoundBeep()
+    showCgToast(`📞 Direct AI phone call placed to ${targetPhone}...`)
+
+    // Dispatch real phone call to Twilio Programmable Voice Backend API
+    try {
+      fetch(getApiUrl('/api/health/trigger-voice-call'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toPhone: targetPhone,
+          patientName: recipient.name || 'Sittu',
+          medicine: alarm.medicine,
+          instruction: alarm.instruction,
+          time: alarm.time,
+          isEmergency: !isManual
+        })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            showCgToast(`📞 Call placed to ${targetPhone}! Ringing now...`)
+          } else {
+            console.warn('[Twilio Call Notice]', data.message)
+            showCgToast(`⚠️ ${data.message}`)
+          }
+        })
+        .catch(err => {
+          console.warn('[Twilio Background Dispatch Note]', err.message)
+        })
+    } catch {
+      // background
+    }
+  }, [primaryCaregiver])
+
   // Disconnect / Unlink WhatsApp Gateway
   const handleDisconnectGateway = async () => {
     setGatewaySession(prev => ({
@@ -644,16 +775,122 @@ export default function MedicationAlarm() {
     sendFamilyWhatsAppAlert(testAlarm, true)
   }
 
-  const handleSaveCaregiverContact = () => {
-    if (!editPhone.trim()) return
-    const updated = {
-      ...familyContact,
-      name: editName.trim() || 'Primary Caregiver',
-      phone: editPhone.trim(),
-      relation: editRelation.trim() || 'Family Caregiver'
+  const showCgToast = (msg) => {
+    setCaregiverToast(msg)
+    setTimeout(() => setCaregiverToast(''), 3500)
+  }
+
+  // Add Caregiver Handler
+  const handleAddCaregiver = (e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    if (!newCgName.trim()) {
+      alert('Please enter caregiver name.')
+      return
     }
-    setFamilyContact(updated)
-    setIsEditingCaregiver(false)
+    if (!newCgPhone.trim()) {
+      alert('Please enter caregiver WhatsApp phone number.')
+      return
+    }
+
+    const newId = `cg-${Date.now()}`
+    const shouldBePrimary = newCgIsPrimary || caregivers.length === 0
+
+    const newEntry = {
+      id: newId,
+      name: newCgName.trim(),
+      relation: newCgRelation.trim() || 'Family Caregiver',
+      phone: newCgPhone.trim(),
+      isPrimary: shouldBePrimary,
+      autoAlertEnabled: newCgAutoAlert
+    }
+
+    setCaregivers(prev => {
+      const updated = shouldBePrimary ? prev.map(c => ({ ...c, isPrimary: false })) : [...prev]
+      return [...updated, newEntry]
+    })
+
+    setShowAddCaregiverModal(false)
+    setNewCgName('')
+    setNewCgRelation('')
+    setNewCgPhone('')
+    setNewCgIsPrimary(false)
+    setNewCgAutoAlert(true)
+    showCgToast(`✓ Caregiver "${newEntry.name}" added successfully!`)
+  }
+
+  // Open Edit Caregiver Modal
+  const openEditCaregiver = (cg) => {
+    setEditingCaregiver(cg)
+    setEditCgName(cg.name)
+    setEditCgRelation(cg.relation)
+    setEditCgPhone(cg.phone)
+    setEditCgIsPrimary(!!cg.isPrimary)
+    setEditCgAutoAlert(cg.autoAlertEnabled !== false)
+  }
+
+  // Update Caregiver Handler
+  const handleUpdateCaregiver = (e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    if (!editingCaregiver) return
+    if (!editCgName.trim() || !editCgPhone.trim()) {
+      alert('Name and Phone are required.')
+      return
+    }
+
+    setCaregivers(prev => {
+      return prev.map(item => {
+        if (item.id === editingCaregiver.id) {
+          return {
+            ...item,
+            name: editCgName.trim(),
+            relation: editCgRelation.trim() || 'Family Caregiver',
+            phone: editCgPhone.trim(),
+            isPrimary: editCgIsPrimary,
+            autoAlertEnabled: editCgAutoAlert
+          }
+        }
+        if (editCgIsPrimary) {
+          return { ...item, isPrimary: false }
+        }
+        return item
+      })
+    })
+
+    showCgToast(`✓ Caregiver "${editCgName.trim()}" updated successfully!`)
+    setEditingCaregiver(null)
+  }
+
+  // Delete Caregiver Handler
+  const handleDeleteCaregiver = (id) => {
+    const target = caregivers.find(c => c.id === id)
+    setCaregivers(prev => {
+      const filtered = prev.filter(c => c.id !== id)
+      if (filtered.length > 0 && !filtered.some(c => c.isPrimary)) {
+        filtered[0].isPrimary = true
+      }
+      return filtered
+    })
+
+    setDeleteConfirmCaregiver(null)
+    if (editingCaregiver?.id === id) {
+      setEditingCaregiver(null)
+    }
+    showCgToast(`🗑️ Caregiver "${target?.name || 'Contact'}" removed.`)
+  }
+
+  // Set as Primary Caregiver
+  const handleSetPrimary = (id) => {
+    setCaregivers(prev => prev.map(c => ({
+      ...c,
+      isPrimary: c.id === id
+    })))
+    const target = caregivers.find(c => c.id === id)
+    showCgToast(`⭐ "${target?.name || 'Caregiver'}" set as Primary Contact.`)
+  }
+
+  // Toggle Auto Alert for a single caregiver
+  const handleToggleCgAlert = (id, checked) => {
+    setCaregivers(prev => prev.map(c => c.id === id ? { ...c, autoAlertEnabled: checked } : c))
   }
 
   const handleCopyAlertMessage = (text) => {
@@ -833,16 +1070,18 @@ export default function MedicationAlarm() {
     setShowAddMealModal(false)
   }
 
+  const showAlarms = section === 'all' || section === 'alarms'
+  const showCaregiver = section === 'all' || section === 'caregiver'
+  const showMeals = section === 'all' || section === 'meals'
+
   return (
     <>
-      <div style={{
-        backgroundColor: '#ffffff',
-      borderRadius: '20px',
-      border: '1px solid #e2e8f0',
-      padding: '1.1rem 1.3rem',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
-      boxSizing: 'border-box'
-    }}>
+      {showAlarms && (
+        <div className="myhealth-card myhealth-alarm-card" style={{
+          borderRadius: '20px',
+          padding: '1.25rem 1.4rem',
+          boxSizing: 'border-box'
+        }}>
       <style>{`
         @keyframes pulseRing {
           0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4); }
@@ -1170,16 +1409,16 @@ export default function MedicationAlarm() {
       </div>
     </div>
 
+      )}
+
       {/* ── FAMILY WHATSAPP CAREGIVER PROTECTION GATEWAY ────────────────── */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '24px',
-        border: '1.5px solid #a7f3d0',
-        padding: '1.3rem 1.5rem',
-        boxShadow: '0 10px 30px rgba(5, 150, 105, 0.06)',
-        boxSizing: 'border-box',
-        marginTop: '1.4rem'
-      }}>
+      {showCaregiver && (
+        <div className="myhealth-card myhealth-caregiver-card" style={{
+          borderRadius: '24px',
+          border: '1.5px solid rgba(16, 185, 129, 0.35)',
+          padding: '1.35rem 1.5rem',
+          boxSizing: 'border-box'
+        }}>
         {/* Gateway Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.8rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.6rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -1307,23 +1546,51 @@ export default function MedicationAlarm() {
             <button
               type="button"
               onClick={() => {
-                setEditName(familyContact.name)
-                setEditPhone(familyContact.phone)
-                setEditRelation(familyContact.relation)
-                setIsEditingCaregiver(true)
+                const testAlarm = {
+                  medicine: alarms[0]?.medicine || 'Dolo 650mg',
+                  time: alarms[0]?.time || '14:00',
+                  instruction: alarms[0]?.instruction || 'After Food'
+                }
+                triggerAiVoiceCall(testAlarm, true)
               }}
               style={{
-                backgroundColor: '#ffffff',
-                color: '#334155',
-                border: '1px solid #cbd5e1',
+                backgroundColor: '#3b82f6',
+                color: '#ffffff',
+                border: 'none',
                 borderRadius: '10px',
                 padding: '0.45rem 0.85rem',
                 fontSize: '0.78rem',
                 fontWeight: 800,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 3px 10px rgba(59, 130, 246, 0.25)'
+              }}
+              title="Test Automated AI Phone Call (Twilio Outbound + Voice AI)"
+            >
+              📞 Test AI Voice Call
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowAddCaregiverModal(true)}
+              style={{
+                backgroundColor: '#059669',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 3px 10px rgba(5, 150, 105, 0.25)'
               }}
             >
-              ✏️ Configure Caregiver
+              ➕ Add Caregiver
             </button>
           </div>
         </div>
@@ -1377,83 +1644,412 @@ export default function MedicationAlarm() {
           </div>
         )}
 
-        {/* Gateway Main Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1rem', marginBottom: '1.2rem' }}>
-          {/* Caregiver Profile Card */}
+        {/* Toast Feedback Notice */}
+        {caregiverToast && (
           <div style={{
-            backgroundColor: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: '16px',
-            padding: '1rem 1.15rem'
+            backgroundColor: '#ecfdf5',
+            border: '1px solid #a7f3d0',
+            color: '#065f46',
+            borderRadius: '12px',
+            padding: '0.75rem 1rem',
+            marginBottom: '1rem',
+            fontSize: '0.82rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            animation: 'fadeIn 0.25s ease'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-              <div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  DESIGNATED FAMILY RECIPIENT
-                </span>
-                <h4 style={{ margin: '0.15rem 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
-                  {familyContact.name}
-                </h4>
-                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
-                  Relationship: {familyContact.relation}
-                </span>
-              </div>
-              <span style={{ fontSize: '1.3rem' }}>🛡️</span>
-            </div>
+            <span>✨</span>
+            <span>{caregiverToast}</span>
+          </div>
+        )}
 
-            <div style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              padding: '0.65rem 0.85rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '0.85rem'
-            }}>
-              <div>
-                <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block', fontWeight: 700 }}>
-                  WhatsApp Phone Number:
-                </span>
-                <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', letterSpacing: '0.5px' }}>
-                  {familyContact.phone}
+        {/* ── TWILIO PROGRAMMABLE VOICE AI GATEWAY STATUS CARD ─────────── */}
+        <div style={{
+          backgroundColor: '#eff6ff',
+          border: '1.5px solid #bfdbfe',
+          borderRadius: '16px',
+          padding: '0.95rem 1.25rem',
+          marginBottom: '1.2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.8rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '1.6rem', backgroundColor: '#dbeafe', padding: '0.4rem', borderRadius: '12px' }}>
+              📞
+            </span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <strong style={{ fontSize: '0.92rem', color: '#1e3a8a' }}>
+                  Twilio Programmable Voice AI Engine Active
+                </strong>
+                <span style={{
+                  backgroundColor: '#dcfce7',
+                  color: '#15803d',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '12px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.25rem'
+                }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#22c55e' }}></span>
+                  CALLER ID: +1 (620) 349-5094 🟢
                 </span>
               </div>
-              <span style={{
-                backgroundColor: '#ecfdf5',
-                color: '#059669',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                padding: '0.2rem 0.5rem',
-                borderRadius: '8px'
-              }}>
-                ✓ Verified
+              <span style={{ fontSize: '0.75rem', color: '#3b82f6', fontWeight: 600 }}>
+                Amazon Polly Aditi Bilingual Engine • Auto-Calls patient & caregivers when dose is missed
               </span>
             </div>
+          </div>
 
-            {/* Toggle */}
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.65rem',
-              cursor: 'pointer',
-              userSelect: 'none'
-            }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer', userSelect: 'none' }}>
               <input
                 type="checkbox"
-                checked={familyCareSyncEnabled && familyContact.autoAlertEnabled}
-                onChange={(e) => {
-                  const val = e.target.checked
-                  setFamilyCareSyncEnabled(val)
-                  setFamilyContact(prev => ({ ...prev, autoAlertEnabled: val }))
-                }}
-                style={{ width: '17px', height: '17px', accentColor: '#059669', cursor: 'pointer' }}
+                checked={autoVoiceCallEnabled}
+                onChange={(e) => setAutoVoiceCallEnabled(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: '#2563eb', cursor: 'pointer' }}
               />
-              <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
-                Auto-Dispatch WhatsApp Alert when 10s alarm expires
+              <span style={{ fontSize: '0.78rem', color: '#1e40af', fontWeight: 700 }}>
+                Auto-Call on Missed Alarm
               </span>
             </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                const testAlarm = {
+                  medicine: alarms[0]?.medicine || 'Dolo 650mg',
+                  time: alarms[0]?.time || '14:00',
+                  instruction: alarms[0]?.instruction || 'After Food'
+                }
+                triggerAiVoiceCall(testAlarm, true)
+              }}
+              style={{
+                backgroundColor: '#2563eb',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)'
+              }}
+            >
+              📞 Test Call Now
+            </button>
           </div>
+        </div>
+
+        {/* Caregiver Directory Section Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.6rem' }}>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#0f172a' }}>
+              👨‍👩‍👧 Family Caregivers Directory ({caregivers.length})
+            </h4>
+            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
+              Contacts who receive instant automated WhatsApp notifications if medication doses are missed.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAddCaregiverModal(true)}
+            style={{
+              backgroundColor: '#ecfdf5',
+              color: '#047857',
+              border: '1px solid #a7f3d0',
+              borderRadius: '10px',
+              padding: '0.4rem 0.85rem',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            ➕ Add Caregiver
+          </button>
+        </div>
+
+        {/* Empty Caregivers Directory State */}
+        {caregivers.length === 0 && (
+          <div style={{
+            backgroundColor: '#f8fafc',
+            border: '2px dashed #cbd5e1',
+            borderRadius: '16px',
+            padding: '2rem 1.5rem',
+            textAlign: 'center',
+            marginBottom: '1.2rem'
+          }}>
+            <span style={{ fontSize: '2.4rem', display: 'block', marginBottom: '0.5rem' }}>👨‍👩‍👧</span>
+            <h4 style={{ margin: '0 0 0.35rem 0', color: '#1e293b', fontSize: '1.05rem', fontWeight: 800 }}>
+              No Caregivers Configured Yet
+            </h4>
+            <p style={{ margin: '0 auto 1.2rem auto', color: '#64748b', fontSize: '0.82rem', maxWidth: '440px', lineHeight: 1.5 }}>
+              Add a trusted family member (e.g. Daughter, Son, Spouse, or Attendant) so they automatically receive WhatsApp safety alerts if you ever miss a dose.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowAddCaregiverModal(true)}
+              style={{
+                backgroundColor: '#059669',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '0.6rem 1.2rem',
+                fontSize: '0.85rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.35)'
+              }}
+            >
+              ➕ Add Primary Caregiver Now
+            </button>
+          </div>
+        )}
+
+        {/* Gateway Main Grid: Caregiver Cards + Message Protocol Preview */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(295px, 1fr))', gap: '1rem', marginBottom: '1.2rem' }}>
+          {/* Caregiver Cards */}
+          {caregivers.map((cg) => (
+            <div
+              key={cg.id}
+              style={{
+                backgroundColor: cg.isPrimary ? '#ffffff' : '#f8fafc',
+                border: cg.isPrimary ? '1.5px solid #10b981' : '1px solid #e2e8f0',
+                borderRadius: '18px',
+                padding: '1.1rem 1.2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                boxShadow: cg.isPrimary ? '0 4px 16px rgba(16, 185, 129, 0.08)' : 'none',
+                position: 'relative'
+              }}
+            >
+              <div>
+                {/* Card Top Row: Relationship Badge + Primary Pill */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    color: cg.isPrimary ? '#047857' : '#64748b',
+                    backgroundColor: cg.isPrimary ? '#ecfdf5' : '#e2e8f0',
+                    padding: '0.2rem 0.55rem',
+                    borderRadius: '8px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.4px'
+                  }}>
+                    {cg.relation || 'Caregiver'}
+                  </span>
+
+                  {cg.isPrimary ? (
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      color: '#b45309',
+                      backgroundColor: '#fef3c7',
+                      border: '1px solid #fde68a',
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: '12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}>
+                      ⭐ PRIMARY CONTACT
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleSetPrimary(cg.id)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#6366f1',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        padding: 0
+                      }}
+                      title="Set as primary alert recipient"
+                    >
+                      ☆ Make Primary
+                    </button>
+                  )}
+                </div>
+
+                {/* Name */}
+                <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                  {cg.name}
+                </h4>
+
+                {/* Phone Box */}
+                <div style={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  padding: '0.55rem 0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.85rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span style={{ fontSize: '1rem' }}>📱</span>
+                    <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', letterSpacing: '0.5px' }}>
+                      {cg.phone}
+                    </span>
+                  </div>
+                  <span style={{
+                    backgroundColor: '#ecfdf5',
+                    color: '#059669',
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '6px'
+                  }}>
+                    ✓ WhatsApp
+                  </span>
+                </div>
+
+                {/* Auto Alert Toggle */}
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.55rem',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  marginBottom: '0.95rem'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={familyCareSyncEnabled && cg.autoAlertEnabled}
+                    onChange={(e) => handleToggleCgAlert(cg.id, e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#059669', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '0.74rem', color: '#334155', fontWeight: 700 }}>
+                    Auto-Dispatch WhatsApp Alert (10s timeout)
+                  </span>
+                </label>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                borderTop: '1px solid #f1f5f9',
+                paddingTop: '0.75rem',
+                flexWrap: 'wrap'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => openEditCaregiver(cg)}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#f1f5f9',
+                    color: '#1e293b',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    padding: '0.4rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.3rem'
+                  }}
+                  title="Update caregiver details"
+                >
+                  ✏️ Edit
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirmCaregiver(cg)}
+                  style={{
+                    backgroundColor: '#fff1f2',
+                    color: '#be123c',
+                    border: '1px solid #fecdd3',
+                    borderRadius: '8px',
+                    padding: '0.4rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.25rem'
+                  }}
+                  title="Delete caregiver"
+                >
+                  🗑️ Delete
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const testAlarm = {
+                      medicine: alarms[0]?.medicine || 'Dolo 650mg (Paracetamol)',
+                      time: alarms[0]?.time || '14:00',
+                      instruction: alarms[0]?.instruction || 'After Food'
+                    }
+                    sendFamilyWhatsAppAlert(testAlarm, true, cg)
+                  }}
+                  style={{
+                    backgroundColor: '#ecfdf5',
+                    color: '#047857',
+                    border: '1px solid #a7f3d0',
+                    borderRadius: '8px',
+                    padding: '0.4rem 0.6rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                  title="Test WhatsApp Alert to this caregiver"
+                >
+                  📲 WhatsApp
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const testAlarm = {
+                      medicine: alarms[0]?.medicine || 'Dolo 650mg',
+                      time: alarms[0]?.time || '14:00',
+                      instruction: alarms[0]?.instruction || 'After Food'
+                    }
+                    triggerAiVoiceCall(testAlarm, true, cg)
+                  }}
+                  style={{
+                    backgroundColor: '#eff6ff',
+                    color: '#1d4ed8',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '8px',
+                    padding: '0.4rem 0.6rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                  title="Test AI Voice Call to this caregiver"
+                >
+                  📞 Call
+                </button>
+              </div>
+            </div>
+          ))}
 
           {/* Clinical Message Protocol Preview */}
           <div style={{
@@ -1555,16 +2151,16 @@ Patient did NOT respond to medication alarm within 10 seconds.
         </div>
       </div>
 
+      )}
+
       {/* ── HEALTHY FOOD PLANNING & SCHEDULE BOARD (ALARM KE NICHE) ────────── */}
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '24px',
-        border: '1px solid #e2e8f0',
-        padding: '1.2rem 1.4rem',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
-        boxSizing: 'border-box',
-        marginTop: '1.4rem'
-      }}>
+      {showMeals && (
+        <div className="myhealth-card myhealth-meals-card" style={{
+          borderRadius: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          padding: '1.35rem 1.5rem',
+          boxSizing: 'border-box'
+        }}>
         {/* Card Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -1723,6 +2319,8 @@ Patient did NOT respond to medication alarm within 10 seconds.
           ))}
         </div>
       </div>
+
+      )}
 
       {/* ── PHONE-STYLE ALARM TIME PICKER MODAL ─────────────────────────── */}
       {modifyModalAlarm && (
@@ -2254,8 +2852,8 @@ Patient did NOT respond to medication alarm within 10 seconds.
         </div>
       )}
 
-      {/* ── CONFIGURE CAREGIVER DETAILS MODAL ──────────────────────────── */}
-      {isEditingCaregiver && (
+      {/* ── ADD NEW CAREGIVER MODAL ─────────────────────────────────────── */}
+      {showAddCaregiverModal && (
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
@@ -2279,29 +2877,207 @@ Patient did NOT respond to medication alarm within 10 seconds.
             margin: 'auto'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
-                👨‍👩‍👧 Configure Family Caregiver
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.4rem' }}>➕</span>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                  Add Family Caregiver
+                </h3>
+              </div>
               <button
                 type="button"
-                onClick={() => setIsEditingCaregiver(false)}
+                onClick={() => setShowAddCaregiverModal(false)}
                 style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
               >
                 ✕
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem', marginBottom: '1.3rem' }}>
+            <form onSubmit={handleAddCaregiver} style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem', marginBottom: '1.3rem' }}>
               <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                  Caregiver Full Name:
+                  Caregiver Full Name *
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Priya Sharma, Ramesh Sharma..."
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="e.g. Rahul Sharma, Sneha Patel, Dr. Verma..."
+                  value={newCgName}
+                  onChange={(e) => setNewCgName(e.target.value)}
                   style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  Relationship to Patient:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Daughter, Son, Spouse, Sister, Attendant..."
+                  value={newCgRelation}
+                  onChange={(e) => setNewCgRelation(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                />
+                {/* Quick Relationship Chips */}
+                <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                  {['Daughter', 'Son', 'Spouse', 'Mother', 'Father', 'Attendant'].map(rel => (
+                    <button
+                      key={rel}
+                      type="button"
+                      onClick={() => setNewCgRelation(rel)}
+                      style={{
+                        background: '#f1f5f9',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '6px',
+                        padding: '0.2rem 0.5rem',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        color: '#475569',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {rel}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  WhatsApp Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  placeholder="e.g. +91 98765 43210 or 9876543210"
+                  value={newCgPhone}
+                  onChange={(e) => setNewCgPhone(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                  required
+                />
+                <span style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.25rem', display: 'block' }}>
+                  WhatsApp emergency SOS alerts will be dispatched directly to this phone number.
+                </span>
+              </div>
+
+              <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.75rem 0.9rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={newCgIsPrimary}
+                    onChange={(e) => setNewCgIsPrimary(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#059669', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '0.78rem', color: '#1e293b', fontWeight: 700 }}>
+                    ⭐ Set as Primary Contact
+                  </span>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={newCgAutoAlert}
+                    onChange={(e) => setNewCgAutoAlert(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#059669', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '0.78rem', color: '#1e293b', fontWeight: 700 }}>
+                    📲 Enable Automated WhatsApp Emergency SOS Alerts
+                  </span>
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAddCaregiverModal(false)}
+                  style={{
+                    backgroundColor: '#f1f5f9',
+                    color: '#475569',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '0.65rem 1rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    backgroundColor: '#059669',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '0.65rem 1rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    flex: 2,
+                    boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)'
+                  }}
+                >
+                  ✓ Add Caregiver
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── UPDATE / EDIT CAREGIVER DETAILS MODAL ───────────────────────── */}
+      {editingCaregiver && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 99999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '460px',
+            width: '100%',
+            padding: '1.6rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            margin: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem', paddingBottom: '0.65rem', borderBottom: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.4rem' }}>✏️</span>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                  Update Caregiver Details
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingCaregiver(null)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCaregiver} style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem', marginBottom: '1.3rem' }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
+                  Caregiver Full Name *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Caregiver Name"
+                  value={editCgName}
+                  onChange={(e) => setEditCgName(e.target.value)}
+                  style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                  required
                 />
               </div>
 
@@ -2312,33 +3088,167 @@ Patient did NOT respond to medication alarm within 10 seconds.
                 <input
                   type="text"
                   placeholder="e.g. Daughter / Primary Caregiver, Son, Spouse..."
-                  value={editRelation}
-                  onChange={(e) => setEditRelation(e.target.value)}
+                  value={editCgRelation}
+                  onChange={(e) => setEditCgRelation(e.target.value)}
                   style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
               <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#334155', display: 'block', marginBottom: '0.35rem' }}>
-                  WhatsApp Phone Number (with Country Code):
+                  WhatsApp Phone Number *
                 </label>
                 <input
                   type="tel"
                   placeholder="e.g. +91 98765 43210 or 9876543210"
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
+                  value={editCgPhone}
+                  onChange={(e) => setEditCgPhone(e.target.value)}
                   style={{ width: '100%', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }}
+                  required
                 />
-                <span style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.25rem', display: 'block' }}>
-                  Standard E.164 formatted number where alerts will be dispatched.
-                </span>
               </div>
+
+              <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.75rem 0.9rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={editCgIsPrimary}
+                    onChange={(e) => setEditCgIsPrimary(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#059669', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '0.78rem', color: '#1e293b', fontWeight: 700 }}>
+                    ⭐ Primary Caregiver Contact
+                  </span>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={editCgAutoAlert}
+                    onChange={(e) => setEditCgAutoAlert(e.target.checked)}
+                    style={{ width: '16px', height: '16px', accentColor: '#059669', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontSize: '0.78rem', color: '#1e293b', fontWeight: 700 }}>
+                    📲 Auto-Dispatch Missed-Dose WhatsApp Alert
+                  </span>
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = editingCaregiver
+                    setEditingCaregiver(null)
+                    setDeleteConfirmCaregiver(target)
+                  }}
+                  style={{
+                    backgroundColor: '#fff1f2',
+                    color: '#be123c',
+                    border: '1px solid #fecdd3',
+                    borderRadius: '12px',
+                    padding: '0.65rem 0.85rem',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                >
+                  🗑️ Delete
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setEditingCaregiver(null)}
+                  style={{
+                    backgroundColor: '#f1f5f9',
+                    color: '#475569',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '0.65rem 0.85rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  style={{
+                    backgroundColor: '#059669',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '0.65rem 1.1rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    flex: 1.5,
+                    boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)'
+                  }}
+                >
+                  ✓ Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── DELETE CAREGIVER CONFIRMATION MODAL ─────────────────────────── */}
+      {deleteConfirmCaregiver && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          zIndex: 999999,
+          display: 'grid',
+          placeItems: 'center',
+          padding: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '24px',
+            maxWidth: '430px',
+            width: '100%',
+            padding: '1.6rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            textAlign: 'center',
+            margin: 'auto'
+          }}>
+            <div style={{
+              width: '54px',
+              height: '54px',
+              borderRadius: '50%',
+              backgroundColor: '#fee2e2',
+              color: '#dc2626',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.6rem',
+              margin: '0 auto 1rem auto'
+            }}>
+              🗑️
             </div>
+
+            <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+              Delete Caregiver?
+            </h3>
+
+            <p style={{ margin: '0 0 1.3rem 0', fontSize: '0.84rem', color: '#64748b', lineHeight: 1.5 }}>
+              Are you sure you want to remove <strong>{deleteConfirmCaregiver.name}</strong> ({deleteConfirmCaregiver.phone}) from your family emergency alerts?
+            </p>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
                 type="button"
-                onClick={() => setIsEditingCaregiver(false)}
+                onClick={() => setDeleteConfirmCaregiver(null)}
                 style={{
                   backgroundColor: '#f1f5f9',
                   color: '#475569',
@@ -2351,13 +3261,14 @@ Patient did NOT respond to medication alarm within 10 seconds.
                   flex: 1
                 }}
               >
-                Cancel
+                Keep Caregiver
               </button>
+
               <button
                 type="button"
-                onClick={handleSaveCaregiverContact}
+                onClick={() => handleDeleteCaregiver(deleteConfirmCaregiver.id)}
                 style={{
-                  backgroundColor: '#059669',
+                  backgroundColor: '#dc2626',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '12px',
@@ -2365,11 +3276,11 @@ Patient did NOT respond to medication alarm within 10 seconds.
                   fontSize: '0.82rem',
                   fontWeight: 800,
                   cursor: 'pointer',
-                  flex: 2,
-                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.35)'
+                  flex: 1.4,
+                  boxShadow: '0 4px 12px rgba(220, 38, 38, 0.35)'
                 }}
               >
-                ✓ Save Caregiver
+                Yes, Delete
               </button>
             </div>
           </div>

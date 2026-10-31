@@ -10,10 +10,12 @@ import HealthAnalytics from '../components/dashboard/HealthAnalytics'
 import UserProfile from '../components/dashboard/UserProfile'
 import AppSettings from '../components/dashboard/AppSettings'
 import NearbyHospitalsMap from '../components/dashboard/NearbyHospitalsMap'
+import Curved3DGallery from '../components/dashboard/Curved3DGallery'
 import '../styles/dashboard.css'
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [viewMode3D, setViewMode3D] = useState(true)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem('pulsemed_sidebar_collapsed') === 'true'
@@ -135,29 +137,89 @@ export default function DashboardPage() {
             {/* Top Header Bar (Dashboard Tab Only) */}
             <Header />
 
-            {/* Health Overview / Vitals Grid */}
-            <section className="dash-vitals-grid">
-              {vitals.map((item) => (
-                <div key={item.id} className="dash-vital-card" style={{ background: item.bgGradient }}>
-                  <div className="dash-vital-top">
-                    <div className="dash-vital-icon" style={{ backgroundColor: `${item.color}15`, borderColor: `${item.color}30` }}>
-                      {item.icon}
+                        {/* View Switch Header Row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.8rem', flexWrap: 'wrap', gap: '0.8rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.01em' }}>
+                  Live Health & Safety Overview
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.2rem 0 0 0' }}>
+                  Live 3D Perspective Ring Visualizer & Health Vitals
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255, 255, 255, 0.05)', padding: '0.25rem', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <button
+                  type="button"
+                  onClick={() => setViewMode3D(true)}
+                  style={{
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: viewMode3D ? 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)' : 'transparent',
+                    color: viewMode3D ? '#ffffff' : '#94a3b8',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    boxShadow: viewMode3D ? '0 2px 10px rgba(56, 189, 248, 0.35)' : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <span>⭕ 3D Ring</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode3D(false)}
+                  style={{
+                    padding: '0.4rem 0.85rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: !viewMode3D ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                    color: !viewMode3D ? '#ffffff' : '#94a3b8',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <span>⊞ Classic Grid</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Health Overview / Vitals: 3D Curved Perspective Carousel or Classic Grid */}
+            {viewMode3D ? (
+              <Curved3DGallery />
+            ) : (
+              <section className="dash-vitals-grid">
+                {vitals.map((item) => (
+                  <div key={item.id} className="dash-vital-card" style={{ background: item.bgGradient }}>
+                    <div className="dash-vital-top">
+                      <div className="dash-vital-icon" style={{ backgroundColor: `${item.color}15`, borderColor: `${item.color}30` }}>
+                        {item.icon}
+                      </div>
+                      <span className="dash-vital-badge" style={{ color: item.color, backgroundColor: `${item.color}15` }}>
+                        {item.status}
+                      </span>
                     </div>
-                    <span className="dash-vital-badge" style={{ color: item.color, backgroundColor: `${item.color}15` }}>
-                      {item.status}
-                    </span>
-                  </div>
-                  <div className="dash-vital-info">
-                    <span className="dash-vital-label">{item.title}</span>
-                    <div className="dash-vital-val-row">
-                      <span className="dash-vital-value">{item.value}</span>
-                      <span className="dash-vital-unit">{item.unit}</span>
+                    <div className="dash-vital-info">
+                      <span className="dash-vital-label">{item.title}</span>
+                      <div className="dash-vital-val-row">
+                        <span className="dash-vital-value">{item.value}</span>
+                        <span className="dash-vital-unit">{item.unit}</span>
+                      </div>
+                      <span className="dash-vital-trend">{item.trend}</span>
                     </div>
-                    <span className="dash-vital-trend">{item.trend}</span>
                   </div>
-                </div>
-              ))}
-            </section>
+                ))}
+              </section>
+            )}
 
             {/* Nearby Emergency Hospitals & Trauma Map Radar Section */}
             <NearbyHospitalsMap />

@@ -6,6 +6,10 @@ const AuthContext = createContext(null)
 const TOKEN_KEY = 'mg_token'
 const USER_KEY  = 'mg_user'
 
+/** Check if a token is a client-side guest/fallback token (not a real JWT) */
+const isLocalToken = (t) =>
+  t && (t.startsWith('guest_jwt_') || t.startsWith('token_') || t.startsWith('local_session_'))
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))
   const [user, setUser] = useState(() => {
@@ -21,8 +25,15 @@ export function AuthProvider({ children }) {
   }, [])
 
   // On mount, validate stored token against /api/auth/me
+  // Skip validation for guest/local tokens (client-side only, no backend session)
   useEffect(() => {
     if (!token) return
+
+    // Guest and local fallback tokens are client-side only — skip server validation
+    if (isLocalToken(token)) {
+      setIsLoading(false)
+      return
+    }
 
     let isMounted = true
 
@@ -70,7 +81,7 @@ export function AuthProvider({ children }) {
    * Clear auth state and token — triggers redirect via ProtectedRoute.
    */
   const logout = useCallback(async () => {
-    if (token && !token.includes('guest')) {
+    if (token && !isLocalToken(token) && !token.includes('guest')) {
       try {
         await fetch(getApiUrl('/api/auth/logout'), {
           method: 'POST',

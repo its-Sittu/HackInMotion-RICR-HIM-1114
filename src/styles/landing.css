@@ -220,6 +220,15 @@ html, body {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  perspective: 600px;
+}
+
+/* Ensure SplitText chars inherit the gradient */
+.hero-main-heading div,
+.hero-main-heading span {
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-tagline {
@@ -229,6 +238,7 @@ html, body {
   margin: 0 0 1.2rem 0;
   line-height: 1.55;
   font-style: italic;
+  perspective: 400px;
 }
 
 .hero-support-text {
@@ -332,7 +342,19 @@ html, body {
   60% { transform: translateY(4px); }
 }
 
-/* ── BORDERLESS ANATOMICAL & WORKFLOW CARDS ─────────────────── */
+/* ── CLEAN OPEN ANATOMICAL CONTENT (NO BOX) ────────────────── */
+.anatomical-content {
+  max-width: clamp(480px, 46vw, 640px);
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  perspective: 600px;
+}
+
+/* Legacy class kept for backward compat */
 .anatomical-quote-box {
   background: rgba(15, 23, 42, 0.62);
   backdrop-filter: blur(25px);
@@ -366,6 +388,13 @@ html, body {
   margin: 0 0 1rem 0;
   letter-spacing: -0.6px;
   line-height: 1.15;
+  perspective: 600px;
+}
+
+/* Ensure SplitText chars inside headings have correct 3D transform */
+.anatomical-heading div,
+.anatomical-heading span {
+  display: inline-block;
 }
 
 .anatomical-subtext {
@@ -526,6 +555,7 @@ html, body {
 
   .hero-content-col,
   .anatomical-quote-box,
+  .anatomical-content,
   .capabilities-header,
   .capabilities-grid,
   .final-cta-box {

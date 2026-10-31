@@ -1,3 +1,8 @@
+import {
+  getVoiceGatewayStatus,
+  triggerOutboundCall,
+  generateCallTwiML
+} from '../services/voiceCall.service.js'
 import * as healthService from '../services/health.service.js'
 import { sendEmergencySms, sendWhatsAppEmergencyAlert } from '../services/sms.service.js'
 import {
@@ -147,3 +152,73 @@ export const disconnectWhatsAppGatewayHandler = async (req, res, next) => {
   }
 }
 
+/**
+ * Trigger Real Automated Voice Call (Twilio Programmable Voice)
+ * @route POST /api/health/trigger-voice-call
+ */
+export const triggerVoiceCallHandler = async (req, res, next) => {
+  try {
+    const { toPhone, recipientPhone, phone, patientName, medicine, instruction, time, isEmergency } = req.body
+    const targetPhone = toPhone || recipientPhone || phone
+
+    if (!targetPhone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Recipient phone number is required to trigger voice call.'
+      })
+    }
+
+    const result = await triggerOutboundCall({
+      toPhone: targetPhone,
+      patientName: patientName || 'Patient',
+      medicine: medicine || 'Prescribed Medicine',
+      instruction: instruction || 'As advised',
+      time: time || 'Scheduled Time',
+      isEmergency: Boolean(isEmergency)
+    })
+
+    return res.status(200).json({
+      success: true,
+      message: `Automated voice call successfully placed to ${targetPhone} via Twilio.`,
+      result
+    })
+  } catch (error) {
+    console.error('[Voice Call Controller Error]', error.message)
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to place automated voice call.'
+    })
+  }
+}
+
+/**
+ * Get Voice Call Gateway Status
+ * @route GET /api/health/voice-gateway/status
+ */
+export const getVoiceGatewayStatusHandler = async (req, res, next) => {
+  try {
+    const status = await getVoiceGatewayStatus()
+    return res.status(200).json({
+      success: true,
+      ...status
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * Return TwiML Voice XML
+ * @route POST /api/health/voice-twiml
+ */
+export const getVoiceCallTwiMLHandler = (req, res) => {
+  const { patientName, medicine, instruction, time, isEmergency } = req.body
+  const twiml = generateCallTwiML({
+    patientName,
+    medicine,
+    instruction,
+    time,
+    isEmergency: Boolean(isEmergency)
+  })
+  res.type('text/xml').send(twiml)
+}

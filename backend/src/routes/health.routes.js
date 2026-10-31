@@ -4,7 +4,10 @@ import {
   sendEmergencySosHandler,
   sendWhatsAppSosHandler,
   getWhatsAppGatewayStatusHandler,
-  disconnectWhatsAppGatewayHandler
+  disconnectWhatsAppGatewayHandler,
+  triggerVoiceCallHandler,
+  getVoiceGatewayStatusHandler,
+  getVoiceCallTwiMLHandler
 } from '../controllers/health.controller.js'
 
 const router = Router()
@@ -43,6 +46,28 @@ router.get('/whatsapp-gateway/status', getWhatsAppGatewayStatusHandler)
  * @access Public
  */
 router.post('/whatsapp-gateway/disconnect', disconnectWhatsAppGatewayHandler)
+
+
+/**
+ * @route POST /api/health/trigger-voice-call
+ * @desc  Trigger automated AI voice call to patient or caregiver
+ * @access Public
+ */
+router.post('/trigger-voice-call', triggerVoiceCallHandler)
+
+/**
+ * @route GET /api/health/voice-gateway/status
+ * @desc  Get Twilio Voice Gateway status & caller phone number
+ * @access Public
+ */
+router.get('/voice-gateway/status', getVoiceGatewayStatusHandler)
+
+/**
+ * @route POST /api/health/voice-twiml
+ * @desc  Dynamic TwiML endpoint for incoming/outbound voice responses
+ * @access Public
+ */
+router.post('/voice-twiml', getVoiceCallTwiMLHandler)
 
 export default router
 

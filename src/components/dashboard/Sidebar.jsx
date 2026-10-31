@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 const navItems = [
   {
-    id: 'dashboard', label: 'Dashboard',
+    id: 'dashboard',
+    label: 'Dashboard',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/>
@@ -13,24 +14,27 @@ const navItems = [
     )
   },
   {
-    id: 'myhealth', label: 'My Health',
+    id: 'myhealth',
+    label: 'My Health',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     )
   },
-
   {
-    id: 'drug-interactions', label: 'Real Drug Interactions',
+    id: 'drug-interactions',
+    label: 'Drug Interactions',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
-    )
+    ),
+    badge: 'FDA'
   },
   {
-    id: 'symptom-checker', label: 'Body Symptom Checker',
+    id: 'symptom-checker',
+    label: 'Symptom Checker',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
@@ -38,7 +42,8 @@ const navItems = [
     )
   },
   {
-    id: 'records', label: 'Medical Records',
+    id: 'records',
+    label: 'Medical Records',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -49,7 +54,8 @@ const navItems = [
     )
   },
   {
-    id: 'medicines', label: 'Medicines',
+    id: 'medicines',
+    label: 'Medicines',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M10.5 3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5h-3z"/>
@@ -59,7 +65,8 @@ const navItems = [
     )
   },
   {
-    id: 'analytics', label: 'Health Analytics',
+    id: 'analytics',
+    label: 'Health Analytics',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" y1="20" x2="18" y2="10"/>
@@ -69,7 +76,8 @@ const navItems = [
     )
   },
   {
-    id: 'profile', label: 'Profile',
+    id: 'profile',
+    label: 'Profile',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -78,7 +86,8 @@ const navItems = [
     )
   },
   {
-    id: 'settings', label: 'Settings',
+    id: 'settings',
+    label: 'Settings',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="3"/>
@@ -110,12 +119,29 @@ const getInitials = (name) => {
   return name.slice(0, 2).toUpperCase()
 }
 
-export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = false, onToggleCollapse }) {
+export default function Sidebar({
+  activeId = 'dashboard',
+  onNav,
+  isCollapsed = false,
+  onToggleCollapse
+}) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
 
   const displayName = getUserDisplayName(user)
   const initials = getInitials(displayName)
+
+  // Keyboard shortcut: Ctrl + B or Cmd + B to toggle sidebar
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault()
+        if (onToggleCollapse) onToggleCollapse()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onToggleCollapse])
 
   const handleLogout = async () => {
     if (logout) {
@@ -128,13 +154,18 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
     <aside className={`medisafe-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
       {/* Brand Header Row */}
       <div className="sidebar-brand-row">
-        <div className="sidebar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')} title="Pharmx AI Home">
+        <div
+          className="sidebar-brand"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+          title="Pharmx AI Home"
+        >
           <div className="brand-icon-wrapper">
             <svg className="brand-logo" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          {!isCollapsed && <span className="brand-name">PHARMX AI</span>}
+          <span className="brand-name">PHARMX AI</span>
         </div>
 
         {/* Mobile Quick Sign Out Button */}
@@ -152,15 +183,25 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
           </svg>
         </button>
 
-        {/* Clear Prominent Desktop Collapse Toggle Button */}
+        {/* Desktop Collapse Toggle Button */}
         <button
           type="button"
           onClick={onToggleCollapse}
           className="sidebar-collapse-btn"
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          title={isCollapsed ? 'Expand Sidebar (Ctrl+B)' : 'Collapse Sidebar (Ctrl+B)'}
           aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}>
+          <svg
+            className="collapse-chevron-icon"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -169,45 +210,67 @@ export default function Sidebar({ activeId = 'dashboard', onNav, isCollapsed = f
       {/* Navigation List */}
       <nav className="sidebar-nav">
         <ul className="nav-list">
-          {navItems.map((item) => (
-            <li key={item.id} className="nav-item-wrapper">
-              <button
-                type="button"
-                id={`nav-${item.id}`}
-                className={`nav-item-btn ${activeId === item.id ? 'active' : ''}`}
-                aria-current={activeId === item.id ? 'page' : undefined}
-                title={isCollapsed ? item.label : undefined}
-                onClick={() => onNav && onNav(item.id)}
-              >
-                <span className="nav-icon" aria-hidden="true">{item.icon}</span>
-                {!isCollapsed && <span className="nav-label">{item.label}</span>}
-              </button>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activeId === item.id
+            return (
+              <li key={item.id} className="nav-item-wrapper">
+                <button
+                  type="button"
+                  id={`nav-${item.id}`}
+                  className={`nav-item-btn ${isActive ? 'active' : ''}`}
+                  aria-current={isActive ? 'page' : undefined}
+                  onClick={() => onNav && onNav(item.id)}
+                >
+                  <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                  {item.badge && <span className="nav-item-badge">{item.badge}</span>}
+                </button>
+                {/* Floating Production Tooltip */}
+                <div className="nav-tooltip" role="tooltip">{item.label}</div>
+              </li>
+            )
+          })}
         </ul>
       </nav>
 
       {/* Footer / User Profile & Logout */}
       <div className="sidebar-footer">
-        <div className="sidebar-user-card" title={isCollapsed ? displayName : undefined}>
-          <div className="sidebar-user-avatar">{initials}</div>
-          {!isCollapsed && (
+        <div className="sidebar-user-card-wrap">
+          <div className="sidebar-user-card">
+            <div className="sidebar-user-avatar-wrap">
+              <div className="sidebar-user-avatar">{initials}</div>
+              <span className="user-online-dot" />
+            </div>
             <div className="sidebar-user-info">
               <span className="sidebar-user-name">{displayName}</span>
-              <span className="sidebar-user-role">{user && user.phone !== 'guest@pulsemed.com' && user.phone !== 'guest@pharmx.ai' && user.phone !== 'guest@medisafe.com' ? 'Verified Member' : 'Guest Account'}</span>
+              <span className="sidebar-user-role">
+                {user && user.phone !== 'guest@pulsemed.com' && user.phone !== 'guest@pharmx.ai' && user.phone !== 'guest@medisafe.com'
+                  ? 'Verified Member'
+                  : 'Guest Account'}
+              </span>
             </div>
-          )}
+          </div>
+          <div className="nav-tooltip" role="tooltip">{displayName}</div>
         </div>
-        <button type="button" className="logout-btn" onClick={handleLogout} id="logout-btn" title={isCollapsed ? 'Sign Out' : undefined}>
-          <span className="nav-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </span>
-          {!isCollapsed && <span className="nav-label">Sign Out</span>}
-        </button>
+
+        <div className="logout-wrapper">
+          <button
+            type="button"
+            className="logout-btn"
+            onClick={handleLogout}
+            id="logout-btn"
+          >
+            <span className="nav-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </span>
+            <span className="nav-label">Sign Out</span>
+          </button>
+          <div className="nav-tooltip" role="tooltip">Sign Out</div>
+        </div>
       </div>
     </aside>
   )
