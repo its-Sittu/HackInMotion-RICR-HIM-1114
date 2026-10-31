@@ -237,6 +237,23 @@ export const sendEmergencySms = async (phone, message) => {
 
   if (!cleanPhone || cleanPhone.length < 10) return
 
+  // 1. Send Real SMS via Twilio if configured
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_FROM_NUMBER) {
+    try {
+      const twilioModule = (await import('twilio')).default
+      const client = twilioModule(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+      const toE164 = phone.startsWith('+') ? phone : `+91${cleanPhone}`
+      const twResult = await client.messages.create({
+        body: message,
+        from: process.env.TWILIO_FROM_NUMBER,
+        to: toE164
+      })
+      console.log(`[Twilio Real SMS Emergency Alert Dispatched ✅] SID: ${twResult.sid} | To: ${toE164}`)
+    } catch (twErr) {
+      console.warn(`[Twilio SMS Warning] ${twErr.message}`)
+    }
+  }
+
   if (apiKey) {
     try {
       // Try GET query string endpoint for Fast2SMS bulkV2

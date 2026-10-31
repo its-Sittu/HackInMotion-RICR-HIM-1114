@@ -84,6 +84,8 @@ export const sendWhatsAppSosHandler = async (req, res, next) => {
 
     if (phone && message) {
       await sendWhatsAppEmergencyAlert(phone, message)
+      const smsText = `🚨 PHARMX AI ALERT: Patient missed taking ${targetMedicine} scheduled at ${scheduledTime} (${instruction || 'Food Protocol'}). Immediate check advised.`
+      await sendEmergencySms(phone, smsText)
     }
 
     return res.status(200).json({

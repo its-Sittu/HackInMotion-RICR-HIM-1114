@@ -173,9 +173,9 @@ export const triggerOutboundCall = async ({ toPhone, patientName, medicine, inst
   }
 
   const twiml = generateCallTwiML({
-    patientName: patientName || 'Sittu',
-    medicine: medicine || 'डोलो 650 मिलीग्राम',
-    instruction: instruction || 'खाना खाने के बाद',
+    patientName: patientName && patientName !== 'Patient' ? patientName : '',
+    medicine: medicine || 'दवाई',
+    instruction: instruction || 'समय पर',
     time: time || 'अभी',
     isEmergency
   })

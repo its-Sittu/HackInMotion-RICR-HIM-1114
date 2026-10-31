@@ -5,15 +5,23 @@ export default function UserProfile() {
   const { user } = useAuth()
 
   // Clean Profile Form State (Username, Medical Conditions, Emergency & Caregiver Contacts removed as requested)
-  const [formData, setFormData] = useState({
-    firstName: user?.name ? user.name.split(' ')[0] : 'Sittu',
-    lastName: user?.name && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : 'Dev',
-    email: user?.email || (user?.phone?.includes('@') ? user?.phone : 'sittu@medisafe.com'),
-    phone: user?.phone?.includes('@') ? '9876543210' : (user?.phone || '9876543210'),
-    countryCode: '+91',
-    dob: '1998-05-15',
-    gender: 'Male',
-    bloodGroup: 'O+'
+  const [formData, setFormData] = useState(() => {
+    try {
+      const saved = localStorage.getItem('medisafe_user_profile')
+      if (saved) return JSON.parse(saved)
+    } catch {
+      // fallback
+    }
+    return {
+      firstName: user?.name ? user.name.split(' ')[0] : '',
+      lastName: user?.name && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : '',
+      email: user?.email || (user?.phone?.includes('@') ? user?.phone : ''),
+      phone: user?.phone?.includes('@') ? '' : (user?.phone || ''),
+      countryCode: '+91',
+      dob: '1998-05-15',
+      gender: 'Male',
+      bloodGroup: 'O+'
+    }
   })
 
   const [savedSuccess, setSavedSuccess] = useState(false)
@@ -31,6 +39,11 @@ export default function UserProfile() {
 
   const handleSave = (e) => {
     e.preventDefault()
+    try {
+      localStorage.setItem('medisafe_user_profile', JSON.stringify(formData))
+    } catch {
+      // fallback
+    }
     setSavedSuccess(true)
     setTimeout(() => setSavedSuccess(false), 3500)
   }

@@ -118,28 +118,21 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
       const savedSingle = localStorage.getItem('pulsemed_family_whatsapp_contact')
       if (savedSingle) {
         const single = JSON.parse(savedSingle)
-        return [{
-          id: single.id || 'cg-1',
-          name: single.name || 'Priya Sharma (Daughter)',
-          relation: single.relation || 'Primary Caregiver',
-          phone: single.phone || '+918789812990',
-          isPrimary: true,
-          autoAlertEnabled: single.autoAlertEnabled !== false
-        }]
+        if (single && single.phone) {
+          return [{
+            id: single.id || 'cg-1',
+            name: single.name || 'Family Caregiver',
+            relation: single.relation || 'Primary Caregiver',
+            phone: single.phone,
+            isPrimary: true,
+            autoAlertEnabled: single.autoAlertEnabled !== false
+          }]
+        }
       }
     } catch {
       // fallback
     }
-    return [
-      {
-        id: 'cg-1',
-        name: 'Priya Sharma (Daughter)',
-        relation: 'Primary Caregiver',
-        phone: '+918789812990',
-        isPrimary: true,
-        autoAlertEnabled: true
-      }
-    ]
+    return []
   })
 
   const primaryCaregiver = useMemo(() => {
@@ -193,16 +186,7 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
   const [whatsappAlertHistory, setWhatsappAlertHistory] = useState(() => {
     try {
       const saved = localStorage.getItem('pulsemed_whatsapp_alerts_history')
-      return saved ? JSON.parse(saved) : [
-        {
-          id: 'wa-hist-1',
-          time: 'Today, 08:01 AM',
-          medicine: 'Pantocid 40mg (Pantoprazole)',
-          recipient: 'Priya Sharma (+919876543210)',
-          status: 'DISPATCHED',
-          trigger: 'Auto-Triggered on 10s Unanswered Timeout'
-        }
-      ]
+      return saved ? JSON.parse(saved) : []
     } catch {
       return []
     }
@@ -540,12 +524,6 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
   const sendFamilyWhatsAppAlert = useCallback((alarm, isManual = false, targetContact = null) => {
     if (!alarm) return
 
-    // GUARD: Check if WhatsApp Gateway is linked via QR Code!
-    if (!gatewaySessionRef.current?.isConnected) {
-      setNotConnectedWarningModal(true)
-      return
-    }
-
     // Determine target recipient(s)
     let recipients = []
     if (targetContact) {
@@ -616,16 +594,7 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
         // background gateway sync optional
       }
 
-      if (idx === 0) {
-        setDispatchedAlertModal({
-          alarm,
-          message,
-          whatsappUrl,
-          recipient: `${contact.name} (${contact.phone})`,
-          gatewayPhone: gatewaySessionRef.current.linkedPhone,
-          isManual
-        })
-
+      if (isManual && idx === 0) {
         try {
           window.open(whatsappUrl, '_blank')
         } catch {
@@ -644,14 +613,16 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
   const triggerAiVoiceCall = useCallback((alarm, isManual = false, targetContact = null) => {
     if (!alarm) return
 
-    const recipient = targetContact || primaryCaregiver || {
-      name: 'Family Contact',
-      phone: '+918789812990'
+    const recipient = targetContact || primaryCaregiver || (caregiversRef.current && caregiversRef.current.length > 0 ? caregiversRef.current[0] : null)
+
+    if (!recipient || !recipient.phone) {
+      showCgToast('⚠️ No caregiver phone number saved. Please save a caregiver to receive calls.')
+      return
     }
 
-    const targetPhone = recipient.phone || '+918789812990'
+    const targetPhone = recipient.phone
     playSoundBeep()
-    showCgToast(`📞 Direct AI phone call placed to ${targetPhone}...`)
+    showCgToast(`📞 Direct AI phone call placed to ${recipient.name} (${targetPhone})...`)
 
     // Dispatch real phone call to Twilio Programmable Voice Backend API
     try {
@@ -660,7 +631,7 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           toPhone: targetPhone,
-          patientName: recipient.name || 'Sittu',
+          patientName: recipient.name || '',
           medicine: alarm.medicine,
           instruction: alarm.instruction,
           time: alarm.time,
@@ -713,13 +684,9 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
       ]
     })
 
-    // 🚨 AUTOMATIC FAMILY WHATSAPP GATEWAY TRIGGER (IF LINKED)
+    // 🚨 AUTOMATIC FAMILY WHATSAPP & SMS GATEWAY TRIGGER
     if (familyCareSyncEnabled && familyContactRef.current?.autoAlertEnabled) {
-      if (gatewaySessionRef.current?.isConnected) {
-        sendFamilyWhatsAppAlert(alarm, false)
-      } else {
-        setNotConnectedWarningModal(true)
-      }
+      sendFamilyWhatsAppAlert(alarm, false)
     }
 
     // 📞 AUTOMATIC AI VOICE CALL TRIGGER (TWILIO PROGRAMMABLE VOICE)
