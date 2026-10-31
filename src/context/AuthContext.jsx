@@ -15,7 +15,10 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem(USER_KEY)) } catch { return null }
   })
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(() => {
+    const initialToken = localStorage.getItem(TOKEN_KEY)
+    return Boolean(initialToken && !isLocalToken(initialToken))
+  })
 
   const clearAuth = useCallback(() => {
     setToken(null)
@@ -27,13 +30,7 @@ export function AuthProvider({ children }) {
   // On mount, validate stored token against /api/auth/me
   // Skip validation for guest/local tokens (client-side only, no backend session)
   useEffect(() => {
-    if (!token) return
-
-    // Guest and local fallback tokens are client-side only — skip server validation
-    if (isLocalToken(token)) {
-      setIsLoading(false)
-      return
-    }
+    if (!token || isLocalToken(token)) return
 
     let isMounted = true
 

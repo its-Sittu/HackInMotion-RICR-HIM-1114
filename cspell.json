@@ -21,7 +21,7 @@
     "Rheumatologist",
     "Troponin",
     "bukhar",
-    "bukhār",
+    "bukh\u0101r",
     "pait",
     "jalan",
     "chati",
@@ -260,12 +260,26 @@
     "pino",
     "jid",
     "whiskeysockets",
-    "qrcode"
+    "qrcode",
+    "twiml",
+    "Twiml",
+    "TwiML",
+    "Kajal",
+    "Aditi",
+    "GSAP",
+    "gsap",
+    "Sneha",
+    "Verma",
+    "omepra",
+    "rabepra"
   ],
   "ignorePaths": [
     "**/node_modules/**",
     "**/dist/**",
     "**/package-lock.json",
     "**/.git/**"
+  ],
+  "ignoreRegExpList": [
+    "[\\\\u0900-\\\\u097F]+"
   ]
 }

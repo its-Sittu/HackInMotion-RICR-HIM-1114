@@ -156,7 +156,7 @@ export const disconnectWhatsAppGatewayHandler = async (req, res, next) => {
  * Trigger Real Automated Voice Call (Twilio Programmable Voice)
  * @route POST /api/health/trigger-voice-call
  */
-export const triggerVoiceCallHandler = async (req, res, next) => {
+export const triggerVoiceCallHandler = async (req, res, _next) => {
   try {
     const { toPhone, recipientPhone, phone, patientName, medicine, instruction, time, isEmergency } = req.body
     const targetPhone = toPhone || recipientPhone || phone

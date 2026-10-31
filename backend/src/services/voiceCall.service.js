@@ -1,3 +1,4 @@
+/* cspell:disable */
 import twilio from 'twilio'
 
 /**
@@ -122,7 +123,7 @@ export const generateCallTwiML = ({
   patientName = '',
   medicine = 'दवाई',
   instruction = 'समय पर',
-  time = 'अभी',
+  _time = 'अभी',
   isEmergency = false
 }) => {
   const hindiMed = convertToConversationalHindi(medicine)

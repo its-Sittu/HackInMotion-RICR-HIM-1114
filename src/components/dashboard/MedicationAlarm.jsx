@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { saveActivityToMedicalHistory } from '../../utils/activityLogger'
 import { getApiUrl } from '../../utils/apiConfig'
 
@@ -142,15 +142,20 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
     ]
   })
 
-  const primaryCaregiver = caregivers.find(c => c.isPrimary) || caregivers[0] || null
-  const familyContact = primaryCaregiver || {
-    id: 'cg-none',
-    name: 'No Caregiver Configured',
-    relation: 'None',
-    phone: '',
-    isPrimary: false,
-    autoAlertEnabled: false
-  }
+  const primaryCaregiver = useMemo(() => {
+    return caregivers.find(c => c.isPrimary) || caregivers[0] || null
+  }, [caregivers])
+
+  const familyContact = useMemo(() => {
+    return primaryCaregiver || {
+      id: 'cg-none',
+      name: 'No Caregiver Configured',
+      relation: 'None',
+      phone: '',
+      isPrimary: false,
+      autoAlertEnabled: false
+    }
+  }, [primaryCaregiver])
 
   const caregiversRef = useRef(caregivers)
   const familyContactRef = useRef(familyContact)
@@ -630,82 +635,10 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
     })
   }, [generateFamilyWhatsAppMessage])
 
-  // Handle 1-Minute Unanswered Alarm Ringing Timeout -> Mark as Missed
-  const handleUnansweredAlarm = useCallback((alarm) => {
-    if (!alarm) return
-
-    setAlarms(prev => prev.map(item => {
-      if (item.id === alarm.id) {
-        return { ...item, status: 'MISSED' }
-      }
-      return item
-    }))
-
-    setActiveRingingAlarm(null)
-
-    saveActivityToMedicalHistory({
-      title: `Missed Medication: ${alarm.medicine}`,
-      category: 'Medicines',
-      typeIcon: '⚠️',
-      status: 'MISSED ⚠️',
-      statusBg: '#ffe4e6',
-      statusColor: '#be123c',
-      summary: `10-second alarm rang with no response for "${alarm.medicine}" (${alarm.time}). Marked as Missed.`,
-      doctorNote: `Dose missed by patient. Instruction: ${alarm.instruction}`,
-      details: [
-        `Medicine Missed: ${alarm.medicine}`,
-        `Scheduled Time: ${alarm.time}`,
-        `Status: Missed Dose ⚠️`
-      ]
-    })
-
-    // 🚨 AUTOMATIC FAMILY WHATSAPP GATEWAY TRIGGER (IF LINKED)
-    if (familyCareSyncEnabled && familyContactRef.current?.autoAlertEnabled) {
-      if (gatewaySessionRef.current?.isConnected) {
-        sendFamilyWhatsAppAlert(alarm, false)
-      } else {
-        setNotConnectedWarningModal(true)
-      }
-    }
-
-    // 📞 AUTOMATIC AI VOICE CALL TRIGGER (TWILIO PROGRAMMABLE VOICE)
-    if (autoVoiceCallEnabled) {
-      triggerAiVoiceCall(alarm, false)
-    }
-  }, [familyCareSyncEnabled, sendFamilyWhatsAppAlert])
-
-  // Simulate QR Code Camera Scan & Device Pairing
-  const handleSimulateQrPairing = () => {
-    setPairingStatus('PAIRING')
-    setTimeout(() => {
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      const newSession = {
-        isConnected: true,
-        linkedPhone: familyContact.phone || '+919876543210',
-        linkedName: 'Patient Primary WhatsApp',
-        linkedAt: `Today, ${now}`,
-        sessionId: `PHARMX-WSS-${Math.floor(100000 + Math.random() * 900000)}`,
-        deviceInfo: 'WhatsApp Web Protocol (Multi-Device Active)'
-      }
-      setGatewaySession(newSession)
-      setPairingStatus('SUCCESS')
-      playSoundBeep()
-
-      setTimeout(() => {
-        setShowQrModal(false)
-        setPairingStatus('IDLE')
-      }, 1500)
-    }, 1600)
+  const showCgToast = (msg) => {
+    setCaregiverToast(msg)
+    setTimeout(() => setCaregiverToast(''), 3500)
   }
-
-  // Save autoVoiceCallEnabled in localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('pulsemed_auto_voice_call_enabled', String(autoVoiceCallEnabled))
-    } catch {
-      // localStorage
-    }
-  }, [autoVoiceCallEnabled])
 
   // Trigger Outbound AI Voice Call Directly to Real Phone (Twilio Programmable Voice)
   const triggerAiVoiceCall = useCallback((alarm, isManual = false, targetContact = null) => {
@@ -751,6 +684,85 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
     }
   }, [primaryCaregiver])
 
+  // Handle 1-Minute Unanswered Alarm Ringing Timeout -> Mark as Missed
+  const handleUnansweredAlarm = useCallback((alarm) => {
+    if (!alarm) return
+
+    setAlarms(prev => prev.map(item => {
+      if (item.id === alarm.id) {
+        return { ...item, status: 'MISSED' }
+      }
+      return item
+    }))
+
+    setActiveRingingAlarm(null)
+
+    saveActivityToMedicalHistory({
+      title: `Missed Medication: ${alarm.medicine}`,
+      category: 'Medicines',
+      typeIcon: '⚠️',
+      status: 'MISSED ⚠️',
+      statusBg: '#ffe4e6',
+      statusColor: '#be123c',
+      summary: `10-second alarm rang with no response for "${alarm.medicine}" (${alarm.time}). Marked as Missed.`,
+      doctorNote: `Dose missed by patient. Instruction: ${alarm.instruction}`,
+      details: [
+        `Medicine Missed: ${alarm.medicine}`,
+        `Scheduled Time: ${alarm.time}`,
+        `Status: Missed Dose ⚠️`
+      ]
+    })
+
+    // 🚨 AUTOMATIC FAMILY WHATSAPP GATEWAY TRIGGER (IF LINKED)
+    if (familyCareSyncEnabled && familyContactRef.current?.autoAlertEnabled) {
+      if (gatewaySessionRef.current?.isConnected) {
+        sendFamilyWhatsAppAlert(alarm, false)
+      } else {
+        setNotConnectedWarningModal(true)
+      }
+    }
+
+    // 📞 AUTOMATIC AI VOICE CALL TRIGGER (TWILIO PROGRAMMABLE VOICE)
+    if (autoVoiceCallEnabled) {
+      triggerAiVoiceCall(alarm, false)
+    }
+  }, [familyCareSyncEnabled, sendFamilyWhatsAppAlert, autoVoiceCallEnabled, triggerAiVoiceCall])
+
+  // Simulate QR Code Camera Scan & Device Pairing
+  const handleSimulateQrPairing = () => {
+    setPairingStatus('PAIRING')
+    setTimeout(() => {
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const newSession = {
+        isConnected: true,
+        linkedPhone: familyContact.phone || '+919876543210',
+        linkedName: 'Patient Primary WhatsApp',
+        linkedAt: `Today, ${now}`,
+        sessionId: `PHARMX-WSS-${Math.floor(100000 + Math.random() * 900000)}`,
+        deviceInfo: 'WhatsApp Web Protocol (Multi-Device Active)'
+      }
+      setGatewaySession(newSession)
+      setPairingStatus('SUCCESS')
+      playSoundBeep()
+
+      setTimeout(() => {
+        setShowQrModal(false)
+        setPairingStatus('IDLE')
+      }, 1500)
+    }, 1600)
+  }
+
+  // Save autoVoiceCallEnabled in localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('pulsemed_auto_voice_call_enabled', String(autoVoiceCallEnabled))
+    } catch {
+      // localStorage
+    }
+  }, [autoVoiceCallEnabled])
+
+// triggerAiVoiceCall hoisted above
+
   // Disconnect / Unlink WhatsApp Gateway
   const handleDisconnectGateway = async () => {
     setGatewaySession(prev => ({
@@ -775,10 +787,7 @@ export default function MedicationAlarm({ section = 'all' } = {}) {
     sendFamilyWhatsAppAlert(testAlarm, true)
   }
 
-  const showCgToast = (msg) => {
-    setCaregiverToast(msg)
-    setTimeout(() => setCaregiverToast(''), 3500)
-  }
+// showCgToast hoisted above
 
   // Add Caregiver Handler
   const handleAddCaregiver = (e) => {

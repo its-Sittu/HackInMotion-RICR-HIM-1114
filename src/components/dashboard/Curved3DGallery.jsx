@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import '../../styles/curved-gallery.css'
 
-export const DEFAULT_RING_CARDS = [
+const DEFAULT_RING_CARDS = [
   {
     id: 'active-meds',
     title: 'Active Medicines Today',
@@ -139,8 +139,6 @@ export default function Curved3DGallery({ cards = DEFAULT_RING_CARDS, onCardClic
   const dragStartRef = useRef({ x: 0, angle: 0 })
   const autoRotateReqRef = useRef(null)
   const isHoveredRef = useRef(false)
-  const targetRotationRef = useRef(0)
-
   const total = cards.length
   const stepAngle = 360 / total
   const baseRotationSpeed = 20 // smooth fast continuous rotation (deg/sec)
